@@ -10,10 +10,12 @@
     ```bash=
     dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
     ```
+    
 2. 用系統管理員身分打開 CMD 後輸入下面指令並執行 (啟用虛擬機器功能)
     ```bash=
     dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
     ```
+    
 3. 下載 Linux 核心更新套件
     - [適用於 x64 系統](https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi)
     - [適用於 ARM 系統](https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_arm64.msi)
@@ -21,10 +23,12 @@
     ```bash=
     wsl --set-default-version 2
     ```
+    
 5. 安裝 Ubuntu 20.04.6 LTS
     - 到 Microsoft Store 搜尋 Ubuntu
     - 找到 **Ubuntu 20.04.6 LTS**
     - 選擇 **取得**，並且選擇 **安裝**
+
 6. 設定帳號密碼
     - 第一次開啟 Ubuntu 會要求你輸入一組帳號密碼
     - 輸入密碼時如果沒有顯示密碼是正常的，這樣可以避免密碼被看到
