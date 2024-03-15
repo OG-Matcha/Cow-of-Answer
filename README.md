@@ -1,0 +1,106 @@
+## 如何開始專案
+
+### 安裝 WSL2
+我們需要先安裝 WSL2 供 Docker 使用 **(如果你的電腦有 WSL2 可跳過此步驟)**
+
+1. 用系統管理員身分打開 CMD 後輸入下面指令並執行 (啟用 WSL)
+    ```bash=
+    dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+    ```
+2. 用系統管理員身分打開 CMD 後輸入下面指令並執行 (啟用虛擬機器功能)
+    ```bash=
+    dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
+    ```
+3. 下載 Linux 核心更新套件
+    - [適用於 x64 系統](https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi)
+    - [適用於 ARM 系統](https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_arm64.msi)
+4. 將 WSL 2 設定為預設版本
+    ```bash=
+    wsl --set-default-version 2
+    ```
+5. 安裝 Ubuntu 20.04.6 LTS
+    - 到 Microsoft Store 搜尋 Ubuntu
+    - 找到 **Ubuntu 20.04.6 LTS**
+    - 選擇 **取得**，並且選擇 **安裝**
+6. 設定帳號密碼
+    - 第一次開啟 Ubuntu 會要求你輸入一組帳號密碼
+    - 輸入密碼時如果沒有顯示密碼是正常的，這樣可以避免密碼被看到
+
+
+### 安裝 Docker
+在這個專案中，我們需要安裝 [Docker](https://docs.docker.com/desktop/release-notes/#4251) 來去執行專案，我們先統一使用 **4.25.1** 版本
+
+### 安裝專案
+我們使用 Git 做版本控制，請先確定你的電腦有安裝 [Git](https://git-scm.com/download/win)，並且有一個 [Github](https://github.com/) 帳號
+
+接下來你可以選一個舒適的地方來複製專案的資料夾，在你想放新專案的路徑下打開 CMD 輸入並執行下面的指令
+```
+git clone https://github.com/OG-Matcha/NCU_Web_Final.git
+```
+
+接下來你的檔案結構應該會像這樣
+```
+your_folder/
+└── NCU_Web_Final/
+    ├── frontend/
+    ├── backend/
+    ├── mysql/
+    ├── nginx/
+    ├── mysql/
+    └── docker-compose.yaml
+```
+
+接下來你要再次開啟 CMD 並確定你的路徑在 **NCU_Web_Final** 那一層
+(也就是 **docker-compose.yaml** 所在的階層)，然後執行下面指令
+```
+docker compose up -d
+```
+就可以開始建立 docker 的映像檔及容器，建立完畢後即可在 Docker Desktop 中去執行容器開始進行專案開發
+
+## 創建你的分支
+
+在開始編輯專案前請先建立你的 Git 分支
+
+```
+git checkout -b <your name>
+```
+
+當你完成部分進度時，請記得適時推送上 Github
+
+```
+git push
+```
+
+**永遠不要直接給我推送到 main 分支 !!!**
+
+## Git Commit 規則
+
+init: 初始化專案
+
+add: 新增項目（但功能未完成）
+
+feat: 新增功能（功能已完成）
+
+RWD: RWD 的功能修正
+
+chore: 雜務（如新增附件檔、上傳字體檔等等）
+
+fix: 修正 bug 或 issue
+
+
+hotfix: 「即時」修正嚴重 bug
+
+範例：
+
+- 上傳圖片、字型: "chore: upload images and fonts"
+- 修正部分裝置的 RWD: "RWD: adjust layout on tablet"
+- 完成桌機頁面: "feat: complete desktop and tablet layout"
+
+## 使用框架及技術
+- Frontend : **Nuxt3 + TailwindCSS**
+
+- Backend : **PHP + Laravel**
+
+- Database : **MySQL + Adminer**
+
+- WebServer: **Nginx**
