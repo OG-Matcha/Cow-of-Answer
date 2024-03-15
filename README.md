@@ -51,7 +51,11 @@ your_folder/
 ```
 
 接下來你要再次開啟 CMD 並確定你的路徑在 **NCU_Web_Final** 那一層
-(也就是 **docker-compose.yaml** 所在的階層)，然後執行下面指令
+(也就是 **docker-compose.yaml** 所在的階層)，可以使用下面的指令去改變 CMD 當前路徑
+```
+cd <想進入的資料夾路徑>
+```
+然後執行下面指令
 ```
 docker compose up -d
 ```
