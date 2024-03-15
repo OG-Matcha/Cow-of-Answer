@@ -1,7 +1,10 @@
 ## 如何開始專案
 
 ### 安裝 WSL2
-我們需要先安裝 WSL2 供 Docker 使用 **(如果你的電腦有 WSL2 可跳過此步驟)**
+> [!TIP]
+> 如果你的電腦已經裝過 WSL2 可跳過此步驟
+
+我們需要先安裝 WSL2 供 Docker 使用
 
 1. 用系統管理員身分打開 CMD 後輸入下面指令並執行 (啟用 WSL)
     ```bash=
@@ -61,6 +64,8 @@ docker compose up -d
 ```
 就可以開始建立 docker 的映像檔及容器，建立完畢後即可在 Docker Desktop 中去執行容器開始進行專案開發
 
+> [!IMPORTANT]  
+> 請自行學習 Git 中的 add, commit, push 以及 branch 該如何使用 
 ## 創建你的分支
 
 在開始編輯專案前請先建立你的 Git 分支
@@ -99,6 +104,9 @@ hotfix: 「即時」修正嚴重 bug
 - 上傳圖片、字型: "chore: upload images and fonts"
 - 修正部分裝置的 RWD: "RWD: adjust layout on tablet"
 - 完成桌機頁面: "feat: complete desktop and tablet layout"
+
+> [!NOTE]  
+> 這部分非常重要，請建立良好的 commit 習慣及規則
 
 ## 使用框架及技術
 - Frontend : **Nuxt3 + TailwindCSS**
