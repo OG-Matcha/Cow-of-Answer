@@ -21,6 +21,7 @@
 3. 下載 Linux 核心更新套件
     - [適用於 x64 系統](https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi)
     - [適用於 ARM 系統](https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_arm64.msi)
+
 4. 將 WSL 2 設定為預設版本
     ```bash=
     wsl --set-default-version 2
@@ -64,7 +65,7 @@ your_folder/
 ```
 cd <想進入的資料夾路徑>
 ```
-然後執行下面指令
+然後在 CMD 執行下面指令
 ```
 docker compose up -d
 ```
