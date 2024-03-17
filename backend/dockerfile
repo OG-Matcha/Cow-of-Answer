@@ -1,4 +1,8 @@
 FROM php:8.2-fpm
+WORKDIR /app/backend
+
+# 複製專案檔案到容器中
+COPY . .
 
 # 安裝必要的系統套件
 RUN apt-get update && apt-get install -y \
@@ -8,25 +12,7 @@ RUN apt-get update && apt-get install -y \
   zip \
   unzip \
   git \
-  default-mysql-client
-
-# 安裝 PHP 擴充套件
-RUN docker-php-ext-install pdo_mysql gd
-
-# 安裝 Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
-# 設定工作目錄
-WORKDIR /var/www/html
-
-# 複製專案檔案到容器中
-COPY . .
-
-# 安裝 Laravel 專案相依套件
-RUN composer install --no-scripts --no-autoloader
-
-# 產生應用程式金鑰
-RUN php artisan key:generate
+  default-mysql-client && docker-php-ext-install pdo_mysql gd && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && composer install --no-scripts --no-autoloader && php artisan key:generate
 
 # 暴露 PHP-FPM 的端口
 EXPOSE 9000

@@ -17,7 +17,7 @@ services:
     build:
       context: ./backend
     volumes:
-      - ./backend:/var/www
+      - ./backend:/app/backend/
     ports:
       - 9000:9000
     depends_on:
@@ -48,8 +48,7 @@ services:
     ports:
       - 8000:80
     volumes:
-      - ./nginx/:/etc/nginx/conf.d/
-      - ./backend:/var/www
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./backend:/app/backend/
     depends_on:
-      - frontend
       - backend
