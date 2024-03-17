@@ -1,4 +1,6 @@
 ## 如何開啟專案
+> [!IMPORTANT]  
+> 請按照順序完成下列步驟
 
 ### 安裝 WSL2
 > [!TIP]
@@ -35,7 +37,7 @@
 
 
 ### 安裝 Docker
-在這個專案中，我們需要安裝 [Docker](https://docs.docker.com/desktop/release-notes/#4251) 來去執行專案，我們先統一使用 **4.25.1** 版本
+在這個專案中，我們需要安裝 [Docker](https://www.docker.com/get-started/) 來去執行專案。
 
 ### 安裝專案
 我們使用 Git 做版本控制，請先確定你的電腦有安裝 [Git](https://git-scm.com/download/win)，並且有一個 [Github](https://github.com/) 帳號
