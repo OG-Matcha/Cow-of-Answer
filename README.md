@@ -67,7 +67,7 @@ cd <想進入的資料夾路徑>
 ```
 然後在 CMD 執行下面指令
 ```
-docker compose up -d
+docker-compose up -d
 ```
 就可以開始建立 docker 的映像檔及容器，建立完畢後即可在 Docker Desktop 中去執行容器開始進行專案開發
 
