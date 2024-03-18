@@ -64,7 +64,7 @@ your_folder/
 ```
 cd <想進入的資料夾路徑>
 ```
-然後在 CMD 執行下面指令
+然後在 CMD 執行下面指令 (確保你的 docker 是開啟的)
 ```
 docker-compose up -d
 ```
