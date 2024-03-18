@@ -12,7 +12,19 @@ RUN apt-get update && apt-get install -y \
   zip \
   unzip \
   git \
-  default-mysql-client && docker-php-ext-install pdo_mysql gd && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && composer install --no-scripts && composer update && composer dump-autoload && php artisan key:generate
+  default-mysql-client && docker-php-ext-install pdo_mysql gd
+
+# 安裝 Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# 執行 Composer 安裝
+RUN composer install --no-scripts
+
+# 生成應用程式金鑰
+RUN php artisan key:generate
+
+# 生成自動載入檔案
+RUN composer dump-autoload
 
 # 暴露 PHP-FPM 的端口
 EXPOSE 9000
