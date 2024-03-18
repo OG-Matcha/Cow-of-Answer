@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
   zip \
   unzip \
   git \
-  default-mysql-client && docker-php-ext-install pdo_mysql gd && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && composer install --no-scripts --no-autoloader && comoser update && php artisan key:generate
+  default-mysql-client && docker-php-ext-install pdo_mysql gd && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && composer install --no-scripts --no-autoloader && composer update && php artisan key:generate
 
 # 暴露 PHP-FPM 的端口
 EXPOSE 9000
