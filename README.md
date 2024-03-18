@@ -56,7 +56,6 @@ your_folder/
     ├── backend/
     ├── mysql/
     ├── nginx/
-    ├── mysql/
     └── docker-compose.yaml
 ```
 
