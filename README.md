@@ -8,12 +8,12 @@
 
 我們需要先安裝 WSL2 供 Docker 使用
 
-1. 用系統管理員身分打開 CMD 後輸入下面指令並執行 (啟用 WSL)
+1. 用**系統管理員**身分打開 CMD 後輸入下面指令並執行 (啟用 WSL)
     ```bash=
     dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
     ```
     
-2. 用系統管理員身分打開 CMD 後輸入下面指令並執行 (啟用虛擬機器功能)
+2. 用**系統管理員**身分打開 CMD 後輸入下面指令並執行 (啟用虛擬機器功能)
     ```bash=
     dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
     ```
