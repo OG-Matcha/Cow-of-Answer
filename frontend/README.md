@@ -222,3 +222,6 @@ export default num => {
 </template>
 ```
 編譯結果： $ 19,999
+
+# Credit
+[Nuxt.js 3.x 目錄結構 Directory Structure](https://clairechang.tw/2023/07/07/nuxt3/nuxt-v3-directory-structure/)
