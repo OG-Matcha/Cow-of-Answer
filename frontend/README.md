@@ -18,7 +18,7 @@ components/
 Button.vue 的元件名稱為 ```<BaseAboutButton />```
 
 ## composables
-組合式函式，利用 Composition API 來封裝和複用 **有狀態邏輯（Stateful Logic）**的函式，取代 Options API mixins 的功能。定義在 composables/ 內的檔案 Nuxt 會自動引入
+組合式函式，利用 Composition API 來封裝和複用 **有狀態邏輯（Stateful Logic）** 的函式，取代 Options API mixins 的功能。定義在 composables/ 內的檔案 Nuxt 會自動引入
 
 我們可以將不同的邏輯抽象成單獨的 composable，並組合在 setup 函式中。比起 mixins ，composable 協助我們更好理解組件的結構和功能，並提高程式碼的可讀性
 
