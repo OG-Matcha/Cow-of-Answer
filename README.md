@@ -119,6 +119,6 @@ hotfix: 「即時」修正嚴重 bug
 
 - Backend : **PHP + Laravel**
 
-- Database : **MySQL + Adminer**
+- Database : **MySQL + Redis + Adminer**
 
 - WebServer: **Nginx**
