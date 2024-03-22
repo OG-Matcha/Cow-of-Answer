@@ -120,6 +120,19 @@ hotfix: 「即時」修正嚴重 bug
 ## 後端檔案架構
 [Laravel 檔案架構](https://github.com/OG-Matcha/NCU_Web_Final/blob/main/backend/README.md)
 
+## 命名規則
+> [!IMPORTANT]
+> 請嚴格遵照命名規則及檔案架構的內容
+
+### 前端
+請遵照 [Style Guide](https://vuejs.org/style-guide/) 等級至少到 **B**
+
+### 後端
+請按照 [Laravel 的命名原則](https://www.icat.tw/laravel-naming/) 進行命名
+
+### 資料庫
+請按照 [資料庫命名規則及設計規範](https://thecolormoon.blogspot.com/2015/10/2015093002.html) 進行資料庫設計
+
 ## 使用框架及技術
 - Frontend : **Nuxt3 + TailwindCSS**
 
