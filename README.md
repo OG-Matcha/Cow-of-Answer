@@ -117,6 +117,9 @@ hotfix: 「即時」修正嚴重 bug
 ## 前端檔案架構
 [Nuxt 檔案架構](https://github.com/OG-Matcha/NCU_Web_Final/blob/main/frontend/README.md)
 
+## 後端檔案架構
+[Laravel 檔案架構](https://github.com/OG-Matcha/NCU_Web_Final/blob/main/backend/README.md)
+
 ## 使用框架及技術
 - Frontend : **Nuxt3 + TailwindCSS**
 
