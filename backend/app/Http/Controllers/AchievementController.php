@@ -13,15 +13,8 @@ class AchievementController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        $achievements = Achievement::all();
+        return response()->json($achievements);
     }
 
     /**
@@ -29,7 +22,8 @@ class AchievementController extends Controller
      */
     public function store(StoreAchievementRequest $request)
     {
-        //
+        $achievement = Achievement::create($request->all());
+        return response()->json($achievement, 201);
     }
 
     /**
@@ -37,15 +31,7 @@ class AchievementController extends Controller
      */
     public function show(Achievement $achievement)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Achievement $achievement)
-    {
-        //
+        return response()->json($achievement);
     }
 
     /**
@@ -53,7 +39,8 @@ class AchievementController extends Controller
      */
     public function update(UpdateAchievementRequest $request, Achievement $achievement)
     {
-        //
+        $achievement->update($request->all());
+        return response()->json($achievement);
     }
 
     /**
@@ -61,6 +48,7 @@ class AchievementController extends Controller
      */
     public function destroy(Achievement $achievement)
     {
-        //
+        $achievement->delete();
+        return response()->json(null, 204);
     }
 }

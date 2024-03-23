@@ -2,8 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\Achievement;
 
 class AchievementSeeder extends Seeder
 {
@@ -12,6 +13,8 @@ class AchievementSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        Achievement::factory()
+            ->count(50)
+            ->create();
     }
 }

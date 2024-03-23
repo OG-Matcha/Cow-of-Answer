@@ -11,17 +11,21 @@ class AchievementPolicy
     /**
      * Determine whether the user can view any models.
      */
-    public function viewAny(User $user): bool
+    public function viewAny(User $user): Response
     {
-        //
+        return $user != null
+            ? Response::allow()
+            : Response::deny("You are not login");
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Achievement $achievement): bool
+    public function view(User $user, Achievement $achievement): Response
     {
-        //
+        return $user != null
+            ? Response::allow()
+            : Response::deny("You are not login");
     }
 
     /**
@@ -29,7 +33,7 @@ class AchievementPolicy
      */
     public function create(User $user): bool
     {
-        //
+        return false;
     }
 
     /**
@@ -37,7 +41,7 @@ class AchievementPolicy
      */
     public function update(User $user, Achievement $achievement): bool
     {
-        //
+        return false;
     }
 
     /**
@@ -45,7 +49,7 @@ class AchievementPolicy
      */
     public function delete(User $user, Achievement $achievement): bool
     {
-        //
+        return false;
     }
 
     /**
@@ -53,7 +57,7 @@ class AchievementPolicy
      */
     public function restore(User $user, Achievement $achievement): bool
     {
-        //
+        return false;
     }
 
     /**
@@ -61,6 +65,6 @@ class AchievementPolicy
      */
     public function forceDelete(User $user, Achievement $achievement): bool
     {
-        //
+        return false;
     }
 }
