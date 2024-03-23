@@ -13,6 +13,12 @@ export default defineNuxtConfig({
       },
     },
   },
+  runtimeConfig: {
+    // Keys within public, will be also exposed to the client-side
+    public: {
+      apiURL: 'http://localhost:8000'
+    }
+  },
   app: {
     pageTransition: { name: 'page', mode: 'out-in' }
   },
