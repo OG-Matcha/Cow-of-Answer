@@ -11,7 +11,7 @@ services:
       - 3000:3000
     depends_on:
       - backend
-      - mysql
+      - mysql_db
 
   backend:
     build:
@@ -21,17 +21,13 @@ services:
     ports:
       - 9000:9000
     depends_on:
-      - mysql
+      - mysql_db
 
-  mysql:
+  mysql_db:
     image: mysql:8.0
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: laravel
-      MYSQL_USER: laraveluser
-      MYSQL_PASSWORD: password
-    volumes:
-      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      MYSQL_DATABASE: db
     ports:
       - "3306:3306"
 
@@ -39,7 +35,7 @@ services:
     image: adminer
     restart: always
     environment:
-      - ADMINER_DEFAULT_SERVER=mysql
+      - ADMINER_DEFAULT_SERVER=mysql_db
     ports:
       - 8080:8080
   
@@ -59,7 +55,7 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - /redis/dаta:/root/redis
+      - /redis/data:/root/redis
     environment:
       - REDIS_PASSWORD=password
       - REDIS_PORT=6379
