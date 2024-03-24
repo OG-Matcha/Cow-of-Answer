@@ -14,7 +14,7 @@ class AchievementController extends Controller
     public function index()
     {
         $achievements = Achievement::all();
-        return response()->json($achievements);
+        return response()->json($achievements, 200);
     }
 
     /**
@@ -31,7 +31,7 @@ class AchievementController extends Controller
      */
     public function show(Achievement $achievement)
     {
-        return response()->json($achievement);
+        return response()->json($achievement, 200);
     }
 
     /**
@@ -40,7 +40,7 @@ class AchievementController extends Controller
     public function update(UpdateAchievementRequest $request, Achievement $achievement)
     {
         $achievement->update($request->all());
-        return response()->json($achievement);
+        return response()->json($achievement, 200);
     }
 
     /**
