@@ -115,10 +115,10 @@ hotfix: 「即時」修正嚴重 bug
 > 這部分非常重要，請建立良好的 commit 習慣及規則
 
 ## 前端檔案架構
-[Nuxt 檔案架構](https://github.com/OG-Matcha/NCU_Web_Final/blob/main/frontend/README.md)
+[Nuxt 檔案架構](https://github.com/OG-Matcha/NCU_Web_Final/blob/main/FRONTEND.md)
 
 ## 後端檔案架構
-[Laravel 檔案架構](https://github.com/OG-Matcha/NCU_Web_Final/blob/main/backend/README.md)
+[Laravel 檔案架構](https://github.com/OG-Matcha/NCU_Web_Final/blob/main/BACKEND.md)
 
 ## 命名規則
 > [!IMPORTANT]
