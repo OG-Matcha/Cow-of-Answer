@@ -57,6 +57,5 @@ services:
     volumes:
       - /redis/data:/root/redis
     environment:
-      - REDIS_PASSWORD=password
+      - REDIS_PASSWORD=root
       - REDIS_PORT=6379
-      - REDIS_DATABASES=16

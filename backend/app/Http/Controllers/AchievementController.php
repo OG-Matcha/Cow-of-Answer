@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Achievement;
 use App\Http\Requests\StoreAchievementRequest;
 use App\Http\Requests\UpdateAchievementRequest;
+use Illuminate\Support\Facades\Redis;
 
 class AchievementController extends Controller
 {
@@ -23,6 +24,7 @@ class AchievementController extends Controller
     public function store(StoreAchievementRequest $request)
     {
         $achievement = Achievement::create($request->all());
+        Redis::set('achievement:' . $achievement->id, json_encode($achievement));
         return response()->json($achievement, 201);
     }
 
@@ -31,7 +33,12 @@ class AchievementController extends Controller
      */
     public function show(Achievement $achievement)
     {
-        return response()->json($achievement, 200);
+        $target = json_decode(Redis::get('achievement:' . $achievement->id));
+        if (!$target) {
+            $target = Achievement::find($achievement->id);
+            Redis::set('achievement:' . $achievement->id, json_encode($target));
+        }
+        return response()->json($target, 200);
     }
 
     /**
