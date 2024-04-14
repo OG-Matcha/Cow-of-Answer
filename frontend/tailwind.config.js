@@ -25,7 +25,7 @@ export default {
       },
       fontFamily: {
         roboto: ['Roboto', 'sans-serif'],
-
+        chen: ['ChenYuluoyan-Thin-Monospaced', 'sans-serif'],
       },
     },
   },
