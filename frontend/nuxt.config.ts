@@ -5,6 +5,9 @@ export default defineNuxtConfig({
     devtools: { enabled: false },
     modules: [
       '@nuxtjs/tailwindcss'
+    ],  
+    css: [
+        './public/assets/css/tailwind.css'
     ],
     vite: {
       server: {
