@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+
+@layer base {
+  @font-face {
+    font-family: 'Neucha-Regular';
+    src:
+      local('Neucha-Regular'),
+      url(../fonts/Neucha-Regular.ttf) format('truetype');
+  }
+
+  @font-face {
+    font-family: 'ChenYuluoyan-Thin-Monospaced';
+    src:
+      local('ChenYuluoyan-Thin-Monospaced'),
+      url(../fonts/ChenYuluoyan-Thin-Monospaced.ttf) format('truetype');
+  }
+
+  @font-face {
+    font-family: 'chinese-fzstk';
+    src:
+      local('chinese-fzstk'),
+      url(../fonts/chinese-fzstk.ttf) format('truetype');
+  }
+}
+
+@tailwind utilities;
