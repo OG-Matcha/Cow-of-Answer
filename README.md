@@ -18,21 +18,23 @@
     dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
     ```
     
-3. 下載 Linux 核心更新套件
+3. 下載並安裝 Linux 核心更新套件
     - [適用於 x64 系統](https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi)
     - [適用於 ARM 系統](https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_arm64.msi)
 
-4. 將 WSL 2 設定為預設版本
+4.  重新啟動你的電腦
+
+5. 將 WSL 2 設定為預設版本
     ```bash=
     wsl --set-default-version 2
     ```
     
-5. 安裝 Ubuntu 20.04.6 LTS
+6. 安裝 Ubuntu 20.04.6 LTS
     - 到 Microsoft Store 搜尋 Ubuntu
     - 找到 **Ubuntu 20.04.6 LTS**
     - 選擇 **取得**，並且選擇 **安裝**
 
-6. 設定帳號密碼
+7. 設定帳號密碼
     - 第一次開啟 Ubuntu 會要求你輸入一組帳號密碼
     - 輸入密碼時如果沒有顯示密碼是正常的，這樣可以避免密碼被看到
 
@@ -115,10 +117,10 @@ hotfix: 「即時」修正嚴重 bug
 > 這部分非常重要，請建立良好的 commit 習慣及規則
 
 ## 前端檔案架構
-[Nuxt 檔案架構](https://github.com/OG-Matcha/NCU_Web_Final/blob/main/frontend/README.md)
+[Nuxt 檔案架構](https://github.com/OG-Matcha/NCU_Web_Final/blob/main/FRONTEND.md)
 
 ## 後端檔案架構
-[Laravel 檔案架構](https://github.com/OG-Matcha/NCU_Web_Final/blob/main/backend/README.md)
+[Laravel 檔案架構](https://github.com/OG-Matcha/NCU_Web_Final/blob/main/BACKEND.md)
 
 ## 命名規則
 > [!IMPORTANT]
