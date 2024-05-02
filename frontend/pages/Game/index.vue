@@ -14,6 +14,16 @@
         :style="cowStyle"
         @click="handleClick"
       />
+      <img
+        v-if="showBook && bookDirection === 'Left'"
+        src="/DroppedBookLeft.png"
+        class="scale-30 book-animation-Left absolute left-1/2 top-1/2 h-auto w-48 translate-x-[-10%] translate-y-[-10%] transform"
+      />
+      <img
+        v-if="showBook && bookDirection === 'Right'"
+        src="/DroppedBookRight.png"
+        class="scale-30 book-animation-Right absolute left-1/2 top-1/2 h-auto w-48 translate-x-[-10%] translate-y-[-10%] transform"
+      />
     </div>
   </div>
 </template>
@@ -33,6 +43,8 @@ export default {
     })
 
     const cowImage = ref('/CowRight.png')
+    const showBook = ref(false)
+    const bookDirection = ref('Right')
 
     onMounted(() => {
       const x = Math.floor(Math.random() * 90)
@@ -41,7 +53,9 @@ export default {
       cowStyle.left = `${x}%`
 
       // Randomly select a cow image
-      cowImage.value = Math.random() < 0.5 ? '/CowRight.png' : '/CowLeft.png'
+      const direction = Math.random() < 0.5 ? 'Right' : 'Left'
+      cowImage.value = `/Cow${direction}.png`
+      bookDirection.value = direction === 'Right' ? 'Left' : 'Right' // Change the book direction based on the cow direction
     })
 
     const handleClick = () => {
@@ -50,12 +64,17 @@ export default {
       cowStyle.width = '15%'
       cowStyle.height = 'auto'
       cowStyle.opacity = '1'
+      setTimeout(() => {
+        showBook.value = true
+      }, 500)
     }
 
     return {
       cowStyle,
       cowImage,
-      handleClick
+      handleClick,
+      showBook,
+      bookDirection
     }
   }
 }
@@ -78,5 +97,38 @@ export default {
   background-image: url('/Setting.png');
   background-size: contain; /* Adjust this value to prevent image cropping */
   background-repeat: no-repeat;
+}
+
+.scale-30 {
+  transform: scale(0.3);
+}
+
+@keyframes bookAnimationLeft {
+  0% {
+    transform: translateX(0) translateY(0) rotate(0deg) scale(0.3);
+  }
+  100% {
+    transform: translateX(-12vw) translateY(0.5vw) rotate(-360deg) scale(0.3);
+  }
+}
+
+@keyframes bookAnimationRight {
+  0% {
+    transform: translateX(0) rotate(0deg) scale(0.3);
+  }
+  50% {
+    transform: translateX(6vw) translateY(0.25vw) rotate(180deg) scale(0.3);
+  }
+  100% {
+    transform: translateX(12vw) translateY(0.5vw) rotate(360deg) scale(0.3);
+  }
+}
+
+.book-animation-Left {
+  animation: bookAnimationLeft 0.75s cubic-bezier(0, 0, 0.58, 1) forwards;
+}
+
+.book-animation-Right {
+  animation: bookAnimationRight 0.5s cubic-bezier(0, 0, 0.58, 1) forwards;
 }
 </style>
