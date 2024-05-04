@@ -7,7 +7,7 @@
         class="setting absolute right-0 mr-[3vw] mt-[3vh] h-[6vh] w-[5vw]"
       ></NuxtLink>
     </div>
-    <div class="relative h-[87vh] w-full">
+    <div class="relative h-[87vh] w-full overflow-hidden">
       <img
         :src="cowImage"
         class="absolute cursor-pointer transition-all duration-300 ease-in-out"
@@ -19,8 +19,8 @@
         src="/DroppedBookLeft.png"
         class="book-animation-Left scale-80 absolute"
         :style="{
-          left: `calc(${cowStyle.left} - 5%)`,
-          top: cowStyle.top,
+          left: bookPosition.left,
+          top: bookPosition.top,
           transform: 'translate(-50%, -50%)'
         }"
       />
@@ -28,7 +28,11 @@
         v-if="showBook && bookDirection === 'Right'"
         src="/DroppedBookRight.png"
         class="book-animation-Right absolute scale-50"
-        :style="{ left: cowStyle.left, top: cowStyle.top, transform: 'translate(-50%, -50%)' }"
+        :style="{
+          left: bookPosition.left,
+          top: bookPosition.top,
+          transform: 'translate(-50%, -50%)'
+        }"
       />
     </div>
   </div>
@@ -46,6 +50,11 @@ export default {
       height: 'auto',
       transform: 'translate(-50%, -50%)'
       // opacity: '0'
+    })
+
+    const bookPosition = reactive({
+      top: '0%',
+      left: '0%'
     })
 
     const cowImage = ref('/CowRight.png')
@@ -72,7 +81,18 @@ export default {
       cowStyle.opacity = '1'
       setTimeout(() => {
         showBook.value = true
+        bookPosition.top = cowStyle.top
+        bookPosition.left = cowStyle.left
       }, 500)
+
+      setTimeout(() => {
+        cowStyle.transition = 'left 2.5s'
+        if (bookDirection.value === 'Right') {
+          cowStyle.left = '-15%' // Move the cow to the right outside of the screen
+        } else {
+          cowStyle.left = '115%' // Move the cow to the left outside of the screen
+        }
+      }, 1000) // Delay for the duration of the book animation
     }
 
     return {
@@ -80,7 +100,8 @@ export default {
       cowImage,
       handleClick,
       showBook,
-      bookDirection
+      bookDirection,
+      bookPosition
     }
   }
 }
@@ -131,7 +152,7 @@ export default {
 }
 
 .book-animation-Left {
-  animation: bookAnimationLeft 0.75s cubic-bezier(0, 0, 0.58, 1) forwards;
+  animation: bookAnimationLeft 0.5s cubic-bezier(0, 0, 0.58, 1) forwards;
 }
 
 .book-animation-Right {
