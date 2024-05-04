@@ -16,11 +16,11 @@
       />
       <div>
         <img
+          ref="bookElementLeft"
           v-if="showBook && bookDirection === 'Left'"
           src="/DroppedBookLeft.png"
-          class="book-animation-Left scale-80 animate-blink absolute"
-          :class="{ blink: isBlinkingLeft }"
-          @click="stopBlinkingLeft"
+          class="book-animation-Left scale-80 absolute"
+          :class="{ blink: isBlinking }"
           :style="{
             left: bookPosition.left,
             top: bookPosition.top,
@@ -30,11 +30,11 @@
       </div>
       <div>
         <img
+          ref="bookElementRight"
           v-if="showBook && bookDirection === 'Right'"
           src="/DroppedBookRight.png"
-          class="book-animation-Right animate-blink absolute scale-50"
-          :class="{ blink: isBlinkingRight }"
-          @click="stopBlinkingRight"
+          class="book-animation-Right scale-80 absolute"
+          :class="{ blink: isBlinking }"
           :style="{
             left: bookPosition.left,
             top: bookPosition.top,
@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import { reactive, onMounted, ref } from 'vue'
+import { reactive, onMounted, ref, nextTick } from 'vue'
 
 export default {
   setup() {
@@ -68,6 +68,9 @@ export default {
     const cowImage = ref('/CowRight.png')
     const showBook = ref(false)
     const bookDirection = ref('Right')
+    const isBlinking = ref(false)
+    const bookElementLeft = ref(null)
+    const bookElementRight = ref(null)
 
     onMounted(() => {
       const x = Math.floor(Math.random() * 90)
@@ -87,10 +90,26 @@ export default {
       cowStyle.width = '15%'
       cowStyle.height = 'auto'
       cowStyle.opacity = '1'
+
       setTimeout(() => {
         showBook.value = true
+        // Set book position to the cow position
         bookPosition.top = cowStyle.top
         bookPosition.left = cowStyle.left
+
+        // Wait for the next DOM update cycle before adding the event listener
+        nextTick(() => {
+          bookElementLeft.value.addEventListener(
+            'animationend',
+            () => {
+              // Save the book position after the animation ends
+              const rect = bookElementLeft.value.getBoundingClientRect()
+              bookPosition.top = rect.top
+              bookPosition.left = rect.left
+            },
+            { once: true }
+          ) // The listener is invoked only once and then removed
+        })
       }, 500)
 
       setTimeout(() => {
@@ -101,17 +120,11 @@ export default {
           cowStyle.left = '115%' // Move the cow to the left outside of the screen
         }
       }, 1000) // Delay for the duration of the book animation
-    }
 
-    const isBlinkingLeft = ref(false)
-    const isBlinkingRight = ref(false)
-
-    function stopBlinkingLeft() {
-      isBlinkingLeft.value = false
-    }
-
-    function stopBlinkingRight() {
-      isBlinkingRight.value = false
+      setTimeout(() => {
+        // Start blinking effect after book drops to the grass
+        isBlinking.value = true
+      }, 2500) // Delay for book drop animation duration
     }
 
     return {
@@ -121,10 +134,9 @@ export default {
       showBook,
       bookDirection,
       bookPosition,
-      isBlinkingLeft,
-      isBlinkingRight,
-      stopBlinkingLeft,
-      stopBlinkingRight
+      isBlinking,
+      bookElementLeft,
+      bookElementRight
     }
   }
 }
@@ -184,15 +196,13 @@ export default {
 
 @keyframes blink {
   0% {
-    box-shadow: 0 0 10px #ffff00;
+    opacity: 1;
   }
   50% {
-    box-shadow:
-      0 0 20px #ffff00,
-      0 0 30px #ffff00;
+    opacity: 0;
   }
   100% {
-    box-shadow: 0 0 10px #ffff00;
+    opacity: 1;
   }
 }
 
