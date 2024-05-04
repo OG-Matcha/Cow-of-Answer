@@ -17,12 +17,18 @@
       <img
         v-if="showBook && bookDirection === 'Left'"
         src="/DroppedBookLeft.png"
-        class="scale-30 book-animation-Left absolute left-1/2 top-1/2 h-auto w-48 translate-x-[-10%] translate-y-[-10%] transform"
+        class="book-animation-Left scale-80 absolute"
+        :style="{
+          left: `calc(${cowStyle.left} - 5%)`,
+          top: cowStyle.top,
+          transform: 'translate(-50%, -50%)'
+        }"
       />
       <img
         v-if="showBook && bookDirection === 'Right'"
         src="/DroppedBookRight.png"
-        class="scale-30 book-animation-Right absolute left-1/2 top-1/2 h-auto w-48 translate-x-[-10%] translate-y-[-10%] transform"
+        class="book-animation-Right absolute scale-50"
+        :style="{ left: cowStyle.left, top: cowStyle.top, transform: 'translate(-50%, -50%)' }"
       />
     </div>
   </div>
@@ -99,28 +105,28 @@ export default {
   background-repeat: no-repeat;
 }
 
-.scale-30 {
-  transform: scale(0.3);
+.scale-80 {
+  transform: scale(0.8);
 }
 
 @keyframes bookAnimationLeft {
   0% {
-    transform: translateX(0) translateY(0) rotate(0deg) scale(0.3);
+    transform: translateX(0) translateY(0) rotate(0deg) scale(0.8);
   }
   100% {
-    transform: translateX(-12vw) translateY(0.5vw) rotate(-360deg) scale(0.3);
+    transform: translateX(-12vw) translateY(0.5vw) rotate(-360deg) scale(0.8);
   }
 }
 
 @keyframes bookAnimationRight {
   0% {
-    transform: translateX(0) rotate(0deg) scale(0.3);
+    transform: translateX(0) rotate(0deg) scale(0.8);
   }
   50% {
-    transform: translateX(6vw) translateY(0.25vw) rotate(180deg) scale(0.3);
+    transform: translateX(8vw) translateY(0.25vw) rotate(180deg) scale(0.8);
   }
   100% {
-    transform: translateX(12vw) translateY(0.5vw) rotate(360deg) scale(0.3);
+    transform: translateX(12vw) translateY(0.5vw) rotate(360deg) scale(0.8);
   }
 }
 
