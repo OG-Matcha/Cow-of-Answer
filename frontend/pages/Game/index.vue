@@ -14,26 +14,34 @@
         :style="cowStyle"
         @click="handleClick"
       />
-      <img
-        v-if="showBook && bookDirection === 'Left'"
-        src="/DroppedBookLeft.png"
-        class="book-animation-Left scale-80 absolute"
-        :style="{
-          left: bookPosition.left,
-          top: bookPosition.top,
-          transform: 'translate(-50%, -50%)'
-        }"
-      />
-      <img
-        v-if="showBook && bookDirection === 'Right'"
-        src="/DroppedBookRight.png"
-        class="book-animation-Right absolute scale-50"
-        :style="{
-          left: bookPosition.left,
-          top: bookPosition.top,
-          transform: 'translate(-50%, -50%)'
-        }"
-      />
+      <div>
+        <img
+          v-if="showBook && bookDirection === 'Left'"
+          src="/DroppedBookLeft.png"
+          class="book-animation-Left scale-80 animate-blink absolute"
+          :class="{ blink: isBlinkingLeft }"
+          @click="stopBlinkingLeft"
+          :style="{
+            left: bookPosition.left,
+            top: bookPosition.top,
+            transform: 'translate(-50%, -50%)'
+          }"
+        />
+      </div>
+      <div>
+        <img
+          v-if="showBook && bookDirection === 'Right'"
+          src="/DroppedBookRight.png"
+          class="book-animation-Right animate-blink absolute scale-50"
+          :class="{ blink: isBlinkingRight }"
+          @click="stopBlinkingRight"
+          :style="{
+            left: bookPosition.left,
+            top: bookPosition.top,
+            transform: 'translate(-50%, -50%)'
+          }"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -95,13 +103,28 @@ export default {
       }, 1000) // Delay for the duration of the book animation
     }
 
+    const isBlinkingLeft = ref(false)
+    const isBlinkingRight = ref(false)
+
+    function stopBlinkingLeft() {
+      isBlinkingLeft.value = false
+    }
+
+    function stopBlinkingRight() {
+      isBlinkingRight.value = false
+    }
+
     return {
       cowStyle,
       cowImage,
       handleClick,
       showBook,
       bookDirection,
-      bookPosition
+      bookPosition,
+      isBlinkingLeft,
+      isBlinkingRight,
+      stopBlinkingLeft,
+      stopBlinkingRight
     }
   }
 }
@@ -157,5 +180,23 @@ export default {
 
 .book-animation-Right {
   animation: bookAnimationRight 0.5s cubic-bezier(0, 0, 0.58, 1) forwards;
+}
+
+@keyframes blink {
+  0% {
+    box-shadow: 0 0 10px #ffff00;
+  }
+  50% {
+    box-shadow:
+      0 0 20px #ffff00,
+      0 0 30px #ffff00;
+  }
+  100% {
+    box-shadow: 0 0 10px #ffff00;
+  }
+}
+
+.blink {
+  animation: blink 1s infinite;
 }
 </style>
