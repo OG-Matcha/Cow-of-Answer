@@ -1,8 +1,14 @@
 <template>
   <div :class="{ 'bg-gray-200': showIGsetting }" class="grass-background h-[100vh] w-[100vw]">
     <div class="h-[10vh] w-full">
-      <NuxtLink to="/" class="exit absolute left-0 ml-[3vw] mt-[3vh] h-[6vh] w-[5vw]"></NuxtLink>
+      <NuxtLink
+        v-if="showButtons"
+        to="/"
+        class="exit absolute left-0 ml-[3vw] mt-[3vh] h-[6vh] w-[5vw]"
+        @click="handleExitClick"
+      ></NuxtLink>
       <button
+        v-if="showButtons"
         class="setting absolute right-0 mr-[3vw] mt-[3vh] h-[6vh] w-[5vw]"
         @click="toggleIGsetting"
       ></button>
@@ -12,7 +18,7 @@
         v-if="showIGsetting"
         :show="showIGsetting"
         @toggle="showIGsetting = !showIGsetting"
-      />
+      ></IGsetting>
       <img
         :src="cowImage"
         class="absolute cursor-pointer transition-all duration-300 ease-in-out"
@@ -21,7 +27,7 @@
       />
       <img
         v-if="showBook && bookDirection === 'Left'"
-        src="/DroppedBookLeft.svg"
+        :src="bookImageLeft"
         class="absolute cursor-pointer"
         :class="bookAnimationClass"
         :style="bookStyle"
@@ -29,7 +35,7 @@
       />
       <img
         v-if="showBook && bookDirection === 'Right'"
-        src="/DroppedBookRight.svg"
+        :src="bookImageRight"
         class="absolute cursor-pointer"
         :class="bookAnimationClass"
         :style="bookStyle"
@@ -45,15 +51,30 @@ import IGsetting from '@/components/IGsetting.vue'
 
 export default {
   setup() {
+    const showButtons = ref(true)
     const showIGsetting = ref(false)
     const cowImage = ref('/CowRight.png')
     const showBook = ref(false)
     const bookDirection = ref('Right')
     const bookAnimationClass = ref('')
+    const isFading = ref(false)
+
+    const bookImageLeft = ref('/DroppedBookLeft.svg')
+    const bookImageRight = ref('/DroppedBookRight.svg')
+    const openBookImage = ref('/OpenedBook.svg')
+
+    const handleExitClick = (event) => {
+      if (showIGsetting.value) {
+        event.preventDefault()
+        showIGsetting.value = false
+        showButtons.value = true
+      }
+    }
 
     // Toggle the IGsetting component
     const toggleIGsetting = () => {
       showIGsetting.value = !showIGsetting.value
+      showButtons.value = true
     }
 
     // Cow style
@@ -76,14 +97,34 @@ export default {
 
     // Handle the book click event
     const handleBookClick = () => {
+      if (showIGsetting.value || bookAnimationClass.value !== 'book-blink') {
+        return
+      }
       bookStyle.transition = 'all 2s'
       bookStyle.top = '30%'
-      bookStyle.left = '40%'
+      bookStyle.left = '45%'
       bookStyle.width = '20%'
       bookStyle.height = 'auto'
+      isFading.value = true
+      bookAnimationClass.value = 'book-open'
       setTimeout(() => {
-        bookAnimationClass.value = 'book-blink'
+        bookAnimationClass.value = ''
+        if (bookDirection.value === 'Left') {
+          bookImageLeft.value = openBookImage.value
+        } else {
+          bookImageRight.value = openBookImage.value
+        }
+        isFading.value = false
       }, 2000)
+    }
+
+    const handleAnimationEnd = () => {
+      if (bookDirection.value === 'Left') {
+        bookImageLeft.value = openBookImage.value
+      } else {
+        bookImageRight.value = openBookImage.value
+      }
+      bookAnimationClass.value = ''
     }
 
     // Randomly set the cow position
@@ -101,6 +142,11 @@ export default {
 
     // Handle the cow click event
     const handleClick = () => {
+      if (showIGsetting.value) {
+        return
+      }
+      showButtons.value = false
+
       cowStyle.top = '50%'
       cowStyle.left = '50%'
       cowStyle.width = '15%'
@@ -133,7 +179,7 @@ export default {
       setTimeout(() => {
         bookStyle.transition = 'all 0.429s'
         bookStyle.top = '30%'
-        bookStyle.left = '40%'
+        bookStyle.left = '45%'
         bookStyle.width = '20%'
         bookStyle.height = 'auto'
         bookAnimationClass.value = 'book-blink'
@@ -150,7 +196,13 @@ export default {
       bookStyle,
       bookAnimationClass,
       showIGsetting,
-      toggleIGsetting
+      toggleIGsetting,
+      handleExitClick,
+      showButtons,
+      bookImageLeft,
+      bookImageRight,
+      openBookImage,
+      isFading
     }
   }
 }
@@ -224,5 +276,24 @@ export default {
 
 .book-blink {
   animation: bookBlink 1s infinite;
+}
+
+.showIGsetting {
+  z-index: 1;
+}
+
+@keyframes bookOpen {
+  0% {
+    transform-origin: left;
+    transform: rotateY(0deg);
+  }
+  100% {
+    transform-origin: left;
+    transform: rotateY(-180deg);
+  }
+}
+
+.book-open {
+  animation: bookOpen 2s forwards;
 }
 </style>
