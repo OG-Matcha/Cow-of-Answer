@@ -1,16 +1,15 @@
 <template>
-  <div class="bg-table container h-[100%] w-[100%] items-center justify-center">
-    <div v-if="!showInfo" class="reel move-left flex justify-center">
-      <div class="font space-y-19 flex flex-col items-center justify-center">
-        <button @click="continueGame" class="gap font">繼續</button>
-        <button @click.stop="showGameInfo" class="gap font">遊戲說明</button>
-        <NuxtLink to="/" class="gap font">退出</NuxtLink>
-      </div>
+  <div v-if="!showInfo" class="reel flex justify-center">
+    <div class="font space-y-19 r-50% flex flex-col items-center justify-center">
+      <button @click="continueGame" class="gap font">繼續</button>
+      <button @click.stop="showGameInfo" class="gap font">遊戲說明</button>
+      <NuxtLink to="/" class="gap font">退出</NuxtLink>
     </div>
-    <div v-if="showInfo" class="game-info">
-      <button @click="hideGameInfo" class="infobutton">X</button>
-      <img src="/GameInfo.png" alt="GameInfo" />
-    </div>
+  </div>
+  <div v-if="showInfo" class="game-info">
+    <button @click="hideGameInfo" class="infoButton"><img src="/xx.svg" alt="x" /></button>
+    <button @click="testVolume" class="volumeButton"><img src="/volume.svg" alt="Volume" /></button>
+    <img src="/GameInfo(nobutton).png" alt="GameInfo" />
   </div>
 </template>
 
@@ -29,6 +28,10 @@ const showGameInfo = () => {
 const hideGameInfo = () => {
   showInfo.value = false
 }
+
+const testVolume = () => {
+  console.log('Volume')
+}
 </script>
 
 <style scoped>
@@ -39,14 +42,20 @@ const hideGameInfo = () => {
   height: 100vh;
 }
 .reel {
-  position: fixed;
+  position: absolute;
+  top: 10%;
+  left: 10%;
   background-image: url('/reel.png');
   background-size: contain;
   background-repeat: no-repeat;
-  width: 60vw;
+  width: 25%;
   height: 60vh;
   margin-left: 27vw;
   margin-bottom: 10vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 .font {
   font-family: 'ChenYuluoyan-Thin-Monospaced', ans-serif;
@@ -61,27 +70,25 @@ const hideGameInfo = () => {
 }
 .game-info {
   position: absolute;
-  top: 70px;
-  right: 0;
-  bottom: 0;
-  left: 430px;
-  width: 700px;
-  height: 490px;
+  top: 15%;
+  left: 30%;
+  width: 45%;
+  height: auto;
 }
-.infobutton {
+.infoButton {
   position: absolute;
-  top: 20px;
-  right: 0;
-  width: 35px;
-  left: 642px;
-  font-size: 20px;
-  opacity: 0;
-  border: none;
+  top: 2vh;
+  right: 1vw;
+  width: 3vw;
+  height: 3vh;
+  border-radius: 50%;
 }
-.move-right {
-  margin-left: 10vw;
-}
-.move-left {
-  margin-right: 30vw;
+.volumeButton {
+  position: absolute;
+  bottom: 28%;
+  left: 10%;
+  width: 10%;
+  height: auto;
+  border-radius: 50%;
 }
 </style>
