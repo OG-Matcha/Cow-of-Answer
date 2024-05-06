@@ -17,33 +17,17 @@
       <img
         v-if="showBook && bookDirection === 'Left'"
         src="/DroppedBookLeft.svg"
-        :class="[
-          bookClass ? 'book-center' : 'book-animation-Left',
-          'scale-10',
-          'absolute',
-          'cursor-pointer'
-        ]"
-        :style="{
-          left: bookPosition.left,
-          top: bookPosition.top,
-          transform: 'translate(-50%, -50%)'
-        }"
+        class="absolute cursor-pointer"
+        :class="bookAnimationClass"
+        :style="bookStyle"
         @click="handleBookClick"
       />
       <img
         v-if="showBook && bookDirection === 'Right'"
         src="/DroppedBookRight.svg"
-        :class="[
-          bookClass ? 'book-center' : 'book-animation-Right',
-          'scale-10',
-          'absolute',
-          'cursor-pointer'
-        ]"
-        :style="{
-          left: bookPosition.left,
-          top: bookPosition.top,
-          transform: 'translate(-50%, -50%)'
-        }"
+        class="absolute cursor-pointer"
+        :class="bookAnimationClass"
+        :style="bookStyle"
         @click="handleBookClick"
       />
     </div>
@@ -64,21 +48,26 @@ export default {
       // opacity: '0'
     })
 
-    const bookPosition = reactive({
-      top: '0%',
-      left: '0%'
+    const bookStyle = reactive({
+      top: '50%',
+      left: '50%',
+      width: '5%',
+      height: 'auto'
     })
 
     const handleBookClick = () => {
-      bookClass.value = true // Change the value to true when the book is clicked
-      bookPosition.top = '50%'
-      bookPosition.left = '50%'
+      bookStyle.top = '50%'
+      bookStyle.left = '50%'
+      bookStyle.width = '20%'
+      bookStyle.height = 'auto'
+      bookAnimationClass.value =
+        bookDirection.value === 'Right' ? 'book-animation-Right' : 'book-animation-Left'
     }
 
     const cowImage = ref('/CowRight.png')
     const showBook = ref(false)
     const bookDirection = ref('Right')
-    const bookClass = ref(false) // Add a new reactive parameter
+    const bookAnimationClass = ref('')
 
     onMounted(() => {
       const x = Math.floor(Math.random() * 90)
@@ -100,8 +89,10 @@ export default {
       cowStyle.opacity = '1'
       setTimeout(() => {
         showBook.value = true
-        bookPosition.top = cowStyle.top
-        bookPosition.left = cowStyle.left
+        bookStyle.top = cowStyle.top
+        bookStyle.left = cowStyle.left
+        bookStyle.width = '5%'
+        bookStyle.height = 'auto'
       }, 500)
 
       setTimeout(() => {
@@ -120,8 +111,9 @@ export default {
       handleClick,
       showBook,
       bookDirection,
-      bookPosition,
-      handleBookClick
+      handleBookClick,
+      bookStyle,
+      bookAnimationClass
     }
   }
 }
