@@ -27,6 +27,8 @@ class AchievementFactory extends Factory
         return [
             'name' => fake()->name(),
             'description' => fake()->sentence(),
+            'image' => 'images/' . fake()->unique()->randomNumber() . '.png',
+            'star' => fake()->numberBetween(1, 3)
         ];
     }
 }

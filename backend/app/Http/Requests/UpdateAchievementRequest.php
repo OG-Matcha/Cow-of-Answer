@@ -24,6 +24,8 @@ class UpdateAchievementRequest extends FormRequest
         return [
             "name" => "required",
             "description" => "required",
+            "image" => "required",
+            "star" => "required|integer|between:1,3"
         ];
     }
 }

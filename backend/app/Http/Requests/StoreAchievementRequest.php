@@ -22,8 +22,10 @@ class StoreAchievementRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required',
-            'description' => 'required',
+            "name" => "required",
+            "description" => "required",
+            "image" => "required",
+            "star" => "required|integer|between:1,3"
         ];
     }
 }
