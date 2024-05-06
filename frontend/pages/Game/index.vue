@@ -14,40 +14,44 @@
         :style="cowStyle"
         @click="handleClick"
       />
-      <div>
-        <img
-          ref="bookElementLeft"
-          v-if="showBook && bookDirection === 'Left'"
-          src="/DroppedBookLeft.png"
-          class="book-animation-Left scale-80 absolute"
-          :class="{ blink: isBlinking }"
-          :style="{
-            left: bookPosition.left,
-            top: bookPosition.top,
-            transform: 'translate(-50%, -50%)'
-          }"
-        />
-      </div>
-      <div>
-        <img
-          ref="bookElementRight"
-          v-if="showBook && bookDirection === 'Right'"
-          src="/DroppedBookRight.png"
-          class="book-animation-Right scale-80 absolute"
-          :class="{ blink: isBlinking }"
-          :style="{
-            left: bookPosition.left,
-            top: bookPosition.top,
-            transform: 'translate(-50%, -50%)'
-          }"
-        />
-      </div>
+      <img
+        v-if="showBook && bookDirection === 'Left'"
+        src="/DroppedBookLeft.svg"
+        :class="[
+          bookClass ? 'book-center' : 'book-animation-Left',
+          'scale-10',
+          'absolute',
+          'cursor-pointer'
+        ]"
+        :style="{
+          left: bookPosition.left,
+          top: bookPosition.top,
+          transform: 'translate(-50%, -50%)'
+        }"
+        @click="handleBookClick"
+      />
+      <img
+        v-if="showBook && bookDirection === 'Right'"
+        src="/DroppedBookRight.svg"
+        :class="[
+          bookClass ? 'book-center' : 'book-animation-Right',
+          'scale-10',
+          'absolute',
+          'cursor-pointer'
+        ]"
+        :style="{
+          left: bookPosition.left,
+          top: bookPosition.top,
+          transform: 'translate(-50%, -50%)'
+        }"
+        @click="handleBookClick"
+      />
     </div>
   </div>
 </template>
 
 <script>
-import { reactive, onMounted, ref, nextTick } from 'vue'
+import { reactive, onMounted, ref } from 'vue'
 
 export default {
   setup() {
@@ -65,12 +69,16 @@ export default {
       left: '0%'
     })
 
+    const handleBookClick = () => {
+      bookClass.value = true // Change the value to true when the book is clicked
+      bookPosition.top = '50%'
+      bookPosition.left = '50%'
+    }
+
     const cowImage = ref('/CowRight.png')
     const showBook = ref(false)
     const bookDirection = ref('Right')
-    const isBlinking = ref(false)
-    const bookElementLeft = ref(null)
-    const bookElementRight = ref(null)
+    const bookClass = ref(false) // Add a new reactive parameter
 
     onMounted(() => {
       const x = Math.floor(Math.random() * 90)
@@ -90,26 +98,10 @@ export default {
       cowStyle.width = '15%'
       cowStyle.height = 'auto'
       cowStyle.opacity = '1'
-
       setTimeout(() => {
         showBook.value = true
-        // Set book position to the cow position
         bookPosition.top = cowStyle.top
         bookPosition.left = cowStyle.left
-
-        // Wait for the next DOM update cycle before adding the event listener
-        nextTick(() => {
-          bookElementLeft.value.addEventListener(
-            'animationend',
-            () => {
-              // Save the book position after the animation ends
-              const rect = bookElementLeft.value.getBoundingClientRect()
-              bookPosition.top = rect.top
-              bookPosition.left = rect.left
-            },
-            { once: true }
-          ) // The listener is invoked only once and then removed
-        })
       }, 500)
 
       setTimeout(() => {
@@ -120,11 +112,6 @@ export default {
           cowStyle.left = '115%' // Move the cow to the left outside of the screen
         }
       }, 1000) // Delay for the duration of the book animation
-
-      setTimeout(() => {
-        // Start blinking effect after book drops to the grass
-        isBlinking.value = true
-      }, 2500) // Delay for book drop animation duration
     }
 
     return {
@@ -134,9 +121,7 @@ export default {
       showBook,
       bookDirection,
       bookPosition,
-      isBlinking,
-      bookElementLeft,
-      bookElementRight
+      handleBookClick
     }
   }
 }
@@ -161,8 +146,8 @@ export default {
   background-repeat: no-repeat;
 }
 
-.scale-80 {
-  transform: scale(0.8);
+.scale-10 {
+  transform: scale(0.1);
 }
 
 @keyframes bookAnimationLeft {
@@ -187,26 +172,31 @@ export default {
 }
 
 .book-animation-Left {
-  animation: bookAnimationLeft 0.5s cubic-bezier(0, 0, 0.58, 1) forwards;
+  animation:
+    bookAnimationLeft 0.5s cubic-bezier(0, 0, 0.58, 1) forwards,
+    bookBlink 1s infinite 2s;
 }
 
 .book-animation-Right {
-  animation: bookAnimationRight 0.5s cubic-bezier(0, 0, 0.58, 1) forwards;
+  animation:
+    bookAnimationRight 0.5s cubic-bezier(0, 0, 0.58, 1) forwards,
+    bookBlink 1s infinite 2s;
 }
 
-@keyframes blink {
-  0% {
+@keyframes bookBlink {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
     opacity: 0;
   }
-  100% {
-    opacity: 1;
-  }
 }
 
-.blink {
-  animation: blink 1s infinite;
+.book-center {
+  transform: translate(-50%, -50%) scale(2) !important;
+  top: 50% !important;
+  left: 50% !important;
+  animation: none !important;
 }
 </style>
