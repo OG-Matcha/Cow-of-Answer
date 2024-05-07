@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Achievement;
-use App\Http\Requests\StoreAchievementRequest;
-use App\Http\Requests\UpdateAchievementRequest;
-use Illuminate\Support\Facades\Redis;
+use Illuminate\Http\Request;
 
 class AchievementController extends Controller
 {
@@ -14,17 +12,16 @@ class AchievementController extends Controller
      */
     public function index()
     {
-        $achievements = Achievement::all();
+        $achievements = Achievement::select('id', 'name', 'image', 'star')->get();
         return response()->json($achievements, 200);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreAchievementRequest $request)
+    public function store(Request $request)
     {
         $achievement = Achievement::create($request->all());
-        Redis::set('achievement:' . $achievement->id, json_encode($achievement));
         return response()->json($achievement, 201);
     }
 
@@ -33,18 +30,13 @@ class AchievementController extends Controller
      */
     public function show(Achievement $achievement)
     {
-        $target = json_decode(Redis::get('achievement:' . $achievement->id));
-        if (!$target) {
-            $target = Achievement::find($achievement->id);
-            Redis::set('achievement:' . $achievement->id, json_encode($target));
-        }
-        return response()->json($target, 200);
+        return response()->json($achievement, 200);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateAchievementRequest $request, Achievement $achievement)
+    public function update(Request $request, Achievement $achievement)
     {
         $achievement->update($request->all());
         return response()->json($achievement, 200);
