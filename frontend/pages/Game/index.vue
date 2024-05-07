@@ -50,6 +50,9 @@ import { reactive, onMounted, ref } from 'vue'
 import IGsetting from '@/components/IGsetting.vue'
 
 export default {
+  components: {
+    IGsetting
+  },
   setup() {
     const showButtons = ref(true)
     const showIGsetting = ref(false)
@@ -65,6 +68,7 @@ export default {
 
     const handleExitClick = (event) => {
       if (showIGsetting.value) {
+        // Add condition to check if GameInfo is showing
         event.preventDefault()
         showIGsetting.value = false
         showButtons.value = true
@@ -142,9 +146,7 @@ export default {
 
     // Handle the cow click event
     const handleClick = () => {
-      if (showIGsetting.value) {
-        return
-      }
+      if (showIGsetting.value) return // Add condition to check if GameInfo is showing
       showButtons.value = false
 
       cowStyle.top = '50%'
