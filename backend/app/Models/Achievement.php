@@ -7,7 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Achievement extends Model
 {
-  use HasFactory;
+    use HasFactory;
 
-  protected $fillable = ['name', 'description'];
+    public $timestamps = false;
+
+    protected $fillable = [
+        'name',
+        'description',
+        'image',
+        'star'
+    ];
 }
