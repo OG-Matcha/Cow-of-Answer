@@ -1,180 +1,176 @@
 <template>
-  <body>
-    <input type="checkbox" id="checkbox-cover" />
-    <input type="checkbox" id="checkbox-page1" />
-    <input type="checkbox" id="checkbox-page2" />
-    <input type="checkbox" id="checkbox-page3" />
-    <div class="book">
-      <div class="cover">
-        <label for="checkbox-cover"></label>
-      </div>
-      <div class="page" id="page1">
-        <div class="front-page">
-          <p>
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nihil magni laudantium beatae
-            quia. Recusandae, fuga quas consectetur perferendis aperiam esse velit veniam ducimus?
-            Quisquam consequatur perferendis quidem quia, recusandae ab!
-          </p>
-          <label class="next" for="checkbox-page1"><i class="fas fa-chevron-right"></i></label>
-        </div>
-        <div class="back-page">
-          <img src="/CowLeft.png" />
-          <label class="prev" for="checkbox-page1"><i class="fas fa-chevron-left"></i></label>
+  <div class="background">
+    <div class="center">
+      <div class="containerLeft" :class="{ leftFlipped: isLeftFlipped }"></div>
+      <!-- 动态显示左侧背景 -->
+      <div class="containerRight">
+        <div class="book" @click="flipBook">
+          <div class="cover front-cover" :class="{ bookFlipped: isBookFlipped }"></div>
         </div>
       </div>
-      <div class="page" id="page2">
-        <div class="front-page">
-          <h2>Page 2</h2>
-          <p>
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nihil magni laudantium beatae
-            quia. Recusandae, fuga quas consectetur perferendis aperiam esse velit veniam ducimus?
-            Quisquam consequatur perferendis quidem quia, recusandae ab!
-          </p>
-          <label class="next" for="checkbox-page2"><i class="fas fa-chevron-right"></i></label>
-        </div>
-        <div class="back-page">
-          <img src="/CowRight.png" />
-          <label class="prev" for="checkbox-page2"><i class="fas fa-chevron-left"></i></label>
-        </div>
-      </div>
-      <div class="page" id="page3">
-        <div class="front-page">
-          <h2>Page 3</h2>
-          <p>
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nihil magni laudantium beatae
-            quia. Recusandae, fuga quas consectetur perferendis aperiam esse velit veniam ducimus?
-            Quisquam consequatur perferendis quidem quia, recusandae ab!
-          </p>
-        </div>
-      </div>
-      <div class="back-cover"></div>
     </div>
-  </body>
+  </div>
 </template>
 
 <script>
-import { ref } from 'vue'
-export default {}
+import { reactive, toRefs, onMounted } from 'vue'
+
+export default {
+  name: 'BookAnimation',
+  setup() {
+    const state = reactive({
+      isBookFlipped: false, // 是否翻转
+      isLeftFlipped: false // 是否左侧背景翻转
+    })
+
+    function flipBook() {
+      state.isBookFlipped = true // 点击书本时切换翻转状态
+
+      setTimeout(() => {
+        state.isLeftFlipped = true // 点击书本时切换左侧背景翻转状态
+      }, 500)
+    }
+
+    return {
+      ...toRefs(state),
+      flipBook
+    }
+  }
+}
 </script>
 
-<style>
-body {
-  font-family: 'Poppin', sans-serif;
-  background-color: #2e3537;
+<style scoped>
+.background {
+  width: 100vw;
   height: 100vh;
+}
+
+.center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex; /* 将左右容器放在一行 */
+}
+
+.containerLeft {
+  background-color: #f5deb3; /* 米色背景 */
+  width: 200px; /* 书籍宽度 */
+  height: 300px; /* 书籍高度 */
   display: flex;
   align-items: center;
-  justify-content: center;
+  padding-top: 10px;
+  border: 6px solid #635850; /* 书籍边框 */
+  border-right: 0.5px solid #000;
+  box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.3);
+  z-index: 2;
+  opacity: 0;
 }
+
+.containerRight {
+  /* position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); */
+  background-color: #f5deb3; /* 米色背景 */
+  width: 200px; /* 书籍宽度 */
+  height: 300px; /* 书籍高度 */
+  display: flex;
+  align-items: center;
+  padding-top: 10px;
+  border: 6px solid #635850; /* 书籍边框 */
+  border-left: none;
+  box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.3);
+}
+
 .book {
-  width: 350px;
-  height: 450px;
   position: relative;
-  transition-duration: 1s;
-  perspective: 1500;
+  width: 105%;
+  height: 110%;
+  z-index: 1; /* 确保书籍在背景层上方 */
 }
-input {
-  display: none;
-}
-.cover,
-.back-cover {
-  background-color: #4173a5;
-  width: 100%;
-  height: 100%;
-  border-radius: 0 15px 15px 0;
-  box-shadow: 0 0 5px rgb(41, 41, 41);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transform-origin: center left;
-}
+
 .cover {
   position: absolute;
-  z-index: 4;
-  transition: transform 1s;
-}
-.cover label {
   width: 100%;
   height: 100%;
-  cursor: pointer;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
-.back-cover {
-  position: relative;
-  z-index: -1;
-}
-.page {
-  position: absolute;
-  background-color: white;
-  width: 330px;
-  height: 430px;
-  border-radius: 0 15px 15px 0;
-  margin-top: 10px;
-  transform-origin: left;
+
+.front-cover {
+  background-image: url('DroppedBookLeft.svg');
+  transform-origin: left center;
   transform-style: preserve-3d;
-  transform: rotateY(0deg);
-  transition-duration: 1.5s;
+  z-index: 0;
 }
-.page img {
-  width: 100%;
-  height: 100%;
-  border-radius: 15px 0 0 15px;
+@keyframes bookFlip {
+  0% {
+    transform: rotateY(0deg);
+    opacity: 1;
+  }
+  25% {
+    transform: rotateY(22.5deg);
+    opacity: 1;
+  }
+  50% {
+    transform: rotateY(45deg);
+    opacity: 1;
+  }
+  75% {
+    transform: rotateY(67.5deg);
+    opacity: 1;
+  }
+  100% {
+    transform: rotateY(90deg);
+    opacity: 0.5;
+  }
 }
-.front-page {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  backface-visibility: hidden;
-  box-sizing: border-box;
-  padding: 1rem;
+.bookFlipped {
+  animation: bookFlip 0.6s forwards;
 }
-.back-page {
-  transform: rotateY(180deg);
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  backface-visibility: hidden;
-  z-index: 99;
+
+@keyframes leftFlip {
+  0% {
+    transform: scaleX(0);
+    transform-origin: right;
+    opacity: 1;
+  }
+  10% {
+    transform: scaleX(0.1);
+  }
+  20% {
+    transform: scaleX(0.2);
+  }
+  30% {
+    transform: scaleX(0.3);
+  }
+  40% {
+    transform: scaleX(0.4);
+  }
+  50% {
+    transform: scaleX(0.5);
+  }
+  60% {
+    transform: scaleX(0.6);
+  }
+  70% {
+    transform: scaleX(0.7);
+  }
+  80% {
+    transform: scaleX(0.8);
+  }
+  90% {
+    transform: scaleX(0.9);
+  }
+  100% {
+    transform: scaleX(1);
+    transform-origin: right;
+    opacity: 1;
+  }
 }
-.next,
-.prev {
-  position: absolute;
-  bottom: 1em;
-  cursor: pointer;
-}
-.next {
-  right: 1em;
-}
-.prev {
-  left: 1em;
-}
-#page1 {
-  z-index: 3;
-}
-#page2 {
-  z-index: 2;
-}
-#page3 {
-  z-index: 1;
-}
-#checkbox-cover:checked ~ .book {
-  transform: translateX(200px);
-}
-#checkbox-cover:checked ~ .book .cover {
-  transition:
-    transform 1.5s,
-    z-index 0.5s 0.5s;
-  transform: rotateY(-180deg);
-  z-index: 1;
-}
-#checkbox-cover:checked ~ .book .page {
-  box-shadow: 0 0 3px rgb(99, 98, 98);
-}
-#checkbox-page1:checked ~ .book #page1 {
-  transform: rotateY(-180deg);
-  z-index: 2;
-}
-#checkbox-page2:checked ~ .book #page2 {
-  transform: rotateY(-180deg);
-  z-index: 3;
+.leftFlipped {
+  animation: leftFlip 0.5s forwards;
 }
 </style>

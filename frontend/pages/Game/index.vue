@@ -25,22 +25,30 @@
         :style="cowStyle"
         @click="handleClick"
       />
-      <img
-        v-if="showBook && bookDirection === 'Left'"
-        :src="bookImageLeft"
-        class="absolute cursor-pointer"
-        :class="bookAnimationClass"
-        :style="bookStyle"
-        @click="handleBookClick"
-      />
-      <img
-        v-if="showBook && bookDirection === 'Right'"
-        :src="bookImageRight"
-        class="absolute cursor-pointer"
-        :class="bookAnimationClass"
-        :style="bookStyle"
-        @click="handleBookClick"
-      />
+      <div class="bookCenter">
+        <div class="containerLeft" :class="{ leftFlipped: isLeftFlipped }"></div>
+        <div class="containerRight">
+          <div class="book" @click="flipBook">
+            <div class="cover front-cover" :class="{ bookFlipped: isBookFlipped }"></div>
+          </div>
+        </div>
+        <img
+          v-if="showBook && bookDirection === 'Left'"
+          :src="bookImageLeft"
+          class="absolute cursor-pointer"
+          :class="bookAnimationClass"
+          :style="bookStyle"
+          @click="handleBookClick"
+        />
+        <img
+          v-if="showBook && bookDirection === 'Right'"
+          :src="bookImageRight"
+          class="absolute cursor-pointer"
+          :class="bookAnimationClass"
+          :style="bookStyle"
+          @click="handleBookClick"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -158,8 +166,8 @@ export default {
       //
       setTimeout(() => {
         showBook.value = true
-        bookStyle.top = cowStyle.top
-        bookStyle.left = cowStyle.left
+        bookStyle.top = '50%'
+        bookStyle.left = '50%'
         bookStyle.width = '5%'
         bookStyle.height = 'auto'
         if (bookDirection.value === 'Right') {
@@ -237,6 +245,60 @@ export default {
   transform: scale(0.1);
 }
 
+.bookCenter {
+  position: absolute;
+  top: 30%;
+  left: 45%;
+  transform: translate(-50%, -50%);
+  display: flex;
+}
+
+.containerLeft {
+  background-color: #f5deb3; /* 米色背景 */
+  width: 200px; /* 书籍宽度 */
+  height: 300px; /* 书籍高度 */
+  display: flex;
+  align-items: center;
+  padding-top: 10px;
+  border: 6px solid #635850; /* 书籍边框 */
+  border-right: 0.5px solid #000;
+  box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.3);
+  z-index: 2;
+  opacity: 0;
+}
+
+.containerRight {
+  background-color: #f5deb3; /* 米色背景 */
+  width: 200px; /* 书籍宽度 */
+  height: 300px; /* 书籍高度 */
+  display: flex;
+  align-items: center;
+  padding-top: 10px;
+  border: 6px solid #635850; /* 书籍边框 */
+  border-left: none;
+  box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.3);
+}
+
+.book {
+  position: relative;
+  width: 105%;
+  height: 110%;
+  z-index: 1; /* 确保书籍在背景层上方 */
+}
+
+.cover {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.front-cover {
+  background-image: url('DroppedBookLeft.svg');
+}
+
 @keyframes bookAnimationLeft {
   0% {
     transform: translateX(0) translateY(0) rotate(0deg) scale(0.8);
@@ -269,7 +331,7 @@ export default {
 @keyframes bookBlink {
   0%,
   100% {
-    opacity: 0;
+    opacity: 0.1;
   }
   50% {
     opacity: 1;
