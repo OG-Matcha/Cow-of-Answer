@@ -48,7 +48,7 @@ paths:
                                 properties:
                                     error:
                                         type: string
-                                        description: 使用者未註冊
+                                        description: 資料庫內沒有使用者
             security:
               - jwt: []
                                         
@@ -275,6 +275,7 @@ paths:
     /api/refresh:
         get:
             summary: 使用者 Token 刷新 (時效重置)
+            description: 設想情境，你不會希望自己還在玩遊戲然後突然要求你去登入，所以你們要討論出一個固定的行為，例如每次進入關卡時都會呼叫此端口，以確保 Token 時效不會過期
             tags:
                 - Authenticate
 
@@ -310,6 +311,7 @@ paths:
     /api/logout:
         get:
             summary: 使用者登出 (移除 Token 效用)
+            description: 前端無須考慮登出的問題，使用者按下登出後呼叫此端口並重導向回初始畫面，原 Token 將無法再使用，需重新登入取得新的 Token
             tags:
                 - Authenticate
                 
@@ -343,6 +345,7 @@ paths:
     /api/achievement/{achievement_id}:
         get:
             summary: 取得特定成就 (查看詳細成就)
+            description: 當使用者點擊特定成就進入該成就頁面時呼叫，會回傳該成就的 description，在此之前應妥善利用先前得到的所有成就的資訊
             tags:
                 - Achievement
 
@@ -461,6 +464,7 @@ paths:
     /api/achievement:
         post:
             summary: 新增成就 (後台使用)
+            description: image 請放入可使用的線上「圖片連結」
             tags:
                 - Achievement
             requestBody:
@@ -497,6 +501,7 @@ paths:
               
         get:
             summary: 取得所有成就 (查看總成就欄使用)
+            description: 在使用者點進成就頁面時呼叫，會回傳除了 description 以外的資訊，image 將採用線上連結
             tags:
                 - Achievement
             responses:
@@ -599,17 +604,18 @@ paths:
             security:
               - jwt: []
     
-    /api/rank-list/{rank_list_id}:
+    /api/rank-list/{challenge_number}:
         get:
             summary: 獲得排行榜資訊
+            description: 會根據傳入的關卡編號去抓取該關卡的前 10 名資訊，若資料不足10筆則只會回傳現有資料，回傳的資料已經過排序
             tags:
               - RankList
               
             parameters:
               - in: path
-                name: rank_list_id
+                name: challenge_number
                 required: true
-                description: 排行榜的ID
+                description: 關卡的編號 (e.g 1, 2, 3)
                 schema:
                     type: integer
                     
@@ -619,7 +625,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/RankListUser"
+                                $ref: "#/components/schemas/ChallengeRankList"
                 "401":
                     description: 使用者 Token 不合格
                     content:
@@ -639,31 +645,20 @@ paths:
             security:
               - jwt: []
               
-    /api/rank-list/user/{user_id}:
+    /api/rank-list/rank/user:
         get:
             summary: 獲得使用者排行榜資訊
+            description: 會根據當前 Token 去抓取使用者 1 至 3 關的最佳通關時間，不需要傳入參數
             tags:
               - RankList
-    
-            parameters:
-              - in: path
-                name: user_id
-                required: true
-                description: 使用者的ID
-                schema:
-                    type: integer
-                    
+  
             responses:
                 "200":
                     description: 成功
                     content:
                         application/json:
                             schema:
-                              type: object
-                              properties:
-                                rank: 
-                                  type: integer
-                                  description: 使用者排名
+                              $ref: "#/components/schemas/UserRankList"
                 "401":
                     description: 使用者 Token 不合格
                     content:
@@ -671,7 +666,7 @@ paths:
                           schema:
                               $ref: "#/components/schemas/JwtError"
                 "404":
-                    description: 沒有找到排名
+                    description: 使用者沒有通關紀錄
                     content:
                         application/json:
                             schema:
@@ -679,12 +674,12 @@ paths:
                                 properties:
                                     error:
                                         type: string
-                                        description: 沒有找到排名
+                                        description: 使用者沒有通關紀錄
             security:
               - jwt: []
             
               
-    /api/book/answer:
+    /api/book:
         get:
             summary: 獲得答案
             tags: 
@@ -917,11 +912,29 @@ components:
               description: 答案
         
         
-        RankListUser:
-          type: object
-          additionalProperties:
-              $ref: '#/components/schemas/User'
-              
+        ChallengeRankList:
+          type: array
+          items:
+            type: object
+            properties:
+              user_name:
+                type: string
+                description: 使用者名稱
+              best_time:
+                type: integer
+                description: 通關時間 (單位為 秒(s)，請自行轉換)
+        
+        UserRankList:
+            type: array
+            items:
+              type: object
+              properties:
+                challenge_number:
+                  type: integer
+                  description: 關卡編號
+                best_time:
+                  type: integer
+                  description: 通關時間 (單位為 秒(s)，請自行轉換)
             
         JwtError:
             type: object
