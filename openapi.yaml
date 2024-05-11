@@ -185,7 +185,7 @@ paths:
             security:
               - jwt: []
 
-    /api/login:
+    /api/auth/login:
         post:
             summary: 使用者登陸 (獲取 Token)
             tags:
@@ -234,7 +234,7 @@ paths:
                                         type: string
                                         description: 使用者未註冊
 
-    /api/register:
+    /api/auth/register:
         post:
             summary: 使用者註冊 (包含建立使用者)
             tags:
@@ -272,7 +272,7 @@ paths:
                                         type: string
                                         description: 使用者email已存在資料庫
                                         
-    /api/refresh:
+    /api/auth/refresh:
         get:
             summary: 使用者 Token 刷新 (時效重置)
             description: 設想情境，你不會希望自己還在玩遊戲然後突然要求你去登入，所以你們要討論出一個固定的行為，例如每次進入關卡時都會呼叫此端口，以確保 Token 時效不會過期
@@ -308,7 +308,7 @@ paths:
             security:
               - jwt: []
               
-    /api/logout:
+    /api/auth/logout:
         get:
             summary: 使用者登出 (移除 Token 效用)
             description: 前端無須考慮登出的問題，使用者按下登出後呼叫此端口並重導向回初始畫面，原 Token 將無法再使用，需重新登入取得新的 Token
@@ -534,6 +534,7 @@ paths:
     /api/user-achievement:
         post:
             summary: 使用者獲取特定成就
+            description: 獲得成就時呼叫，會根據傳入的使用者 ID 與成就 ID 去建立使用者與成就的關聯
             tags:
                 - UserAchievement
             requestBody:
@@ -541,18 +542,22 @@ paths:
               content:
                   application/json:
                       schema:
-                          $ref: '#/components/schemas/UserAchievement'
+                          $ref: '#/components/schemas/UserAchievementCreate'
             responses:
-                "200":
-                    description: 成功
+                "201":
+                    description: 已建立
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/UserAchievementResponse"
                 "401":
                     description: 使用者 Token 不合格
                     content:
                       application/json:
                           schema:
                               $ref: "#/components/schemas/JwtError"
-                "404":
-                    description: 資料庫內沒有該使用者或成就
+                "409":
+                    description: 此映射已存在
                     content:
                         application/json:
                             schema:
@@ -560,31 +565,60 @@ paths:
                                 properties:
                                     error:
                                         type: string
-                                        description: 資料庫內沒有該使用者或成就
+                                        description: 此映射已存在
             security:
               - jwt: []
   
-    /api/user-achievement/{user_id}:
         get:
             summary: 查看使用者已獲得成就
+            description: 會根據當前 Token 去抓取使用者獲得的成就 ID，不需要傳入參數 (請前端自行計算總數量)
+            tags:
+                - UserAchievement
+
+            responses:
+                "200":
+                    description: 成功
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/AchievementRankList"
+                "401":
+                    description: 使用者 Token 不合格
+                    content:
+                      application/json:
+                          schema:
+                              $ref: "#/components/schemas/JwtError"
+                "404":
+                    description: 使用者沒有已獲得成就
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        description: 使用者沒有已獲得成就
+            security:
+              - jwt: []
+    
+    /api/user-achievement/{user_achievement_id}:
+        delete:
+            summary: 刪除特定使用者成就關聯 (後台使用)
             tags:
                 - UserAchievement
 
             parameters:
-                - in: path
-                  name: user_id
-                  required: true
-                  description: 使用者的ID
-                  schema:
-                      type: integer
+              - in: path
+                name: user_achievement_id
+                required: true
+                description: 映射的 ID
+                schema:
+                    type: integer
 
             responses:
-                "200":
-                    description: 成功
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/AchievementList"
+                "204":
+                    description: 無內容
+
                 "401":
                     description: 使用者 Token 不合格
                     content:
@@ -592,7 +626,7 @@ paths:
                           schema:
                               $ref: "#/components/schemas/JwtError"
                 "404":
-                    description: 資料庫內沒有成就
+                    description: 此映射不存在
                     content:
                         application/json:
                             schema:
@@ -600,10 +634,10 @@ paths:
                                 properties:
                                     error:
                                         type: string
-                                        description: 資料庫內沒有成就
+                                        description: 此映射不存在
             security:
               - jwt: []
-    
+
     /api/rank-list/{challenge_number}:
         get:
             summary: 獲得排行榜資訊
@@ -889,10 +923,36 @@ components:
             type: array
             items:
                 $ref: '#/components/schemas/AllAchievement'
+        
+        AchievementRankList:
+            type: array
+            items:
+                type: object
+                properties:
+                  achievement_id:
+                    type: integer
+                    description: 成就 ID  
                 
-        UserAchievement:
+        UserAchievementCreate:
             type: object
             properties:
+              user_id:
+                type: integer
+                description: 使用者 ID
+              achievement_id:
+                type: integer
+                description: 成就 ID
+            
+            required:
+                - user_id
+                - achievement_id
+
+        UserAchievementResponse:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: 映射 ID
               user_id:
                 type: integer
                 description: 使用者 ID
