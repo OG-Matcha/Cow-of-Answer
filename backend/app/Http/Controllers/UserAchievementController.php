@@ -32,9 +32,9 @@ class UserAchievementController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($userAchievement_id)
+    public function destroy($user_achievement_id)
     {
-        $userAchievement = UserAchievement::find($userAchievement_id);
+        $userAchievement = UserAchievement::find($user_achievement_id);
 
         if (!$userAchievement) {
             return response()->json(['error' => '此映射不存在'], 404);

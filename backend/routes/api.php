@@ -25,7 +25,7 @@ Route::middleware([Authenticate::class])->group(function () {
 
     Route::post('user-achievement', [UserAchievementController::class, 'store'])->name('storeUserAchievement');
     Route::get('user-achievement', [UserController::class, 'completeAchievement'])->name('UserCompleteAchievement');
-    Route::delete('user-achievement/{userAchievement_id}', [UserAchievementController::class, 'destroy'])->name('deleteUserAchievement');
+    Route::delete('user-achievement/{user_achievement_id}', [UserAchievementController::class, 'destroy'])->name('deleteUserAchievement');
 
     Route::get('auth/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('auth/refresh', [AuthController::class, 'refresh'])->name('refresh');
