@@ -6,6 +6,7 @@ use App\Http\Controllers\AchievementController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChallengeRecordController;
+use App\Http\Controllers\UserAchievementController;
 use App\Http\Middleware\Authenticate;
 
 Route::middleware([Authenticate::class])->group(function () {
@@ -21,6 +22,10 @@ Route::middleware([Authenticate::class])->group(function () {
 
     Route::get('rank-list/{challenge_number}', [ChallengeRecordController::class, 'rankList'])->name('singleChallengeRecord');
     Route::get('rank-list/rank/user', [UserController::class, 'getChallengeRecords'])->name('userRank');
+
+    Route::post('user-achievement', [UserAchievementController::class, 'store'])->name('storeUserAchievement');
+    Route::get('user-achievement', [UserController::class, 'completeAchievement'])->name('UserCompleteAchievement');
+    Route::delete('user-achievement/{userAchievement_id}', [UserAchievementController::class, 'destroy'])->name('deleteUserAchievement');
 
     Route::get('auth/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('auth/refresh', [AuthController::class, 'refresh'])->name('refresh');

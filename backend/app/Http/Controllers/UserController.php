@@ -91,4 +91,24 @@ class UserController extends Controller
 
         return response()->json($records, 200);
     }
+
+    public function completeAchievement()
+    {
+        $user = auth()->user();
+        $user_id = $user->id;
+
+        $records = json_decode(Redis::get("user_achievement_{$user_id}"));
+
+        if (!$records) {
+            $records = $user->linkAchievements()->select('achievement_id')->get();
+
+            if ($records->isEmpty()) {
+                return response()->json(['error' => '使用者沒有已獲得成就'], 404);
+            }
+
+            Redis::setex("user_achievement_{$user_id}", 600, json_encode($records));
+        }
+
+        return response()->json($records, 200);
+    }
 }

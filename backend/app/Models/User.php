@@ -39,6 +39,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(ChallengeRecord::class);
     }
 
+    public function linkAchievements(): HasMany
+    {
+        return $this->hasMany(UserAchievement::class);
+    }
+
     /**
      * Set the user's password.
      *
@@ -80,6 +85,7 @@ class User extends Authenticatable implements JWTSubject
 
         static::deleting(function ($user) {
             $user->challengeRecords()->delete();
+            $user->linkAchievement()->delete();
         });
     }
 }
