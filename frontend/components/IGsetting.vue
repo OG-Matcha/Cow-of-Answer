@@ -7,6 +7,7 @@
     </div>
   </div>
   <GameInfo :show="showInfo" @hide="hideGameInfo" />
+
 </template>
 
 <script setup>
