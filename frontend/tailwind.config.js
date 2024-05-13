@@ -14,7 +14,12 @@ module.exports = {
             "bg-color": "#FDFAF3",
             "overlay": "#E0D6C3",
             "overlay-text": "#FDFAF3",
-            "button": "#846E82"
+            "button": "#846E82",
+            'hovercolor': '#E8DEF8',
+            'textColor' : '#FDFAF3',
+            'textColor2' : '#625B71',
+            'table' : '#E0D6C3',
+            'listfont':'#563A3D'
           },
           fontFamily: {
             neucha: ["Neucha-Regular", "sans-serif"],
@@ -25,6 +30,6 @@ module.exports = {
       },
     plugins: [],
     css: [
-        './public/assets/css/tailwind.css',
+        'assets/css/tailwind.css',
     ],
   }
