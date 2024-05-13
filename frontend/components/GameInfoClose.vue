@@ -1,5 +1,5 @@
 <template>
-  <div v-if="show" class="game-info">
+  <div v-if="show" class="game-info z-10">
     <button @click="hide" class="infoButton"><img src="/xx.svg" alt="x" /></button>
     <button @click="testVolume" class="volumeButton"><img src="/volume.svg" alt="Volume" /></button>
     <img src="/GameInfo(nobutton).png" alt="GameInfo" />

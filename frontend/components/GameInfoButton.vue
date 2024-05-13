@@ -1,19 +1,21 @@
 <template>
-  <div v-if="show" class="game-info1">
+  <div v-if="startGameInfo" class="game-info1 z-10">
     <img src="/GameInfo(nobutton).png" alt="GameInfo" />
     <button @click="testVolume1" class="volumeButton1">
       <img src="/volume.svg" alt="Volume" />
     </button>
-    <button @click="handleStartClick" class="startGameButton1">開始遊戲</button>
+    <button @click="showStartGameInfo" class="startGameButton1">開始遊戲</button>
   </div>
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue'
+import { ref, defineEmits } from 'vue'
 
-const props = defineProps({
-  show: Boolean
-})
+const startGameInfo = ref(true)
+
+const showStartGameInfo = () => {
+  startGameInfo.value = false
+}
 
 const emits = defineEmits(['hide'])
 
@@ -30,7 +32,7 @@ const testVolume1 = () => {
 <style scoped>
 .game-info1 {
   position: absolute;
-  top: 23%;
+  top: 20%;
   left: 30%;
   width: 45%;
   height: auto;

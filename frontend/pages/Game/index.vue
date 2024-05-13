@@ -1,65 +1,12 @@
-<template>
-  <div :class="{ 'bg-gray-200': showIGsetting }" class="grass-background h-[100vh] w-[100vw]">
-    <div class="h-[10vh] w-full">
-      <NuxtLink
-        v-if="showButtons"
-        to="/"
-        class="exit absolute left-0 ml-[3vw] mt-[3vh] h-[6vh] w-[5vw]"
-        @click="handleExitClick"
-      ></NuxtLink>
-      <button
-        v-if="showButtons"
-        class="setting absolute right-0 mr-[3vw] mt-[3vh] h-[6vh] w-[5vw]"
-        @click="toggleIGsetting"
-      ></button>
-    </div>
-    <div class="relative h-[87vh] w-full overflow-hidden">
-      <IGsetting
-        v-if="showIGsetting"
-        :show="showIGsetting"
-        @toggle="showIGsetting = !showIGsetting"
-      ></IGsetting>
-      <img
-        :src="cowImage"
-        class="absolute cursor-pointer transition-all duration-300 ease-in-out"
-        :style="cowStyle"
-        @click="handleClick"
-      />
-      <div class="bookCenter">
-        <div class="containerLeft" :class="{ leftFlipped: isLeftFlipped }"></div>
-        <div class="containerRight">
-          <div class="book" @click="flipBook">
-            <div class="cover front-cover" :class="{ bookFlipped: isBookFlipped }"></div>
-          </div>
-        </div>
-        <img
-          v-if="showBook && bookDirection === 'Left'"
-          :src="bookImageLeft"
-          class="absolute cursor-pointer"
-          :class="bookAnimationClass"
-          :style="bookStyle"
-          @click="handleBookClick"
-        />
-        <img
-          v-if="showBook && bookDirection === 'Right'"
-          :src="bookImageRight"
-          class="absolute cursor-pointer"
-          :class="bookAnimationClass"
-          :style="bookStyle"
-          @click="handleBookClick"
-        />
-      </div>
-    </div>
-  </div>
-</template>
-
 <script>
-import { reactive, onMounted, ref } from 'vue'
+import { reactive, onMounted, ref, computed } from 'vue'
 import IGsetting from '@/components/IGsetting.vue'
+import GameInfoButton from '@/components/GameInfoButton.vue'
 
 export default {
   components: {
-    IGsetting
+    IGsetting,
+    GameInfoButton
   },
   setup() {
     const showButtons = ref(true)
@@ -69,22 +16,30 @@ export default {
     const bookDirection = ref('Right')
     const bookAnimationClass = ref('')
     const isFading = ref(false)
+    const hasClickedCow = ref(false)
+    const isGameInfoVisible = ref(false)
 
     const bookImageLeft = ref('/DroppedBookLeft.svg')
     const bookImageRight = ref('/DroppedBookRight.svg')
     const openBookImage = ref('/OpenedBook.svg')
 
+    const handleGameInfoStart = () => {
+      isGameInfoVisible.value = true
+    }
+
     const handleExitClick = (event) => {
-      if (showIGsetting.value) {
+      if (showIGsetting.value || isGameInfoVisible.value) {
         // Add condition to check if GameInfo is showing
         event.preventDefault()
-        showIGsetting.value = false
-        showButtons.value = true
+        return
       }
+      showButtons.value = false
+      showIGsetting.value = false
     }
 
     // Toggle the IGsetting component
     const toggleIGsetting = () => {
+      if (isGameInfoVisible.value) return
       showIGsetting.value = !showIGsetting.value
       showButtons.value = true
     }
@@ -154,16 +109,20 @@ export default {
 
     // Handle the cow click event
     const handleClick = () => {
+      if (isGameInfoVisible.value) return
+      if (hasClickedCow.value) return
       if (showIGsetting.value) return // Add condition to check if GameInfo is showing
       showButtons.value = false
 
+      hasClickedCow.value = true // Prevent multiple cow clicks
+
+      // Set the cow style
       cowStyle.top = '50%'
       cowStyle.left = '50%'
       cowStyle.width = '15%'
       cowStyle.height = 'auto'
       cowStyle.opacity = '1'
 
-      //
       setTimeout(() => {
         showBook.value = true
         bookStyle.top = '50%'
@@ -212,11 +171,76 @@ export default {
       bookImageLeft,
       bookImageRight,
       openBookImage,
-      isFading
+      isFading,
+      hasClickedCow,
+      handleAnimationEnd,
+      isGameInfoVisible,
+      handleGameInfoStart
     }
   }
 }
 </script>
+
+<template>
+  <div :class="{ 'bg-gray-200': showIGsetting }" class="grass-background h-[100vh] w-[100vw]">
+    <div>
+      <GameInfoButton v-if="!isGameInfoVisible">
+        <button @click="handleGameInfoStart">開始遊戲</button></GameInfoButton
+      >
+    </div>
+    <div class="h-[10vh] w-full">
+      <button
+        v-if="showButtons"
+        class="exit absolute left-0 ml-[3vw] mt-[3vh] h-[6vh] w-[5vw]"
+        @click.prevent="handleExitClick"
+      ></button>
+      <button
+        v-if="showButtons"
+        class="setting absolute right-0 mr-[3vw] mt-[3vh] h-[6vh] w-[5vw]"
+        @click="toggleIGsetting"
+      ></button>
+    </div>
+    <div>
+      <IGsetting
+        v-if="showIGsetting"
+        :show="showIGsetting"
+        @toggle="showIGsetting = !showIGsetting"
+      ></IGsetting>
+    </div>
+    <div class="relative h-[87vh] w-full overflow-hidden">
+      <img
+        :src="cowImage"
+        class="absolute cursor-pointer transition-all duration-300 ease-in-out"
+        :style="cowStyle"
+        @click="handleClick"
+      />
+      <!-- <div class="bookCenter">
+        <div class="containerLeft" :class="{ leftFlipped: isLeftFlipped }"></div>
+          <div class="containerRight">
+            <div class="book" @click="flipBook">
+              <div class="cover front-cover" :class="{ bookFlipped: isBookFlipped }"></div>
+            </div>
+        </div> -->
+      <img
+        v-if="showBook && bookDirection === 'Left'"
+        :src="bookImageLeft"
+        class="absolute cursor-pointer"
+        :class="bookAnimationClass"
+        :style="bookStyle"
+        @click="handleBookClick"
+      />
+      <img
+        v-if="showBook && bookDirection === 'Right'"
+        :src="bookImageRight"
+        class="absolute cursor-pointer"
+        :class="bookAnimationClass"
+        :style="bookStyle"
+        @click="handleBookClick"
+      />
+      <!-- </div> -->
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .bg-gray-200 {
@@ -245,7 +269,7 @@ export default {
   transform: scale(0.1);
 }
 
-.bookCenter {
+/* .bookCenter {
   position: absolute;
   top: 30%;
   left: 45%;
@@ -254,13 +278,13 @@ export default {
 }
 
 .containerLeft {
-  background-color: #f5deb3; /* 米色背景 */
-  width: 200px; /* 书籍宽度 */
-  height: 300px; /* 书籍高度 */
+  background-color: #f5deb3; 
+  width: 200px; 
+  height: 300px; 
   display: flex;
   align-items: center;
   padding-top: 10px;
-  border: 6px solid #635850; /* 书籍边框 */
+  border: 6px solid #635850; 
   border-right: 0.5px solid #000;
   box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.3);
   z-index: 2;
@@ -268,13 +292,13 @@ export default {
 }
 
 .containerRight {
-  background-color: #f5deb3; /* 米色背景 */
-  width: 200px; /* 书籍宽度 */
-  height: 300px; /* 书籍高度 */
+  background-color: #f5deb3; 
+  width: 200px; 
+  height: 300px; 
   display: flex;
   align-items: center;
   padding-top: 10px;
-  border: 6px solid #635850; /* 书籍边框 */
+  border: 6px solid #635850; 
   border-left: none;
   box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.3);
 }
@@ -283,7 +307,7 @@ export default {
   position: relative;
   width: 105%;
   height: 110%;
-  z-index: 1; /* 确保书籍在背景层上方 */
+  z-index: 1; 
 }
 
 .cover {
@@ -297,7 +321,7 @@ export default {
 
 .front-cover {
   background-image: url('DroppedBookLeft.svg');
-}
+} */
 
 @keyframes bookAnimationLeft {
   0% {
@@ -346,7 +370,7 @@ export default {
   z-index: 1;
 }
 
-@keyframes bookOpen {
+/* @keyframes bookOpen {
   0% {
     transform-origin: left;
     transform: rotateY(0deg);
@@ -359,5 +383,5 @@ export default {
 
 .book-open {
   animation: bookOpen 2s forwards;
-}
+} */
 </style>

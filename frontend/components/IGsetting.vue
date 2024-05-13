@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!showInfo" class="reel flex justify-center">
+  <div v-if="!showInfo" class="reel z-[5] flex justify-center">
     <div class="font space-y-19 r-50% flex flex-col items-center justify-center">
       <button @click="continueGame" class="gap font">繼續</button>
       <button @click.stop="showGameInfo" class="gap font">遊戲說明</button>
@@ -25,10 +25,6 @@ const showGameInfo = () => {
 
 const hideGameInfo = () => {
   showInfo.value = false
-}
-
-const testVolume = () => {
-  console.log('Volume')
 }
 </script>
 
