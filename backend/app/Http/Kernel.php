@@ -8,6 +8,7 @@ class Kernel extends HttpKernel
 {
     protected $middleware = [
         // ...
+        \App\Http\Middleware\Cors::class,
     ];
 
     protected $middlewareGroups = [
