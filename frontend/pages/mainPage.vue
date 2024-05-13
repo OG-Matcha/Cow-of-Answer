@@ -87,7 +87,7 @@ const RegisterUser = async () => {
     username.value = data.value.user.name
     console.log(username.value)
     console.log(token.value)
-    router.push('/challenge')
+    await navigateTo({ path: '/question' })
   } else {
     alert('Email已被註冊過')
     console.log('User register failed')
