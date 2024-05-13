@@ -47,21 +47,22 @@
 
 接下來你可以選一個舒適的地方來複製專案的資料夾，在你想放新專案的路徑下打開 CMD 輸入並執行下面的指令
 ```
-git clone https://github.com/OG-Matcha/NCU_Web_Final.git
+git clone https://github.com/OG-Matcha/Cow-of-Answer.git
 ```
 
 接下來你的檔案結構應該會像這樣
 ```
 your_folder/
-└── NCU_Web_Final/
+└── Cow-of-Answer/
     ├── frontend/
     ├── backend/
     ├── mysql/
+    ├── redis/
     ├── nginx/
     └── docker-compose.yaml
 ```
 
-接下來你要再次開啟 CMD 並確定你的路徑在 **NCU_Web_Final** 那一層
+接下來你要再次開啟 CMD 並確定你的路徑在 **Cow-of-Answer** 那一層
 (也就是 **docker-compose.yaml** 所在的階層)，可以使用下面的指令去改變 CMD 當前路徑
 ```
 cd <想進入的資料夾路徑>
