@@ -18,7 +18,8 @@ module.exports = {
             'hovercolor': '#E8DEF8',
             'textColor' : '#FDFAF3',
             'textColor2' : '#625B71',
-            'table' : '#E0D6C3'
+            'table' : '#E0D6C3',
+            'listfont':'#563A3D'
           },
           fontFamily: {
             neucha: ["Neucha-Regular", "sans-serif"],
@@ -29,6 +30,6 @@ module.exports = {
       },
     plugins: [],
     css: [
-        './public/assets/css/tailwind.css',
+        'assets/css/tailwind.css',
     ],
   }

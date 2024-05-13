@@ -1,115 +1,140 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import List from '@/components/list.vue';
+import { ref, onMounted } from 'vue'
+import List from '@/components/list.vue'
 
-let userName = ref('User');
-let originalText = `Hi, ${userName.value} ~ <br> 最近有什麼困擾著你? <br> 輸入你的問題 <br> 尋找封印在幕後的答案之牛！ <br> `;
-let displayedText = ref('');
-let currentIndex = ref(0);
-let showSkipText = ref(false);
+let userName = ref('User')
+let originalText = `Hi, ${userName.value} ~ <br> 最近有什麼困擾著你? <br> 輸入你的問題 <br> 尋找封印在幕後的答案之牛！ <br> `
+let displayedText = ref('')
+let currentIndex = ref(0)
+let showSkipText = ref(false)
 
 onMounted(() => {
-    const intervalId = setInterval(() => {
-        if (currentIndex.value < originalText.length) {
-            if (originalText.substr(currentIndex.value, 4) === '<br>') {
-                displayedText.value += '<br>';
-                currentIndex.value += 4;
-            } else {
-                displayedText.value += originalText[currentIndex.value];
-                currentIndex.value++;
-            }
-        } else {
-            clearInterval(intervalId);
-        }
-    }, 110); // 110 毫秒
+  const intervalId = setInterval(() => {
+    if (currentIndex.value < originalText.length) {
+      if (originalText.substr(currentIndex.value, 4) === '<br>') {
+        displayedText.value += '<br>'
+        currentIndex.value += 4
+      } else {
+        displayedText.value += originalText[currentIndex.value]
+        currentIndex.value++
+      }
+    } else {
+      clearInterval(intervalId)
+    }
+  }, 110) // 110 毫秒
 
-    setTimeout(() => {
-        showSkipText.value = true;
-    }, 5800);
-});
-const showList = ref(false);
+  setTimeout(() => {
+    showSkipText.value = true
+  }, 5800)
+})
+const showList = ref(false)
 const openModalL = () => {
-    showList.value = true;
-};
+  showList.value = true
+}
 const closeModal = () => {
-    showList.value = false;
-};
+  showList.value = false
+}
 </script>
 <template>
-    <div class="w-[100vw] h-[100vh] flex">
-        <button @click="openModalL">
-            <img src="/Setting.png" alt="setting" class="fixed top-3 left-3 w-[3%] h-auto">
-        </button>
-        <div class="w-[47%] h-auto bg-orange-50 flex justify-center items-center p-[2%]">
-            <img src="/CowLOGO.png" alt="cows" class="w-[80%] h-[80%] justify-center animate-slide-in-from-left">
-        </div>
-        <div class="w-[53%] h-auto bg-orange-50 p-[2%]">
-            <div class="w-auto h-[50%] flex items-end text-xl pl-[5%]">
-                <div v-html="displayedText" class="text-textColor2 font-chen"></div>
-            </div>
-            <div v-if="showSkipText"
-                class="w-auto h-[10%] flex text-sm pl-[5%] transition-transform duration-300 ease-in-out animate-fade-in text-textColor2 font-chen">
-                (沒有問題可以按下SKIP直接進入關卡)
-            </div>
-            <div class="w-auto h-[20%] pl-[5%] flex">
-                <div v-if="showSkipText"
-                    class="w-[80%] h-auto transition-transform duration-300 ease-in-out animate-fade-in">
-                    <input class=" border-b-2 border-textColor2 bg-transparent w-full h-auto font-chen" type="text"
-                        placeholder="你想知道什麼?">
-                </div>
-                <div v-if="showSkipText"
-                    class="w-[20%] h-auto pl-[1%] transition-transform duration-300 ease-in-out animate-fade-in">
-                    <img src="/btnNext.png" alt="Next" class="w-[60%] h-auto">
-                </div>
-            </div>
-            <div class="w-auto h-[20%] p-[5%]">
-                <NuxtLink to="http://localhost:3000/Challenge"
-                    class="text-center text-2xl flex justify-end items-center text-textColor2 hover:text-hovercolor transition-transform duration-300 ease-in-out animate-fade-in font-neucha"
-                    v-if="showSkipText">
-                    SKIP>>
-                </NuxtLink>
-            </div>
-        </div>
+  <div class="flex h-[100vh] w-[100vw]">
+    <button @click="openModalL">
+      <img src="/Setting.png" alt="setting" class="fixed left-3 top-3 h-auto w-[3%]" />
+    </button>
+    <div class="flex h-auto w-[47%] items-center justify-center bg-orange-50 p-[2%]">
+      <img
+        src="/CowLOGO.png"
+        alt="cows"
+        class="animate-slide-in-from-left h-[80%] w-[80%] justify-center"
+      />
     </div>
-    <div v-if="showList" @click="closeModal"
-        class="fixed inset-0 w-full h-full z-10 bg-black bg-opacity-50 flex items-center justify-center">
-        <div @click.stop class="w-auto h-auto p-[2%] animate-fade-in scale-150">          
-           <List />
+    <div class="h-auto w-[53%] bg-orange-50 p-[2%]">
+      <div class="flex h-[50%] w-auto items-end pb-[5%] pl-[5%] text-3xl">
+        <div v-html="displayedText" class="font-chen text-textColor2"></div>
+      </div>
+      <div
+        v-if="showSkipText"
+        class="animate-fade-in flex h-[10%] w-auto items-start pl-[5%] font-chen text-xl text-textColor2 transition-transform duration-300 ease-in-out"
+      >
+        (沒有問題可以按下SKIP直接進入關卡)
+      </div>
+      <div class="flex h-[20%] w-auto pl-[5%]">
+        <div
+          v-if="showSkipText"
+          class="animate-fade-in h-auto w-[80%] transition-transform duration-300 ease-in-out"
+        >
+          <input
+            class="h-auto w-full border-b-2 border-textColor2 bg-transparent font-chen text-2xl outline-none"
+            type="text"
+            placeholder="你想知道什麼?"
+          />
         </div>
+        <div
+          v-if="showSkipText"
+          class="animate-fade-in h-auto w-[20%] pl-[1%] transition-transform duration-300 ease-in-out"
+        >
+          <NuxtLink to="http://localhost:3000/challenge">
+            <img
+              src="/btnNext.png"
+              alt="Next"
+              class="h-auto w-[60%] transition-transform duration-300 ease-in-out hover:scale-110"
+            />
+          </NuxtLink>
+        </div>
+      </div>
+      <div class="h-[20%] w-auto p-[5%]" v-if="showSkipText">
+        <div class="flex items-center justify-end text-center font-neucha text-2xl text-textColor2">
+          <NuxtLink
+            to="http://localhost:3000/challenge"
+            class="animate-fade-in transition-transform duration-300 ease-in-out hover:scale-110 hover:text-hovercolor"
+          >
+            SKIP>>
+          </NuxtLink>
+        </div>
+      </div>
     </div>
+  </div>
+  <div
+    v-if="showList"
+    @click="closeModal"
+    class="fixed inset-0 z-10 flex h-auto w-full items-center justify-center bg-black bg-opacity-50"
+  >
+    <div @click.stop class="animate-fade-in h-auto w-auto">
+      <List />
+    </div>
+  </div>
 </template>
 
 <style scoped>
 p {
-    margin-bottom: 1em;
+  margin-bottom: 1em;
 }
 
 @keyframes slide-in-from-left {
-    0% {
-        transform: translateX(-100%);
-    }
+  0% {
+    transform: translateX(-100%);
+  }
 
-    100% {
-        transform: translateX(0);
-    }
+  100% {
+    transform: translateX(0);
+  }
 }
 
 .animate-slide-in-from-left {
-    animation: slide-in-from-left 2s ease-out;
+  animation: slide-in-from-left 2s ease-out;
 }
 
 @keyframes fade-in {
-    0% {
-        opacity: 0;
-    }
+  0% {
+    opacity: 0;
+  }
 
-    100% {
-        opacity: 1;
-    }
+  100% {
+    opacity: 1;
+  }
 }
 
 .animate-fade-in {
-    animation-delay: 5s;
-    animation: fade-in 2s ease-in-out;
+  animation-delay: 5s;
+  animation: fade-in 2s ease-in-out;
 }
 </style>
