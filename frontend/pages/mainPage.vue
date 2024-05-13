@@ -1,10 +1,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-// import { useCookie } from 'vue-cookie-next'
 
 const email = ref('')
 const password = ref('')
-const username = ref('')
+const username = useCookie('username')
 const token = useCookie('token')
 
 const logIn = ref(false)
@@ -13,9 +12,11 @@ const signIn = ref(false)
 const openModalL = () => {
   logIn.value = true
 }
+
 const openModalS = () => {
   signIn.value = true
 }
+
 const closeModal = () => {
   logIn.value = false
   signIn.value = false
@@ -30,156 +31,224 @@ const handleAnimationEnd = () => {
     showButtons.value = true
   }
 }
+
+const SignInUser = async () => {
+  console.log(email.value)
+  console.log(password.value)
+
+  const { data, status } = await useFetch('http://localhost:8000/api/auth/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: {
+      email: email.value,
+      password: password.value
+    }
+  })
+
+  console.log(status.value)
+
+  if (status.value === 'success') {
+    console.log('User login success')
+    token.value = data.value.token
+    username.value = data.value.user.name
+    console.log(username.value)
+    console.log(token.value)
+    await navigateTo({ path: '/question' })
+  } else {
+    alert('帳號或密碼錯誤')
+    console.log('User login failed')
+  }
+}
+
+const RegisterUser = async () => {
+  console.log(username.value)
+  console.log(email.value)
+  console.log(password.value)
+
+  const { data, status } = await useFetch('http://localhost:8000/api/auth/register', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: {
+      name: username.value,
+      email: email.value,
+      password: password.value
+    }
+  })
+
+  console.log(status.value)
+
+  if (status.value === 'success') {
+    console.log('User register success')
+    token.value = data.value.token
+    username.value = data.value.user.name
+    console.log(username.value)
+    console.log(token.value)
+    await navigateTo({ path: '/question' })
+  } else {
+    alert('Email已被註冊過')
+    console.log('User register failed')
+  }
+}
+
 onMounted(() => {
   document.body.style.overflow = 'hidden'
 })
 </script>
 
 <template>
-  <div class="flex h-[100vh] w-[100vw]">
-    <div class="flex h-auto w-[47%] items-center justify-center bg-orange-50 p-[2%]">
-      <img
-        src="/CowLOGO.png"
-        alt="cows"
-        class="animate-slide-in-from-left h-[80%] w-[80%] justify-center"
-        @animationend="handleAnimationEnd"
-      />
-    </div>
-
-    <div class="h-auto w-[53%] bg-orange-50 p-[2%]">
-      <div class="flex h-[70%] w-auto items-end justify-center">
+  <div>
+    <div class="flex h-[100vh] w-[100vw]">
+      <div class="flex h-auto w-[47%] items-center justify-center bg-orange-50 p-[2%]">
         <img
-          src="/TitleFont.png"
-          alt="Cow Of Answer"
-          class="animate-slide-in-from-right h-[65%] w-[65%]"
+          src="/CowLOGO.png"
+          alt="cows"
+          class="animate-slide-in-from-left h-[80%] w-[80%] justify-center"
           @animationend="handleAnimationEnd"
         />
       </div>
-      <div class="flex h-[30%] w-auto">
-        <div class="flex h-auto w-[50%] items-center justify-center">
+
+      <div class="h-auto w-[53%] bg-orange-50 p-[2%]">
+        <div class="flex h-[70%] w-auto items-end justify-center">
+          <img
+            src="/TitleFont.png"
+            alt="Cow Of Answer"
+            class="animate-slide-in-from-right h-[65%] w-[65%]"
+            @animationend="handleAnimationEnd"
+          />
+        </div>
+        <div class="flex h-[30%] w-auto">
+          <div class="flex h-auto w-[50%] items-center justify-center">
+            <button
+              @click="openModalL"
+              class="flex items-center justify-center text-center text-4xl transition-transform duration-300 ease-in-out hover:scale-110"
+            >
+              <img
+                v-show="showButtons"
+                src="/LogIn.png"
+                alt="登入"
+                class="animate-fade-in h-auto w-[55%]"
+              />
+            </button>
+          </div>
+          <div class="flex h-auto w-[50%] items-center justify-center">
+            <button
+              @click="openModalS"
+              class="flex items-center justify-center text-center text-4xl transition-transform duration-300 ease-in-out hover:scale-110"
+            >
+              <img
+                v-show="showButtons"
+                src="/SignUp.png"
+                alt="註冊"
+                class="animate-fade-in h-auto w-[55%]"
+              />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      v-if="logIn"
+      @click="closeModal"
+      class="fixed inset-0 z-10 flex h-full w-full items-center justify-center bg-black bg-opacity-50"
+    >
+      <div @click.stop class="animate-fade-in h-[50%] w-[50%] rounded-3xl bg-overlay p-[2%]">
+        <div class="flex h-[25%] w-auto items-start justify-end">
           <button
-            @click="openModalL"
-            class="flex items-center justify-center text-center text-4xl transition-transform duration-300 ease-in-out hover:scale-110"
+            @click="closeModal"
+            class="text-xl transition duration-200 ease-in-out hover:text-white"
           >
-            <img
-              v-show="showButtons"
-              src="/LogIn.png"
-              alt="登入"
-              class="animate-fade-in h-auto w-[55%]"
-            />
+            X
           </button>
         </div>
-        <div class="flex h-auto w-[50%] items-center justify-center">
+        <div class="flex h-[25%] w-auto p-[1%] text-xl">
+          <p class="flex h-auto w-[30%] items-center pl-[3%] font-neucha text-2xl text-textColor">
+            E-mail：
+          </p>
+          <input
+            v-model="email"
+            type="email"
+            placeholder=" "
+            class="h-auto w-[70%] border-b-2 border-textColor bg-transparent outline-none"
+          />
+        </div>
+        <div class="flex h-[25%] w-auto p-[1%] text-2xl">
+          <p class="flex h-auto w-[30%] items-center pl-[3%] font-neucha text-xl text-textColor">
+            密碼：
+          </p>
+          <input
+            v-model="password"
+            type="password"
+            placeholder=" "
+            class="h-auto w-[70%] border-b-2 border-textColor bg-transparent outline-none"
+          />
+        </div>
+        <div class="flex h-[25%] w-auto justify-end pr-[3%] pt-[2%]">
           <button
-            @click="openModalS"
-            class="flex items-center justify-center text-center text-4xl transition-transform duration-300 ease-in-out hover:scale-110"
+            @click="SignInUser"
+            class="flex h-auto w-[20%] items-center justify-end transition-transform duration-300 ease-in-out hover:scale-110"
           >
-            <img
-              v-show="showButtons"
-              src="/SignUp.png"
-              alt="註冊"
-              class="animate-fade-in h-auto w-[55%]"
-            />
+            <img src="/LogIn.png" alt="登入" />
           </button>
         </div>
       </div>
     </div>
-  </div>
-  <div
-    v-if="logIn"
-    @click="closeModal"
-    class="fixed inset-0 z-10 flex h-full w-full items-center justify-center bg-black bg-opacity-50"
-  >
-    <div @click.stop class="animate-fade-in h-[50%] w-[50%] rounded-3xl bg-overlay p-[2%]">
-      <div class="flex h-[25%] w-auto items-start justify-end">
-        <button
-          @click="closeModal"
-          class="text-xl transition duration-200 ease-in-out hover:text-white"
-        >
-          X
-        </button>
-      </div>
-      <div class="flex h-[25%] w-auto p-[1%] text-xl">
-        <p class="flex h-auto w-[30%] items-center pl-[3%] font-neucha text-2xl text-textColor">
-          E-mail：
-        </p>
-        <input
-          v-model="email"
-          type="email"
-          placeholder=" "
-          class="h-auto w-[70%] border-b-2 border-textColor bg-transparent outline-none"
-        />
-      </div>
-      <div class="flex h-[25%] w-auto p-[1%] text-2xl">
-        <p class="flex h-auto w-[30%] items-center pl-[3%] font-neucha text-xl text-textColor">
-          密碼：
-        </p>
-        <input
-          v-model="password"
-          type="password"
-          placeholder=" "
-          class="h-auto w-[70%] border-b-2 border-textColor bg-transparent outline-none"
-        />
-      </div>
-      <div class="flex h-[25%] w-auto justify-end pr-[3%] pt-[2%]">
-        <button
-          class="flex h-auto w-[20%] items-center justify-end transition-transform duration-300 ease-in-out hover:scale-110"
-        >
-          <img src="/LogIn.png" alt="登入" />
-        </button>
-      </div>
-    </div>
-  </div>
-  <div
-    v-if="signIn"
-    @click="closeModal"
-    class="fixed inset-0 z-10 flex h-full w-full items-center justify-center bg-black bg-opacity-50"
-  >
-    <div @click.stop class="animate-fade-in h-[50%] w-[50%] rounded-3xl bg-overlay p-[2%]">
-      <div class="flex h-[20%] w-auto items-start justify-end">
-        <button
-          @click="closeModal"
-          class="text-xl transition duration-200 ease-in-out hover:text-white"
-        >
-          X
-        </button>
-      </div>
-      <div class="flex h-[20%] w-auto p-[1%] text-2xl">
-        <p class="flex h-auto w-[35%] items-center pl-[3%] font-neucha text-textColor">
-          使用者名稱：
-        </p>
-        <input
-          v-model="username"
-          type="text"
-          placeholder="Linda67890"
-          class="h-auto w-[65%] border-b-2 border-textColor bg-transparent outline-none"
-        />
-      </div>
-      <div class="flex h-[20%] w-auto p-[1%] text-2xl">
-        <p class="flex h-auto w-[35%] items-center pl-[3%] font-neucha text-textColor">E-mail：</p>
-        <input
-          v-model="email"
-          type="email"
-          placeholder=" "
-          class="h-auto w-[65%] border-b-2 border-textColor bg-transparent outline-none"
-        />
-      </div>
-      <div class="flex h-[20%] w-auto p-[1%] text-2xl">
-        <p class="flex h-auto w-[35%] items-center pl-[3%] font-neucha text-textColor">密碼：</p>
-        <input
-          v-model="password"
-          type="password"
-          placeholder="請輸入6~13含有英數字的密碼"
-          class="h-auto w-[65%] border-b-2 border-textColor bg-transparent outline-none"
-        />
-      </div>
-      <div class="flex h-[20%] w-auto justify-end pr-[3%] pt-[2%]">
-        <button
-          @click="signInUser"
-          class="flex h-auto w-[20%] items-center justify-end transition-transform duration-300 ease-in-out hover:scale-110"
-        >
-          <img src="/SignUp.png" alt="註冊" />
-        </button>
+    <div
+      v-if="signIn"
+      @click="closeModal"
+      class="fixed inset-0 z-10 flex h-full w-full items-center justify-center bg-black bg-opacity-50"
+    >
+      <div @click.stop class="animate-fade-in h-[50%] w-[50%] rounded-3xl bg-overlay p-[2%]">
+        <div class="flex h-[20%] w-auto items-start justify-end">
+          <button
+            @click="closeModal"
+            class="text-xl transition duration-200 ease-in-out hover:text-white"
+          >
+            X
+          </button>
+        </div>
+        <div class="flex h-[20%] w-auto p-[1%] text-2xl">
+          <p class="flex h-auto w-[35%] items-center pl-[3%] font-neucha text-textColor">
+            使用者名稱：
+          </p>
+          <input
+            v-model="username"
+            type="text"
+            placeholder="Linda67890"
+            class="h-auto w-[65%] border-b-2 border-textColor bg-transparent outline-none"
+          />
+        </div>
+        <div class="flex h-[20%] w-auto p-[1%] text-2xl">
+          <p class="flex h-auto w-[35%] items-center pl-[3%] font-neucha text-textColor">
+            E-mail：
+          </p>
+          <input
+            v-model="email"
+            type="email"
+            placeholder=" "
+            class="h-auto w-[65%] border-b-2 border-textColor bg-transparent outline-none"
+          />
+        </div>
+        <div class="flex h-[20%] w-auto p-[1%] text-2xl">
+          <p class="flex h-auto w-[35%] items-center pl-[3%] font-neucha text-textColor">密碼：</p>
+          <input
+            v-model="password"
+            type="password"
+            placeholder="請輸入6~13含有英數字的密碼"
+            class="h-auto w-[65%] border-b-2 border-textColor bg-transparent outline-none"
+          />
+        </div>
+        <div class="flex h-[20%] w-auto justify-end pr-[3%] pt-[2%]">
+          <button
+            @click="RegisterUser"
+            class="flex h-auto w-[20%] items-center justify-end transition-transform duration-300 ease-in-out hover:scale-110"
+          >
+            <img src="/SignUp.png" alt="註冊" />
+          </button>
+        </div>
       </div>
     </div>
   </div>
