@@ -1,10 +1,11 @@
 <script setup>
+const token = useCookie('token')
 const logOut = async () => {
   alert('確定登出？')
   const { data, status } = await useFetch('http://localhost:8000/api/auth/logout', {
     method: 'GET',
     headers: {
-      //   Authorization: 'Bearer ' + token.value,
+      Authorization: 'Bearer ' + token.value,
       'Content-Type': 'application/json'
     }
   })
@@ -12,9 +13,11 @@ const logOut = async () => {
   console.log(status.value)
 
   if (status.value === 'success') {
+    alert('登出成功')
     console.log('User logout success')
     await navigateTo({ path: '/mainPage' })
   } else {
+    alert('登出失敗')
     console.log('User logout failed')
   }
 }
@@ -22,12 +25,7 @@ const logOut = async () => {
 
 <template>
   <div class="list-background flex h-auto w-auto scale-150 flex-col items-center justify-center">
-    <NuxtLink
-      to="http://localhost:3000/mainPage"
-      class="no-scale h-[20%] w-auto font-chen text-xs"
-      @click="logOut"
-      >登出</NuxtLink
-    >
+    <button class="no-scale h-[20%] w-auto font-chen text-xs" @click="logOut">登出</button>
     <NuxtLink
       to="http://localhost:3000/table"
       class="no-scale flex h-[20%] w-auto justify-center font-chen text-xs"
