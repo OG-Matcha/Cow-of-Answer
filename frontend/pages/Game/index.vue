@@ -27,7 +27,6 @@ export default {
     // Book images
     const bookImageLeft = ref('/DroppedBookLeft.svg')
     const bookImageRight = ref('/DroppedBookRight.svg')
-    const openBookImage = ref('/OpenedBook.svg')
 
     // Cow style
     const cowStyle = reactive({
@@ -43,7 +42,7 @@ export default {
     const bookStyle = reactive({
       top: '50%',
       left: '50%',
-      width: '5%',
+      width: '3%',
       height: 'auto'
     })
 
@@ -83,31 +82,10 @@ export default {
       bookStyle.transition = 'all 2s'
       bookStyle.top = '30%'
       bookStyle.left = '45%'
-      bookStyle.width = '20%'
+      bookStyle.width = '16vw'
       bookStyle.height = 'auto'
       isFading.value = true
-      bookAnimationClass.value = 'book-open'
-
-      // Change the book image after the book is opened
-      setTimeout(() => {
-        bookAnimationClass.value = ''
-        if (bookDirection.value === 'Left') {
-          bookImageLeft.value = openBookImage.value
-        } else {
-          bookImageRight.value = openBookImage.value
-        }
-        isFading.value = false // Reset the fading state
-      }, 2000)
-    }
-
-    // Handle the animation end event
-    const handleAnimationEnd = () => {
-      if (bookDirection.value === 'Left') {
-        bookImageLeft.value = openBookImage.value
-      } else {
-        bookImageRight.value = openBookImage.value
-      }
-      bookAnimationClass.value = ''
+      bookAnimationClass.value = 'bookFlipped'
     }
 
     // Randomly set the cow position
@@ -124,6 +102,19 @@ export default {
       cowImage.value = `/Cow${direction}.png`
       bookDirection.value = direction === 'Right' ? 'Left' : 'Right' // Change the book direction based on the cow direction
     })
+
+    const state = reactive({
+      isBookFlipped: false, // 是否翻转
+      isLeftFlipped: false // 是否左侧背景翻转
+    })
+
+    function flipBook() {
+      state.isBookFlipped = true // 点击书本时切换翻转状态
+
+      setTimeout(() => {
+        state.isLeftFlipped = true // 点击书本时切换左侧背景翻转状态
+      }, 500)
+    }
 
     // Handle the cow click event
     // @@@ stop time
@@ -150,7 +141,7 @@ export default {
         showBook.value = true
         bookStyle.top = '50%'
         bookStyle.left = '50%'
-        bookStyle.width = '5%'
+        bookStyle.width = '3%'
         bookStyle.height = 'auto'
 
         // Set the book animation style
@@ -176,7 +167,7 @@ export default {
         bookStyle.transition = 'all 0.429s'
         bookStyle.top = '30%'
         bookStyle.left = '45%'
-        bookStyle.width = '20%'
+        bookStyle.width = '16vw'
         bookStyle.height = 'auto'
         bookAnimationClass.value = 'book-blink'
       }, 2800)
@@ -198,12 +189,11 @@ export default {
       showButtons,
       bookImageLeft,
       bookImageRight,
-      openBookImage,
-      isFading,
       hasClickedCow,
-      handleAnimationEnd,
       isGameInfoVisible,
-      handleGameInfoStart
+      handleGameInfoStart,
+      ...toRefs(state),
+      flipBook
     }
   }
 }
@@ -237,9 +227,17 @@ export default {
       ></IGsetting>
     </div>
     <div class="relative h-[87vh] w-full overflow-hidden">
+      <div
+        class="bookLeftPage bg-bookPage border-bookPageBorder absolute left-[29%] top-[30%] z-auto h-[55%] w-[16%] border-[6px] border-solid"
+        :class="{ leftFlipped: isLeftFlipped }"
+      ></div>
+      <div
+        class="bookRightPage bg-bookPage border-bookPageBorder absolute left-[45%] top-[30%] z-auto h-[55%] w-[16%] border-[6px] border-solid"
+      ></div>
       <img
         :src="cowImage"
-        class="absolute cursor-pointer transition-all duration-300 ease-in-out"
+        class="absolute transition-all duration-300 ease-in-out"
+        :class="isGameInfoVisible || showIGsetting ? 'cursor-auto' : 'cursor-pointer'"
         :style="cowStyle"
         @click="handleClick"
       />
@@ -288,6 +286,15 @@ export default {
   background-image: url('/Setting.png');
 }
 
+.bookRightPage {
+  border-left: none;
+  box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.3);
+}
+
+.bookLeftPage {
+  border-right: 1px solid #000;
+  box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.3);
+}
 /* .bookCenter {
   position: absolute;
   top: 30%;
@@ -389,18 +396,78 @@ export default {
   z-index: 1;
 }
 
-/* @keyframes bookOpen {
+@keyframes bookFlip {
   0% {
     transform-origin: left;
     transform: rotateY(0deg);
+    opacity: 1;
+  }
+  25% {
+    transform-origin: left;
+    transform: rotateY(22.5deg);
+    opacity: 1;
+  }
+  50% {
+    transform-origin: left;
+    transform: rotateY(45deg);
+    opacity: 1;
+  }
+  75% {
+    transform-origin: left;
+    transform: rotateY(67.5deg);
+    opacity: 1;
   }
   100% {
     transform-origin: left;
-    transform: rotateY(-180deg);
+    transform: rotateY(90deg);
+    opacity: 0.5;
   }
 }
 
-.book-open {
-  animation: bookOpen 2s forwards;
-} */
+.bookFlipped {
+  animation: bookFlip 0.6s forwards;
+}
+
+@keyframes leftFlip {
+  0% {
+    transform: scaleX(0);
+    transform-origin: right;
+    opacity: 1;
+  }
+  10% {
+    transform: scaleX(0.1);
+  }
+  20% {
+    transform: scaleX(0.2);
+  }
+  30% {
+    transform: scaleX(0.3);
+  }
+  40% {
+    transform: scaleX(0.4);
+  }
+  50% {
+    transform: scaleX(0.5);
+  }
+  60% {
+    transform: scaleX(0.6);
+  }
+  70% {
+    transform: scaleX(0.7);
+  }
+  80% {
+    transform: scaleX(0.8);
+  }
+  90% {
+    transform: scaleX(0.9);
+  }
+  100% {
+    transform: scaleX(1);
+    transform-origin: right;
+    opacity: 1;
+  }
+}
+.leftFlipped {
+  animation: leftFlip 0.5s forwards;
+}
 </style>

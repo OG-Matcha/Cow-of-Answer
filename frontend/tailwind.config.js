@@ -19,7 +19,10 @@ module.exports = {
             'textColor' : '#FDFAF3',
             'textColor2' : '#625B71',
             'table' : '#E0D6C3',
-            'listfont':'#563A3D'
+            'listfont':'#563A3D',
+            'bookPage': '#f5deb3',
+            'bookPageBorder': '#635850',
+            'bookPageMiddle': '#000000',
           },
           fontFamily: {
             neucha: ["Neucha-Regular", "sans-serif"],
