@@ -9,40 +9,25 @@ export default {
     GameInfoButton
   },
   setup() {
-    const showButtons = ref(true)
-    const showIGsetting = ref(false)
+    // Cow variables
     const cowImage = ref('/CowRight.png')
-    const showBook = ref(false)
+    const hasClickedCow = ref(false)
+
+    // Book variables
     const bookDirection = ref('Right')
+    const showBook = ref(false)
     const bookAnimationClass = ref('')
     const isFading = ref(false)
-    const hasClickedCow = ref(false)
-    const isGameInfoVisible = ref(false)
 
+    // Buttons variables
+    const showButtons = ref(true)
+    const showIGsetting = ref(false)
+    const isGameInfoVisible = ref(true)
+
+    // Book images
     const bookImageLeft = ref('/DroppedBookLeft.svg')
     const bookImageRight = ref('/DroppedBookRight.svg')
     const openBookImage = ref('/OpenedBook.svg')
-
-    const handleGameInfoStart = () => {
-      isGameInfoVisible.value = true
-    }
-
-    const handleExitClick = (event) => {
-      if (showIGsetting.value || isGameInfoVisible.value) {
-        // Add condition to check if GameInfo is showing
-        event.preventDefault()
-        return
-      }
-      showButtons.value = false
-      showIGsetting.value = false
-    }
-
-    // Toggle the IGsetting component
-    const toggleIGsetting = () => {
-      if (isGameInfoVisible.value) return
-      showIGsetting.value = !showIGsetting.value
-      showButtons.value = true
-    }
 
     // Cow style
     const cowStyle = reactive({
@@ -62,6 +47,34 @@ export default {
       height: 'auto'
     })
 
+    // Handle the game info start event
+    // @@@ calculate time
+    // ### sound on
+    // $$$ get refresh token to update
+    const handleGameInfoStart = () => {
+      isGameInfoVisible.value = false
+    }
+
+    // Handle the exit click event
+    const handleExitClick = (event) => {
+      if (showIGsetting.value || isGameInfoVisible.value) {
+        // Add condition to check if GameInfo is showing
+        event.preventDefault()
+        return
+      }
+      showButtons.value = false
+      showIGsetting.value = false
+    }
+
+    // Toggle the IGsetting component
+    // @@@ stop time
+    // ### stop sound
+    const toggleIGsetting = () => {
+      if (isGameInfoVisible.value) return
+      showIGsetting.value = !showIGsetting.value
+      showButtons.value = true
+    }
+
     // Handle the book click event
     const handleBookClick = () => {
       if (showIGsetting.value || bookAnimationClass.value !== 'book-blink') {
@@ -74,6 +87,8 @@ export default {
       bookStyle.height = 'auto'
       isFading.value = true
       bookAnimationClass.value = 'book-open'
+
+      // Change the book image after the book is opened
       setTimeout(() => {
         bookAnimationClass.value = ''
         if (bookDirection.value === 'Left') {
@@ -81,10 +96,11 @@ export default {
         } else {
           bookImageRight.value = openBookImage.value
         }
-        isFading.value = false
+        isFading.value = false // Reset the fading state
       }, 2000)
     }
 
+    // Handle the animation end event
     const handleAnimationEnd = () => {
       if (bookDirection.value === 'Left') {
         bookImageLeft.value = openBookImage.value
@@ -95,6 +111,8 @@ export default {
     }
 
     // Randomly set the cow position
+
+    // %%% first get answer of word before get refresh token
     onMounted(() => {
       const x = Math.floor(Math.random() * 90)
       const y = Math.floor(Math.random() * 90)
@@ -108,10 +126,14 @@ export default {
     })
 
     // Handle the cow click event
+    // @@@ stop time
+    // ### stop sound
+    // !!! send time to backend
+    // ^^^ achievement (watch notepad)
     const handleClick = () => {
-      if (isGameInfoVisible.value) return
-      if (hasClickedCow.value) return
-      if (showIGsetting.value) return // Add condition to check if GameInfo is showing
+      if (isGameInfoVisible.value) return // Add condition to check if StartGameInfo is showing
+      if (hasClickedCow.value) return // Prevent multiple cow clicks
+      if (showIGsetting.value) return // Add condition to check if Setting is showing
       showButtons.value = false
 
       hasClickedCow.value = true // Prevent multiple cow clicks
@@ -123,12 +145,15 @@ export default {
       cowStyle.height = 'auto'
       cowStyle.opacity = '1'
 
+      // Set the book show style
       setTimeout(() => {
         showBook.value = true
         bookStyle.top = '50%'
         bookStyle.left = '50%'
         bookStyle.width = '5%'
         bookStyle.height = 'auto'
+
+        // Set the book animation style
         if (bookDirection.value === 'Right') {
           bookAnimationClass.value = 'book-animation-Right'
         } else {
@@ -136,6 +161,7 @@ export default {
         }
       }, 500)
 
+      // Move the cow outside of the screen
       setTimeout(() => {
         cowStyle.transition = 'left 2.5s'
         if (bookDirection.value === 'Right') {
@@ -143,8 +169,9 @@ export default {
         } else {
           cowStyle.left = '115%' // Move the cow to the left outside of the screen
         }
-      }, 1500) // Delay for the duration of the book animation
+      }, 1500)
 
+      // Move and enlarge the book
       setTimeout(() => {
         bookStyle.transition = 'all 0.429s'
         bookStyle.top = '30%'
@@ -152,9 +179,10 @@ export default {
         bookStyle.width = '20%'
         bookStyle.height = 'auto'
         bookAnimationClass.value = 'book-blink'
-      }, 2800) // Move and enlarge the book after the cow has moved
+      }, 2800)
     }
 
+    // Return the reactive variables and functions
     return {
       cowStyle,
       cowImage,
@@ -182,21 +210,22 @@ export default {
 </script>
 
 <template>
-  <div :class="{ 'bg-gray-200': showIGsetting }" class="grass-background h-[100vh] w-[100vw]">
+  <div
+    :class="{ 'bg-gray-200': showIGsetting }"
+    class="grass-background h-[100vh] w-[100vw] bg-cover bg-no-repeat"
+  >
     <div>
-      <GameInfoButton v-if="!isGameInfoVisible">
-        <button @click="handleGameInfoStart">開始遊戲</button></GameInfoButton
-      >
+      <GameInfoButton :show="isGameInfoVisible" @click="handleGameInfoStart" />
     </div>
     <div class="h-[10vh] w-full">
       <button
         v-if="showButtons"
-        class="exit absolute left-0 ml-[3vw] mt-[3vh] h-[6vh] w-[5vw]"
+        class="exit absolute left-0 ml-[3vw] mt-[3vh] h-[6vh] w-[5vw] bg-contain bg-no-repeat"
         @click.prevent="handleExitClick"
       ></button>
       <button
         v-if="showButtons"
-        class="setting absolute right-0 mr-[3vw] mt-[3vh] h-[6vh] w-[5vw]"
+        class="setting absolute right-0 mr-[3vw] mt-[3vh] h-[6vh] w-[5vw] bg-contain bg-no-repeat"
         @click="toggleIGsetting"
       ></button>
     </div>
@@ -244,29 +273,19 @@ export default {
 
 <style scoped>
 .bg-gray-200 {
-  background-color: rgba(128, 128, 128, 0.5);
+  background-color: rgba(128, 128, 128, 0.7);
 }
 
 .grass-background {
   background-image: url('/Grass background texture.png');
-  background-size: cover;
-  background-repeat: no-repeat;
 }
 
 .exit {
   background-image: url('/Exit.png');
-  background-size: contain; /* Adjust this value to prevent image cropping */
-  background-repeat: no-repeat;
 }
 
 .setting {
   background-image: url('/Setting.png');
-  background-size: contain; /* Adjust this value to prevent image cropping */
-  background-repeat: no-repeat;
-}
-
-.scale-10 {
-  transform: scale(0.1);
 }
 
 /* .bookCenter {

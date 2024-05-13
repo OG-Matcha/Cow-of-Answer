@@ -1,7 +1,14 @@
 <template>
-  <div v-if="show" class="game-info z-10">
-    <button @click="hide" class="infoButton"><img src="/xx.svg" alt="x" /></button>
-    <button @click="testVolume" class="volumeButton"><img src="/volume.svg" alt="Volume" /></button>
+  <div v-if="show" class="absolute left-[30%] top-[20%] z-10 h-auto w-[45%]">
+    <button @click="hide" class="absolute right-[1vw] top-[2vh] h-[3vh] w-[3vw] rounded-[50%]">
+      <img src="/xx.svg" alt="x" />
+    </button>
+    <button
+      @click="testVolume"
+      class="absolute bottom-[28%] left-[10%] h-auto w-[10%] rounded-[50%]"
+    >
+      <img src="/volume.svg" alt="Volume" />
+    </button>
     <img src="/GameInfo(nobutton).png" alt="GameInfo" />
   </div>
 </template>
@@ -24,29 +31,4 @@ const testVolume = () => {
 }
 </script>
 
-<!-- 將遊戲說明相關的樣式複製到這裡 -->
-<style scoped>
-.game-info {
-  position: absolute;
-  top: 15%;
-  left: 30%;
-  width: 45%;
-  height: auto;
-}
-.infoButton {
-  position: absolute;
-  top: 2vh;
-  right: 1vw;
-  width: 3vw;
-  height: 3vh;
-  border-radius: 50%;
-}
-.volumeButton {
-  position: absolute;
-  bottom: 28%;
-  left: 10%;
-  width: 10%;
-  height: auto;
-  border-radius: 50%;
-}
-</style>
+<style scoped></style>
