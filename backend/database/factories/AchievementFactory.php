@@ -25,8 +25,10 @@ class AchievementFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->word,
-            'description' => $this->faker->sentence,
+            'name' => fake()->name(),
+            'description' => fake()->sentence(),
+            'image' => fake()->imageUrl(),
+            'star' => fake()->numberBetween(1, 3)
         ];
     }
 }

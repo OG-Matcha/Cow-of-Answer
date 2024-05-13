@@ -1,0 +1,1010 @@
+openapi: 3.0.3
+info:
+    title: Cow of Answer
+    version: 1.0.0
+tags:
+    - name: User
+      description: 與使用者有關的路由
+    - name: Authenticate
+      description: 與驗證有關的路由
+    - name: Achievement
+      description: 與成就有關的路由
+    - name: RankList
+      description: 與排行榜有關的路由
+    - name: Book
+      description: 與答案之書有關的路由
+    - name: UserAchievement
+      description: 與使用者獲得成就有關的路由
+paths:
+    /api/user:
+        get:
+            summary: 取得所有使用者 (後台使用)
+            tags:
+                - User
+
+            responses:
+                "200":
+                    description: 成功
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/UserNameList"
+                "401":
+                    description: 使用者 Token 不合格
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        description: 使用者帳號或密碼錯誤
+                "404":
+                    description: 找不到使用者
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        description: 資料庫內沒有使用者
+            security:
+              - jwt: []
+                                        
+    /api/user/{user_id}:
+        get:
+            summary: 取得特定使用者 (後台使用)
+            tags:
+                - User
+                
+            parameters:
+              - in: path
+                name: user_id
+                required: true
+                description: 使用者的ID
+                schema:
+                    type: integer
+
+            responses:
+                "200":
+                    description: 成功
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/UserUpdateResult"
+                "401":
+                    description: 使用者 Token 不合格
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        description: 使用者帳號或密碼錯誤
+                "404":
+                    description: 找不到使用者
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        description: 使用者未註冊
+            security:
+              - jwt: []
+
+        put:
+            summary: 更新特定使用者 (後台使用)
+            tags:
+                - User
+                
+            parameters:
+              - in: path
+                name: user_id
+                required: true
+                description: 使用者的ID
+                schema:
+                    type: integer
+                    
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UserUpdate'
+
+            responses:
+                "200":
+                    description: 成功
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/UserUpdateResult"
+                "401":
+                    description: 使用者 Token 不合格
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        description: 使用者帳號或密碼錯誤
+                "404":
+                    description: 找不到使用者
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        description: 使用者未註冊
+            security:
+              - jwt: []
+
+        delete:
+            summary: 刪除特定使用者 (後台使用)
+            tags:
+                - User
+                
+            parameters:
+              - in: path
+                name: user_id
+                required: true
+                description: 使用者的ID
+                schema:
+                    type: integer
+
+            responses:
+                "204":
+                    description: 無內容
+                "401":
+                    description: 使用者 Token 不合格
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        description: 使用者帳號或密碼錯誤
+                "404":
+                    description: 找不到使用者
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        description: 使用者未註冊
+            security:
+              - jwt: []
+
+    /api/auth/login:
+        post:
+            summary: 使用者登陸 (獲取 Token)
+            tags:
+                - Authenticate
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UserLogin'
+
+            responses:
+                "200":
+                    description: 成功
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        description: 代表登入成功
+                                    user:
+                                        $ref: "#/components/schemas/User"
+                                    token:
+                                        type: string
+                                        description: 用來做 JWT Token 的驗證
+                "401":
+                    description: 密碼錯誤
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        description: 使用者帳號或密碼錯誤
+                "404":
+                    description: 找不到使用者
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        description: 使用者未註冊
+
+    /api/auth/register:
+        post:
+            summary: 使用者註冊 (包含建立使用者)
+            tags:
+                - Authenticate
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UserRegister'
+            responses:
+                "200":
+                    description: 成功
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        description: 代表使用者創建成功
+                                    user:
+                                        $ref: "#/components/schemas/User"
+                                    token:
+                                        type: string
+                                        description: 用來做 JWT Token 的驗證
+                "409":
+                    description: 使用者email重複
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        description: 使用者email已存在資料庫
+                                        
+    /api/auth/refresh:
+        get:
+            summary: 使用者 Token 刷新 (時效重置)
+            description: 設想情境，你不會希望自己還在玩遊戲然後突然要求你去登入，所以你們要討論出一個固定的行為，例如每次進入關卡時都會呼叫此端口，以確保 Token 時效不會過期
+            tags:
+                - Authenticate
+
+            responses:
+                "200":
+                    description: 成功
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        description: 代表使用者創建成功
+                                    user:
+                                        $ref: "#/components/schemas/User"
+                                    token:
+                                        type: string
+                                        description: 用來做 JWT Token 的驗證
+                "401":
+                    description: 使用者 Token 不合格
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        description: 用來做 JWT Token 的驗證
+            security:
+              - jwt: []
+              
+    /api/auth/logout:
+        get:
+            summary: 使用者登出 (移除 Token 效用)
+            description: 前端無須考慮登出的問題，使用者按下登出後呼叫此端口並重導向回初始畫面，原 Token 將無法再使用，需重新登入取得新的 Token
+            tags:
+                - Authenticate
+                
+            responses:
+                "200":
+                    description: 成功
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        description: 代表使用者創建成功
+                                    message:
+                                        type: string
+                                        description: 成功登出
+                "401":
+                    description: 使用者 Token 不合格
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        description: 用來做 JWT Token 的驗證
+            security:
+              - jwt: []
+
+    /api/achievement/{achievement_id}:
+        get:
+            summary: 取得特定成就 (查看詳細成就)
+            description: 當使用者點擊特定成就進入該成就頁面時呼叫，會回傳該成就的 description，在此之前應妥善利用先前得到的所有成就的資訊
+            tags:
+                - Achievement
+
+            parameters:
+                - in: path
+                  name: achievement_id
+                  required: true
+                  description: 想取得成就的 ID
+                  schema:
+                      type: integer
+
+            responses:
+                "200":
+                    description: 成功
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/DetailAchievement"
+                               
+                "401":
+                    description: 使用者 Token 不合格
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/JwtError"
+
+                "404":
+                    description: 成就不存在
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        description: 成就不存在資料庫內
+            security:
+              - jwt: []
+  
+        put:
+          summary: 更新特定成就 (後台使用)
+          tags:
+              - Achievement
+          parameters:
+              - in: path
+                name: achievement_id
+                required: true
+                description: 想更新成就的 ID
+                schema:
+                    type: integer
+          requestBody:
+              required: true
+              content:
+                  application/json:
+                      schema:
+                          $ref: '#/components/schemas/AchievementCreate'
+          responses:
+              "200":
+                  description: 成功
+                  content:
+                      application/json:
+                          schema:
+                              $ref: "#/components/schemas/Achievement"
+              "401":
+                  description: 使用者 Token 不合格
+                  content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/JwtError"
+              "404":
+                  description: 資料庫內沒有成就
+                  content:
+                      application/json:
+                          schema:
+                              type: object
+                              properties:
+                                  error:
+                                      type: string
+                                      description: 資料庫內沒有成就
+          security:
+            - jwt: []
+            
+        delete:
+          summary: 刪除特定成就 (後台使用)
+          tags:
+              - Achievement
+          parameters:
+              - in: path
+                name: achievement_id
+                required: true
+                description: 想獲取成就的 ID
+                schema:
+                    type: integer
+          responses:
+              "204":
+                  description: 無內容
+              "401":
+                  description: 使用者 Token 不合格
+                  content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/JwtError"
+              "404":
+                  description: 資料庫內沒有成就
+                  content:
+                      application/json:
+                          schema:
+                              type: object
+                              properties:
+                                  error:
+                                      type: string
+                                      description: 資料庫內沒有成就
+          security:
+            - jwt: [] 
+
+    /api/achievement:
+        post:
+            summary: 新增成就 (後台使用)
+            description: image 請放入可使用的線上「圖片連結」
+            tags:
+                - Achievement
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/AchievementCreate'
+            responses:
+                "201":
+                    description: 已建立
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Achievement"
+                "401":
+                    description: 使用者 Token 不合格
+                    content:
+                      application/json:
+                          schema:
+                              $ref: "#/components/schemas/JwtError"
+                "422":
+                    description: 創建成就失敗
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        description: 創建成就失敗
+            security:
+              - jwt: [] 
+              
+        get:
+            summary: 取得所有成就 (查看總成就欄使用)
+            description: 在使用者點進成就頁面時呼叫，會回傳除了 description 以外的資訊，image 將採用線上連結
+            tags:
+                - Achievement
+            responses:
+                "200":
+                    description: 成功
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/AchievementList"
+                "401":
+                    description: 使用者 Token 不合格
+                    content:
+                      application/json:
+                          schema:
+                              $ref: "#/components/schemas/JwtError"
+                "404":
+                    description: 資料庫內沒有成就
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        description: 資料庫內沒有成就
+            security:
+              - jwt: [] 
+              
+              
+    /api/user-achievement:
+        post:
+            summary: 使用者獲取特定成就
+            description: 獲得成就時呼叫，會根據傳入的使用者 ID 與成就 ID 去建立使用者與成就的關聯
+            tags:
+                - UserAchievement
+            requestBody:
+              required: true
+              content:
+                  application/json:
+                      schema:
+                          $ref: '#/components/schemas/UserAchievementCreate'
+            responses:
+                "201":
+                    description: 已建立
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/UserAchievementResponse"
+                "401":
+                    description: 使用者 Token 不合格
+                    content:
+                      application/json:
+                          schema:
+                              $ref: "#/components/schemas/JwtError"
+                "409":
+                    description: 此映射已存在
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        description: 此映射已存在
+            security:
+              - jwt: []
+  
+        get:
+            summary: 查看使用者已獲得成就
+            description: 會根據當前 Token 去抓取使用者獲得的成就 ID，不需要傳入參數 (請前端自行計算總數量)
+            tags:
+                - UserAchievement
+
+            responses:
+                "200":
+                    description: 成功
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/AchievementRankList"
+                "401":
+                    description: 使用者 Token 不合格
+                    content:
+                      application/json:
+                          schema:
+                              $ref: "#/components/schemas/JwtError"
+                "404":
+                    description: 使用者沒有已獲得成就
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        description: 使用者沒有已獲得成就
+            security:
+              - jwt: []
+    
+    /api/user-achievement/{user_achievement_id}:
+        delete:
+            summary: 刪除特定使用者成就關聯 (後台使用)
+            tags:
+                - UserAchievement
+
+            parameters:
+              - in: path
+                name: user_achievement_id
+                required: true
+                description: 映射的 ID
+                schema:
+                    type: integer
+
+            responses:
+                "204":
+                    description: 無內容
+
+                "401":
+                    description: 使用者 Token 不合格
+                    content:
+                      application/json:
+                          schema:
+                              $ref: "#/components/schemas/JwtError"
+                "404":
+                    description: 此映射不存在
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        description: 此映射不存在
+            security:
+              - jwt: []
+
+    /api/rank-list/{challenge_number}:
+        get:
+            summary: 獲得排行榜資訊
+            description: 會根據傳入的關卡編號去抓取該關卡的前 10 名資訊，若資料不足10筆則只會回傳現有資料，回傳的資料已經過排序
+            tags:
+              - RankList
+              
+            parameters:
+              - in: path
+                name: challenge_number
+                required: true
+                description: 關卡的編號 (e.g 1, 2, 3)
+                schema:
+                    type: integer
+                    
+            responses:
+                "200":
+                    description: 成功
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ChallengeRankList"
+                "401":
+                    description: 使用者 Token 不合格
+                    content:
+                      application/json:
+                          schema:
+                              $ref: "#/components/schemas/JwtError"
+                "404":
+                    description: 沒有找到排行榜
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        description: 沒有找到排行榜
+            security:
+              - jwt: []
+              
+    /api/rank-list/rank/user:
+        get:
+            summary: 獲得使用者排行榜資訊
+            description: 會根據當前 Token 去抓取使用者 1 至 3 關的最佳通關時間，不需要傳入參數
+            tags:
+              - RankList
+  
+            responses:
+                "200":
+                    description: 成功
+                    content:
+                        application/json:
+                            schema:
+                              $ref: "#/components/schemas/UserRankList"
+                "401":
+                    description: 使用者 Token 不合格
+                    content:
+                      application/json:
+                          schema:
+                              $ref: "#/components/schemas/JwtError"
+                "404":
+                    description: 使用者沒有通關紀錄
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        description: 使用者沒有通關紀錄
+            security:
+              - jwt: []
+            
+              
+    /api/book:
+        get:
+            summary: 獲得答案
+            tags: 
+              - Book
+              
+            responses:
+                "200":
+                    description: 成功
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Answer"
+                "401":
+                    description: 使用者 Token 不合格
+                    content:
+                      application/json:
+                          schema:
+                              $ref: "#/components/schemas/JwtError"
+                "404":
+                    description: 沒有找到答案
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        description: 沒有找到答案
+            security:
+              - jwt: []
+
+components:
+    schemas:
+        User:
+            type: object
+            properties:
+                id:
+                  type: integer
+                  description: 使用者id
+                name:
+                  type: string
+                  description: 使用者名稱
+                email:
+                  type: string
+                  description: 使用者email
+                password:
+                    type: string
+                    description: 使用者密碼
+            required:
+                - id
+                - name
+                - email
+                - password
+                
+        UserUpdateResult:
+            type: object
+            properties:
+                id:
+                  type: integer
+                  description: 使用者id
+                name:
+                  type: string
+                  description: 使用者名稱
+                email:
+                  type: string
+                  description: 使用者email
+            required:
+                - id
+                - name
+                - email
+                
+        UserUpdate:
+            type: object
+            properties:
+                name:
+                  type: string
+                  description: 使用者名稱
+                email:
+                  type: string
+                  description: 使用者email
+            required:
+                - name
+                - email
+                
+        UserNameList:
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: 使用者名稱
+        
+                
+        UserLogin:
+            type: object
+            properties:
+                email:
+                  type: string
+                  description: 使用者email
+                password:
+                    type: string
+                    description: 使用者密碼
+            required:
+                - email
+                - password
+                
+        UserRegister:
+            type: object
+            properties:
+                name:
+                  type: string
+                  description: 使用者名稱
+                email:
+                  type: string
+                  description: 使用者email
+                password:
+                    type: string
+                    description: 使用者密碼
+            required:
+                - name
+                - email
+                - password
+
+        DetailAchievement:
+            type: object
+            properties:
+                description:
+                    type: string
+                    description: 成就說明
+
+            required:
+                - description
+                
+        AllAchievement:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: 成就id
+                name:
+                    type: string
+                    description: 成就名稱
+                image:
+                    type: string
+                    description: 成就圖片的名稱 (包含附檔名 e.g cow1.png)
+                star:
+                    type: integer
+                    description: 成就星星個數
+
+            required:
+                - id
+                - name
+                - image
+                - star
+                
+        Achievement:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: 成就id
+                name:
+                    type: string
+                    description: 成就名稱
+                description:
+                    type: string
+                    description: 成就說明
+                image:
+                    type: string
+                    description: 成就圖片的名稱 (包含附檔名 e.g cow1.png)
+                star:
+                    type: integer
+                    description: 成就星星個數
+
+            required:
+                - id
+                - name
+                - description
+                - image
+                - star
+
+        AchievementCreate:
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: 成就名稱
+                description:
+                    type: string
+                    description: 成就說明
+                image:
+                    type: string
+                    description: 成就圖片的路徑 (包含附檔名 e.g images/1.png)
+                star:
+                    type: integer
+                    description: 成就星星個數
+
+            required:
+                - id
+                - name
+                - description
+                - image
+                - star
+                
+        AchievementList:
+            type: array
+            items:
+                $ref: '#/components/schemas/AllAchievement'
+        
+        AchievementRankList:
+            type: array
+            items:
+                type: object
+                properties:
+                  achievement_id:
+                    type: integer
+                    description: 成就 ID  
+                
+        UserAchievementCreate:
+            type: object
+            properties:
+              user_id:
+                type: integer
+                description: 使用者 ID
+              achievement_id:
+                type: integer
+                description: 成就 ID
+            
+            required:
+                - user_id
+                - achievement_id
+
+        UserAchievementResponse:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: 映射 ID
+              user_id:
+                type: integer
+                description: 使用者 ID
+              achievement_id:
+                type: integer
+                description: 成就 ID
+            
+            required:
+                - user_id
+                - achievement_id
+        
+        Answer:
+          type: object
+          properties:
+            answer:
+              type: string
+              description: 答案
+        
+        
+        ChallengeRankList:
+          type: array
+          items:
+            type: object
+            properties:
+              user_name:
+                type: string
+                description: 使用者名稱
+              best_time:
+                type: integer
+                description: 通關時間 (單位為 秒(s)，請自行轉換)
+        
+        UserRankList:
+            type: array
+            items:
+              type: object
+              properties:
+                challenge_number:
+                  type: integer
+                  description: 關卡編號
+                best_time:
+                  type: integer
+                  description: 通關時間 (單位為 秒(s)，請自行轉換)
+            
+        JwtError:
+            type: object
+            properties:
+                error:
+                    type: string
+                    description: 使用者 JWT Token 驗證失敗
+                    
+    securitySchemes:
+        jwt:
+            type: apiKey
+            in: header
+            name: Authorization

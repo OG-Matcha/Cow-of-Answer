@@ -25,6 +25,8 @@ services:
 
   mysql_db:
     image: mysql:8.0
+    volumes:
+      - ./mysql/data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: db
@@ -53,7 +55,7 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - /redis/data:/root/redis
+      - ./redis/data:/root/redis
     environment:
       - REDIS_PASSWORD=root
       - REDIS_PORT=6379
