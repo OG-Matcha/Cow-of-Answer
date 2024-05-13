@@ -1,7 +1,13 @@
 <script setup>
 const router = useRouter()
-const logOut = () => {
-  window.alert('確定登出？')
+const logOut = async () => {
+  alert('確定登出？')
+  await useFetch('http://localhost:8000/api/auth/logout', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
   router.push('/mainPage')
 }
 </script>
