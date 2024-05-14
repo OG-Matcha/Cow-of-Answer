@@ -1,201 +1,179 @@
-<script>
-import { reactive, onMounted, ref, computed } from 'vue'
+<script setup>
+import { reactive, onMounted, ref } from 'vue'
 import IGsetting from '@/components/IGsetting.vue'
 import GameInfoButton from '@/components/GameInfoButton.vue'
 
-export default {
-  components: {
-    IGsetting,
-    GameInfoButton
-  },
-  setup() {
-    // Cow variables
-    const cowImage = ref('/CowRight.png')
-    const hasClickedCow = ref(false)
+// Cow variables
+const cowImage = ref('/CowRight.png')
+const hasClickedCow = ref(false)
 
-    // Book variables
-    const bookDirection = ref('Right')
-    const showBook = ref(false)
-    const bookAnimationClass = ref('')
-    const isFading = ref(false)
+// Book variables
+const bookDirection = ref('Right')
+const showBook = ref(false)
+const bookAnimationClass = ref('')
+const isFading = ref(false)
 
-    // Buttons variables
-    const showButtons = ref(true)
-    const showIGsetting = ref(false)
-    const isGameInfoVisible = ref(true)
+// Buttons variables
+const showButtons = ref(true)
+const showIGsetting = ref(false)
+const isGameInfoVisible = ref(true)
 
-    // Book images
-    const bookImageLeft = ref('/DroppedBookLeft.svg')
-    const bookImageRight = ref('/DroppedBookRight.svg')
+// Book images
+const bookImageLeft = ref('/DroppedBookLeft.svg')
+const bookImageRight = ref('/DroppedBookRight.svg')
 
-    // Cow style
-    const cowStyle = reactive({
-      top: '0%',
-      left: '0%',
-      width: '3%',
-      height: 'auto',
-      transform: 'translate(-50%, -50%)'
-      // opacity: '0'
-    })
+// Book flip function
+const isBookFlipped = ref(false)
+const isLeftFlipped = ref(false)
+const isBookRightPageInvisible = ref(false)
+const isBookLeftPageInvisible = ref(false)
 
-    // Book style
-    const bookStyle = reactive({
-      top: '50%',
-      left: '50%',
-      width: '3%',
-      height: 'auto'
-    })
+// Cow book image
+const cowBookImage = ref('/CowLOGO.svg')
+const isCowBookImageInvisible = ref(false)
 
-    // Handle the game info start event
-    // @@@ calculate time
-    // ### sound on
-    // $$$ get refresh token to update
-    const handleGameInfoStart = () => {
-      isGameInfoVisible.value = false
-    }
+const answer = ref('問題一定可以被解決')
+const isAnswer = ref(false)
 
-    // Handle the exit click event
-    const handleExitClick = (event) => {
-      if (showIGsetting.value || isGameInfoVisible.value) {
-        // Add condition to check if GameInfo is showing
-        event.preventDefault()
-        return
-      }
-      showButtons.value = false
-      showIGsetting.value = false
-    }
+// Cow style
+const cowStyle = reactive({
+  top: '0%',
+  left: '0%',
+  width: '3%',
+  height: 'auto',
+  transform: 'translate(-50%, -50%)'
+  // opacity: '0'
+})
 
-    // Toggle the IGsetting component
-    // @@@ stop time
-    // ### stop sound
-    const toggleIGsetting = () => {
-      if (isGameInfoVisible.value) return
-      showIGsetting.value = !showIGsetting.value
-      showButtons.value = true
-    }
+// Book style
+const bookStyle = reactive({
+  top: '50%',
+  left: '50%',
+  width: '3%',
+  height: 'auto'
+})
 
-    // Handle the book click event
-    const handleBookClick = () => {
-      if (showIGsetting.value || bookAnimationClass.value !== 'book-blink') {
-        return
-      }
-      bookStyle.transition = 'all 2s'
-      bookStyle.top = '30%'
-      bookStyle.left = '45%'
-      bookStyle.width = '16vw'
-      bookStyle.height = 'auto'
-      isFading.value = true
-      bookAnimationClass.value = 'bookFlipped'
-    }
+// Handle the game info start event
+// @@@ calculate time
+// ### sound on
+// $$$ get refresh token to update
+const handleGameInfoStart = () => {
+  isGameInfoVisible.value = false
+}
 
-    // Randomly set the cow position
-
-    // %%% first get answer of word before get refresh token
-    onMounted(() => {
-      const x = Math.floor(Math.random() * 90)
-      const y = Math.floor(Math.random() * 90)
-      cowStyle.top = `${y}%`
-      cowStyle.left = `${x}%`
-
-      // Randomly select a cow image
-      const direction = Math.random() < 0.5 ? 'Right' : 'Left'
-      cowImage.value = `/Cow${direction}.png`
-      bookDirection.value = direction === 'Right' ? 'Left' : 'Right' // Change the book direction based on the cow direction
-    })
-
-    const state = reactive({
-      isBookFlipped: false, // 是否翻转
-      isLeftFlipped: false // 是否左侧背景翻转
-    })
-
-    function flipBook() {
-      state.isBookFlipped = true // 点击书本时切换翻转状态
-
-      setTimeout(() => {
-        state.isLeftFlipped = true // 点击书本时切换左侧背景翻转状态
-      }, 500)
-    }
-
-    // Handle the cow click event
-    // @@@ stop time
-    // ### stop sound
-    // !!! send time to backend
-    // ^^^ achievement (watch notepad)
-    const handleClick = () => {
-      if (isGameInfoVisible.value) return // Add condition to check if StartGameInfo is showing
-      if (hasClickedCow.value) return // Prevent multiple cow clicks
-      if (showIGsetting.value) return // Add condition to check if Setting is showing
-      showButtons.value = false
-
-      hasClickedCow.value = true // Prevent multiple cow clicks
-
-      // Set the cow style
-      cowStyle.top = '50%'
-      cowStyle.left = '50%'
-      cowStyle.width = '15%'
-      cowStyle.height = 'auto'
-      cowStyle.opacity = '1'
-
-      // Set the book show style
-      setTimeout(() => {
-        showBook.value = true
-        bookStyle.top = '50%'
-        bookStyle.left = '50%'
-        bookStyle.width = '3%'
-        bookStyle.height = 'auto'
-
-        // Set the book animation style
-        if (bookDirection.value === 'Right') {
-          bookAnimationClass.value = 'book-animation-Right'
-        } else {
-          bookAnimationClass.value = 'book-animation-Left'
-        }
-      }, 500)
-
-      // Move the cow outside of the screen
-      setTimeout(() => {
-        cowStyle.transition = 'left 2.5s'
-        if (bookDirection.value === 'Right') {
-          cowStyle.left = '-15%' // Move the cow to the right outside of the screen
-        } else {
-          cowStyle.left = '115%' // Move the cow to the left outside of the screen
-        }
-      }, 1500)
-
-      // Move and enlarge the book
-      setTimeout(() => {
-        bookStyle.transition = 'all 0.429s'
-        bookStyle.top = '30%'
-        bookStyle.left = '45%'
-        bookStyle.width = '16vw'
-        bookStyle.height = 'auto'
-        bookAnimationClass.value = 'book-blink'
-      }, 2800)
-    }
-
-    // Return the reactive variables and functions
-    return {
-      cowStyle,
-      cowImage,
-      handleClick,
-      showBook,
-      bookDirection,
-      handleBookClick,
-      bookStyle,
-      bookAnimationClass,
-      showIGsetting,
-      toggleIGsetting,
-      handleExitClick,
-      showButtons,
-      bookImageLeft,
-      bookImageRight,
-      hasClickedCow,
-      isGameInfoVisible,
-      handleGameInfoStart,
-      ...toRefs(state),
-      flipBook
-    }
+// Handle the exit click event
+const handleExitClick = (event) => {
+  if (showIGsetting.value || isGameInfoVisible.value) {
+    // Add condition to check if GameInfo is showing
+    event.preventDefault()
+    return
   }
+  showButtons.value = false
+  showIGsetting.value = false
+}
+
+// Toggle the IGsetting component
+// @@@ stop time
+// ### stop sound
+const toggleIGsetting = () => {
+  if (isGameInfoVisible.value) return
+  showIGsetting.value = !showIGsetting.value
+  showButtons.value = true
+}
+
+// Handle the book click event
+const handleBookClick = () => {
+  if (showIGsetting.value || bookAnimationClass.value !== 'book-blink') {
+    return
+  }
+  bookStyle.transition = 'all 2s'
+  bookStyle.top = '10%'
+  bookStyle.left = '50%'
+  bookStyle.width = '24vw'
+  bookStyle.height = 'auto'
+  bookAnimationClass.value = 'bookFlipped'
+  isBookFlipped.value = true
+  isBookRightPageInvisible.value = true
+
+  setTimeout(() => {
+    isBookLeftPageInvisible.value = true
+    isLeftFlipped.value = true // 点击书本时切换左侧背景翻转状态
+    isCowBookImageInvisible.value = true
+    isFading.value = true
+    isAnswer.value = true
+  }, 500)
+}
+
+// Randomly set the cow position
+
+// %%% first get answer of word before get refresh token
+onMounted(() => {
+  const x = Math.floor(Math.random() * 90)
+  const y = Math.floor(Math.random() * 90)
+  cowStyle.top = `${y}%`
+  cowStyle.left = `${x}%`
+
+  // Randomly select a cow image
+  const direction = Math.random() < 0.5 ? 'Right' : 'Left'
+  cowImage.value = `/Cow${direction}.png`
+  bookDirection.value = direction === 'Right' ? 'Left' : 'Right' // Change the book direction based on the cow direction
+})
+
+// Handle the cow click event
+// @@@ stop time
+// ### stop sound
+// !!! send time to backend
+// ^^^ achievement (watch notepad)
+const handleClick = () => {
+  if (isGameInfoVisible.value) return // Add condition to check if StartGameInfo is showing
+  if (hasClickedCow.value) return // Prevent multiple cow clicks
+  if (showIGsetting.value) return // Add condition to check if Setting is showing
+  showButtons.value = false
+
+  hasClickedCow.value = true // Prevent multiple cow clicks
+
+  // Set the cow style
+  cowStyle.top = '50%'
+  cowStyle.left = '50%'
+  cowStyle.width = '15%'
+  cowStyle.height = 'auto'
+  cowStyle.opacity = '1'
+
+  // Set the book show style
+  setTimeout(() => {
+    showBook.value = true
+    bookStyle.top = '50%'
+    bookStyle.left = '50%'
+    bookStyle.width = '3%'
+    bookStyle.height = 'auto'
+
+    // Set the book animation style
+    if (bookDirection.value === 'Right') {
+      bookAnimationClass.value = 'book-animation-Right'
+    } else {
+      bookAnimationClass.value = 'book-animation-Left'
+    }
+  }, 500)
+
+  // Move the cow outside of the screen
+  setTimeout(() => {
+    cowStyle.transition = 'left 2.5s'
+    if (bookDirection.value === 'Right') {
+      cowStyle.left = '-15%' // Move the cow to the right outside of the screen
+    } else {
+      cowStyle.left = '115%' // Move the cow to the left outside of the screen
+    }
+  }, 1500)
+
+  // Move and enlarge the book
+  setTimeout(() => {
+    bookStyle.transition = 'all 0.429s'
+    bookStyle.top = '10%'
+    bookStyle.left = '50%'
+    bookStyle.width = '24vw'
+    bookStyle.height = 'auto'
+    bookAnimationClass.value = 'book-blink'
+  }, 2800)
 }
 </script>
 
@@ -228,12 +206,37 @@ export default {
     </div>
     <div class="relative h-[87vh] w-full overflow-hidden">
       <div
-        class="bookLeftPage bg-bookPage border-bookPageBorder absolute left-[29%] top-[30%] z-auto h-[55%] w-[16%] border-[6px] border-solid"
+        v-if="isBookLeftPageInvisible"
+        class="bookLeftPage absolute left-[26%] top-[10%] z-auto h-[81%] w-[24%] border-[6px] border-solid border-bookPageBorder bg-bookPage"
         :class="{ leftFlipped: isLeftFlipped }"
-      ></div>
+      >
+        <img
+          :src="cowBookImage"
+          class="absolute top-[10%] h-[70%] w-[100vw]"
+          v-if="isCowBookImageInvisible"
+          alt="cowLogo"
+        />
+      </div>
       <div
-        class="bookRightPage bg-bookPage border-bookPageBorder absolute left-[45%] top-[30%] z-auto h-[55%] w-[16%] border-[6px] border-solid"
-      ></div>
+        v-if="isBookRightPageInvisible"
+        class="bookRightPage absolute left-[50%] top-[10%] z-auto h-[81%] w-[24%] border-[6px] border-solid border-bookPageBorder bg-bookPage"
+      >
+        <div class="h-[80%] w-auto pl-[5%] pr-[5%] pt-[50%] text-center text-5xl">
+          <div v-if="isFading" v-text="answer" class="animation-fade-in text-answer font-shu"></div>
+        </div>
+        <div class="h-[20%] w-auto p-[5%]">
+          <div
+            v-if="isFading"
+            class="absolute bottom-3 right-5 font-neucha text-4xl text-bookPageBorder"
+          >
+            <Nuxt-link
+              to="http://localhost:3000/challenge"
+              class="animation-fade-in transition-transform duration-300 ease-in-out hover:scale-125 hover:text-bookPageMiddle"
+              >NEXT>></Nuxt-link
+            >
+          </div>
+        </div>
+      </div>
       <img
         :src="cowImage"
         class="absolute transition-all duration-300 ease-in-out"
@@ -241,13 +244,6 @@ export default {
         :style="cowStyle"
         @click="handleClick"
       />
-      <!-- <div class="bookCenter">
-        <div class="containerLeft" :class="{ leftFlipped: isLeftFlipped }"></div>
-          <div class="containerRight">
-            <div class="book" @click="flipBook">
-              <div class="cover front-cover" :class="{ bookFlipped: isBookFlipped }"></div>
-            </div>
-        </div> -->
       <img
         v-if="showBook && bookDirection === 'Left'"
         :src="bookImageLeft"
@@ -264,7 +260,6 @@ export default {
         :style="bookStyle"
         @click="handleBookClick"
       />
-      <!-- </div> -->
     </div>
   </div>
 </template>
@@ -292,7 +287,7 @@ export default {
 }
 
 .bookLeftPage {
-  border-right: 1px solid #000;
+  border-right: 2px solid #000;
   box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.3);
 }
 /* .bookCenter {
@@ -469,5 +464,18 @@ export default {
 }
 .leftFlipped {
   animation: leftFlip 0.5s forwards;
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.animation-fade-in {
+  animation: fade-in 3.5s ease-in;
 }
 </style>

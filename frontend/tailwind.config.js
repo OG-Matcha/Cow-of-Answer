@@ -23,6 +23,7 @@ module.exports = {
             'bookPage': '#f5deb3',
             'bookPageBorder': '#635850',
             'bookPageMiddle': '#000000',
+            'answer': '#493000'
           },
           fontFamily: {
             neucha: ["Neucha-Regular", "sans-serif"],
