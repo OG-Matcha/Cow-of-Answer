@@ -1,31 +1,3 @@
-<script setup>
-import { ref } from 'vue'
-const ranks = ref(['4th', '5th', '6th', '7th', '8th', '9th', '10th'])
-const names = ref(['kitty', 'uuu', 'ooo', 'sam', 'jim', 'tom', 'jerry', 'joe', 'jane', 'jill'])
-const times = ref([
-  '00:00:01',
-  '00:11:00',
-  '00:11:08',
-  '00:11:11',
-  '00:22:22',
-  '00:33:33',
-  '00:44:44',
-  '00:55:55',
-  '00:66:66',
-  '00:77:77'
-])
-const showList = ref(false)
-const Yrank = ref('99th')
-const Yname = ref('linda')
-const Ytime = ref('100:00:00')
-const openModalL = () => {
-  showList.value = true
-}
-const closeModal = () => {
-  showList.value = false
-}
-</script>
-
 <template>
   <div class="h-[100vh] w-[100vw] bg-table">
     <div class="flex h-[40%] w-full border-b-2 border-black bg-table">
@@ -120,3 +92,31 @@ const closeModal = () => {
     </div>
   </div>
 </template>
+
+<script setup>
+import { ref } from 'vue'
+const ranks = ref(['4th', '5th', '6th', '7th', '8th', '9th', '10th'])
+const names = ref(['kitty', 'uuu', 'ooo', 'sam', 'jim', 'tom', 'jerry', 'joe', 'jane', 'jill'])
+const times = ref([
+  '00:00:01',
+  '00:11:00',
+  '00:11:08',
+  '00:11:11',
+  '00:22:22',
+  '00:33:33',
+  '00:44:44',
+  '00:55:55',
+  '00:66:66',
+  '00:77:77'
+])
+const showList = ref(false)
+const Yrank = ref('99th')
+const Yname = ref('linda')
+const Ytime = ref('100:00:00')
+const openModalL = () => {
+  showList.value = true
+}
+const closeModal = () => {
+  showList.value = false
+}
+</script>
