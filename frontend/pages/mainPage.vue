@@ -184,8 +184,8 @@ import { ref } from 'vue'
 
 const email = ref('')
 const password = ref('')
-let errorMessage = ref('')
-let label = ref(' 登入失敗<br>（使用者帳號或密碼錯誤）')
+const errorMessage = ref('')
+const label = ref(' 登入失敗<br>（使用者帳號或密碼錯誤）')
 
 const username = useCookie('username')
 const token = useCookie('token')
@@ -262,7 +262,7 @@ const SignUpUser = async () => {
 
     await navigateTo({ path: '/question' })
   } else {
-    label = ' 登入失敗<br>（使用者帳號或密碼錯誤）'
+    label.value = ' 登入失敗<br>（使用者帳號或密碼錯誤）'
     openModelHint()
   }
 }
@@ -296,7 +296,7 @@ const RegisterUser = async () => {
 
     await navigateTo({ path: '/question' })
   } else {
-    label = ' 註冊失敗<br>（Email 已被註冊過）'
+    label.value = ' 註冊失敗<br>（Email 已被註冊過）'
     openModelHint()
   }
 }
