@@ -92,7 +92,7 @@
             <p class="pl-[1.4rem] font-neucha text-2xl text-red-600">{{ errorMessage }}</p>
           </div>
           <button
-            @click="SignUpUser"
+            @click="LogInUser"
             class="flex h-auto w-[20%] items-center justify-end transition-transform duration-300 ease-in-out hover:scale-110"
           >
             <img src="/LogIn.png" alt="登入" />
@@ -235,15 +235,23 @@ const handleAnimationEnd = () => {
   }
 }
 
-const SignUpUser = async () => {
+const LogInUser = async () => {
   if (!email.value || !password.value) {
     errorMessage.value = '* 請填寫所有欄位 *'
     await nextTick()
     return
   }
+
+  const emailRegex = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/
+  if (!emailRegex.test(email.value)) {
+    errorMessage.value = '* 請輸入有效的電子郵件 *'
+    await nextTick()
+    return
+  }
+
   openModelLoading()
 
-  const { data, status } = await useFetch('http://localhost:8000/api/auth/login', {
+  const { data, error, status } = await useFetch('http://localhost:8000/api/auth/login', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -261,8 +269,11 @@ const SignUpUser = async () => {
     username.value = data.value.user.name
 
     await navigateTo({ path: '/question' })
-  } else {
-    label.value = ' 登入失敗<br>（使用者帳號或密碼錯誤）'
+  } else if (error.value.statusCode == 401) {
+    label.value = ' 登入失敗（密碼錯誤）'
+    openModelHint()
+  } else if (error.value.statusCode == 404) {
+    label.value = ' 登入失敗<br>（使用者帳號錯誤）'
     openModelHint()
   }
 }
@@ -270,6 +281,13 @@ const SignUpUser = async () => {
 const RegisterUser = async () => {
   if (!username.value || !email.value || !password.value) {
     errorMessage.value = '* 請填寫所有欄位 *'
+    await nextTick()
+    return
+  }
+
+  const emailRegex = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/
+  if (!emailRegex.test(email.value)) {
+    errorMessage.value = '* 請輸入有效的電子郵件地址 *'
     await nextTick()
     return
   }
