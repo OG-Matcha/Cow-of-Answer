@@ -1,27 +1,27 @@
 <template>
   <div
-    v-if="!showInfo"
     class="reel align-center absolute left-[38%] top-[20%] z-[5] flex h-[30vw] w-[25vw] flex-col justify-center bg-contain bg-no-repeat"
   >
     <div class="font space-y-19 r-50% flex flex-col items-center justify-center font-chen">
       <button @click="continueGame" class="font">繼續</button>
-      <button @click.stop="showGameInfo" class="font mt-[1.25vh]">遊戲說明</button>
+      <button @click="showGameInfo" class="font mt-[1.25vh]">遊戲說明</button>
       <NuxtLink to="/" class="font mt-[1.25vh]">退出</NuxtLink>
     </div>
   </div>
-  <GameInfo :show="showInfo" @hide="hideGameInfo" />
+  <GameInfoClose :show="showInfo" @hide="hideGameInfo" />
 </template>
 
 <script setup>
 import { ref, defineEmits } from 'vue'
-import GameInfo from './GameInfoClose.vue'
 
 const showInfo = ref(false)
 
-const emits = defineEmits(['toggle'])
+const emits = defineEmits(['continue'])
 const continueGame = () => {
-  emits('toggle')
+  emits('continue')
+  showInfo.value = false
 }
+
 const showGameInfo = () => {
   showInfo.value = true
 }

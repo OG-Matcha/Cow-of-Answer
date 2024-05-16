@@ -1,7 +1,5 @@
 <script setup>
 import { reactive, onMounted, ref } from 'vue'
-import IGsetting from '@/components/IGsetting.vue'
-import GameInfoButton from '@/components/GameInfoButton.vue'
 
 // Cow variables
 const cowImage = ref('/CowRight.png')
@@ -35,6 +33,12 @@ const isCowBookImageInvisible = ref(false)
 const answer = ref('問題一定可以被解決')
 const isAnswer = ref(false)
 
+const audioRefInfo = ref(null)
+
+// audioInGame
+const audioRefInGame = ref(null)
+const volume = ref(1)
+
 // Cow style
 const cowStyle = reactive({
   top: '0%',
@@ -53,12 +57,20 @@ const bookStyle = reactive({
   height: 'auto'
 })
 
+const handleVolumeTest = () => {
+  audioRefInfo.value.volume = volume.value
+  audioRefInfo.value.play()
+}
+
 // Handle the game info start event
 // @@@ calculate time
 // ### sound on
 // $$$ get refresh token to update
 const handleGameInfoStart = () => {
   isGameInfoVisible.value = false
+  audioRefInGame.value.volume = volume.value
+  // console.log('Game started')
+  audioRefInGame.value.play()
 }
 
 // Handle the exit click event
@@ -72,6 +84,11 @@ const handleExitClick = (event) => {
   showIGsetting.value = false
 }
 
+const handleContinue = () => {
+  showIGsetting.value = false
+  audioRefInGame.value.play()
+}
+
 // Toggle the IGsetting component
 // @@@ stop time
 // ### stop sound
@@ -79,6 +96,12 @@ const toggleIGsetting = () => {
   if (isGameInfoVisible.value) return
   showIGsetting.value = !showIGsetting.value
   showButtons.value = true
+
+  if (showIGsetting.value) {
+    audioRefInGame.value.pause()
+  } else {
+    audioRefInGame.value.play()
+  }
 }
 
 // Handle the book click event
@@ -104,19 +127,32 @@ const handleBookClick = () => {
   }, 500)
 }
 
-// Randomly set the cow position
-
 // %%% first get answer of word before get refresh token
 onMounted(() => {
-  const x = Math.floor(Math.random() * 90)
-  const y = Math.floor(Math.random() * 90)
-  cowStyle.top = `${y}%`
-  cowStyle.left = `${x}%`
+  let cowX = Math.floor(Math.random() * 90)
+  let cowY = Math.floor(Math.random() * 90)
+  cowStyle.top = `${cowY}%`
+  cowStyle.left = `${cowX}%`
 
   // Randomly select a cow image
   const direction = Math.random() < 0.5 ? 'Right' : 'Left'
   cowImage.value = `/Cow${direction}.png`
   bookDirection.value = direction === 'Right' ? 'Left' : 'Right' // Change the book direction based on the cow direction
+
+  window.addEventListener('mousemove', (event) => {
+    const mouseX = (event.clientX / window.innerWidth) * 100
+    const mouseY = (event.clientY / window.innerHeight) * 100
+
+    // Calculate the distance between the mouse and the cow
+    const dx = mouseX - cowX
+    const dy = mouseY - cowY
+    const distance = Math.sqrt(dx * dx + dy * dy)
+
+    // Adjust the volume based on the distance
+    if (audioRefInGame.value) {
+      audioRefInGame.value.volume = Math.max(0.1, Math.min(1, 1.3 - (2 * distance) / 50))
+    }
+  })
 })
 
 // Handle the cow click event
@@ -129,8 +165,8 @@ const handleClick = () => {
   if (hasClickedCow.value) return // Prevent multiple cow clicks
   if (showIGsetting.value) return // Add condition to check if Setting is showing
   showButtons.value = false
-
   hasClickedCow.value = true // Prevent multiple cow clicks
+  audioRefInGame.value.pause()
 
   // Set the cow style
   cowStyle.top = '50%'
@@ -183,7 +219,21 @@ const handleClick = () => {
     class="grass-background h-[100vh] w-[100vw] bg-cover bg-no-repeat"
   >
     <div>
-      <GameInfoButton :show="isGameInfoVisible" @click="handleGameInfoStart" />
+      <GameInfoButton
+        :show="isGameInfoVisible"
+        @testVolume1="handleVolumeTest"
+        @close="handleGameInfoStart"
+      />
+
+      <audio ref="audioRefInfo" controls autoplay style="display: none">
+        <source src="/mow.MP3" type="audio/mpeg" />
+        Your browser does not support the audio element.
+      </audio>
+
+      <audio ref="audioRefInGame" controls loop autoplay style="display: none">
+        <source src="/mow.MP3" type="audio/mpeg" />
+        Your browser does not support the audio element.
+      </audio>
     </div>
     <div class="h-[10vh] w-full">
       <button
@@ -198,11 +248,7 @@ const handleClick = () => {
       ></button>
     </div>
     <div>
-      <IGsetting
-        v-if="showIGsetting"
-        :show="showIGsetting"
-        @toggle="showIGsetting = !showIGsetting"
-      ></IGsetting>
+      <IGsetting v-if="showIGsetting" @continue="handleContinue"></IGsetting>
     </div>
     <div class="relative h-[87vh] w-full overflow-hidden">
       <div
@@ -222,7 +268,7 @@ const handleClick = () => {
         class="bookRightPage absolute left-[50%] top-[10%] z-auto h-[81%] w-[24%] border-[6px] border-solid border-bookPageBorder bg-bookPage"
       >
         <div class="h-[80%] w-auto pl-[5%] pr-[5%] pt-[50%] text-center text-5xl">
-          <div v-if="isFading" v-text="answer" class="animation-fade-in text-answer font-shu"></div>
+          <div v-if="isFading" v-text="answer" class="animation-fade-in font-shu text-answer"></div>
         </div>
         <div class="h-[20%] w-auto p-[5%]">
           <div
