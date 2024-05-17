@@ -121,7 +121,7 @@ onMounted(async () => {
   })
 
   if (status.value === 'success') {
-    openChallenge.value = data.value.length - 1
+    openChallenge.value = data.value.length
   } else if (error.value.statusCode == 404) {
     openChallenge.value = 0
   }
