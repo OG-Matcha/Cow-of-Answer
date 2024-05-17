@@ -36,32 +36,40 @@
             v-if="showSkipText"
             class="animate-fade-in h-auto w-[20%] pl-[1%] transition-transform duration-300 ease-in-out"
           >
-            <NuxtLink to="http://localhost:3000/challenge">
+            <button @click="navigateToChallenge">
               <img
                 src="/btnNext.png"
                 alt="Next"
                 class="h-auto w-[60%] transition-transform duration-300 ease-in-out hover:scale-110"
               />
-            </NuxtLink>
+            </button>
           </div>
         </div>
         <div class="h-[20%] w-auto p-[5%]" v-if="showSkipText">
           <div
             class="flex items-center justify-end text-center font-neucha text-2xl text-textColor2"
           >
-            <NuxtLink
-              to="http://localhost:3000/challenge"
+            <button
+              @click="navigateToChallenge"
               class="animate-fade-in transition-transform duration-300 ease-in-out hover:scale-110 hover:text-hovercolor"
             >
               SKIP>>
-            </NuxtLink>
+            </button>
           </div>
         </div>
       </div>
     </div>
     <div
+      v-if="showLoading"
+      class="fixed inset-0 z-10 flex w-full items-center justify-center bg-black bg-opacity-50"
+    >
+      <div class="animate-fade-in w-auto">
+        <Loading />
+      </div>
+    </div>
+    <div
       v-if="showSetting"
-      @click="closeModel"
+      @click="closeModelSetting"
       class="fixed inset-0 z-10 flex h-auto w-full items-center justify-center bg-black bg-opacity-50"
     >
       <div @click.stop class="setting-animate-fade-in h-auto w-auto">
@@ -74,15 +82,17 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 
-let userName = useCookie('username')
+const userName = useCookie('username')
+const openChallenge = useCookie('openChallenge')
 
 let originalText = `Hi, ${userName.value} ~ <br> 最近有什麼困擾著你? <br> 輸入你的問題 <br> 尋找封印在幕後的答案之牛！ <br> `
-let displayedText = ref('')
-let currentIndex = ref(0)
-let showSkipText = ref(false)
+const displayedText = ref('')
+const currentIndex = ref(0)
+const showSkipText = ref(false)
 const showSetting = ref(false)
+const showLoading = ref(false)
 
-onMounted(() => {
+onMounted(async () => {
   const intervalId = setInterval(() => {
     if (currentIndex.value < originalText.length) {
       if (originalText.substr(currentIndex.value, 4) === '<br>') {
@@ -100,14 +110,53 @@ onMounted(() => {
   setTimeout(() => {
     showSkipText.value = true
   }, 5800)
+
+  const token = useCookie('token')
+  const { data, status, error } = await useFetch('http://localhost:8000/api/rank-list/rank/user', {
+    method: 'GET',
+    headers: {
+      Authorization: 'Bearer ' + token.value,
+      'Content-Type': 'application/json'
+    }
+  })
+
+  if (status.value === 'success') {
+    openChallenge.value = data.value.length - 1
+  } else if (error.value.statusCode == 404) {
+    openChallenge.value = 0
+  }
 })
 
 const openModelSetting = () => {
   showSetting.value = true
 }
 
-const closeModel = () => {
+const closeModelSetting = () => {
   showSetting.value = false
+}
+
+const openModelLoading = () => {
+  showLoading.value = true
+}
+
+const closeModelLoading = () => {
+  showLoading.value = false
+}
+
+const navigateToChallenge = async () => {
+  if (openChallenge.value === null || openChallenge.value === undefined) {
+    openModelLoading()
+
+    const checkInterval = setInterval(async () => {
+      if (openChallenge.value !== null && openChallenge.value !== undefined) {
+        clearInterval(checkInterval)
+        closeModelLoading()
+        await navigateTo({ path: '/challenge' })
+      }
+    }, 1000)
+  } else {
+    await navigateTo({ path: '/challenge' })
+  }
 }
 </script>
 

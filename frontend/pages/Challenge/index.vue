@@ -8,12 +8,23 @@
       <div class="h-auto w-1/3">
         <div class="flex h-[60%] w-auto items-start justify-center">
           <NuxtLink
-            to="/challenge1"
-            class="animate-bounce1 relative flex h-auto w-[40%] justify-center"
+            :to="openChallenge >= 0 ? '/challenge1' : null"
+            :class="{ 'animate-bounce1': openChallenge >= 0 }"
+            class="relative flex h-auto w-[40%] justify-center"
           >
-            <img src="/cow1.png" alt="Challenge1" class="absolute h-auto w-full" />
+            <img
+              src="/cow1.png"
+              :style="{ filter: openChallenge >= 0 ? 'none' : 'brightness(50%)' }"
+              alt="Challenge1"
+              class="absolute h-auto w-full"
+            />
           </NuxtLink>
-          <img src="/grass.png" alt="Grass" class="absolute bottom-[42%] h-auto w-[15%]" />
+          <img
+            src="/grass.png"
+            :style="{ filter: openChallenge >= 0 ? 'none' : 'brightness(50%)' }"
+            alt="Grass"
+            class="absolute bottom-[42%] h-auto w-[15%]"
+          />
         </div>
         <div class="flex h-[40%] w-auto items-center justify-center pt-[2%]">
           <div v-html="displayedText" class="ml-[4rem] font-chen text-5xl text-textColor2"></div>
@@ -21,21 +32,57 @@
       </div>
       <div class="flex h-auto w-1/3 items-start justify-center">
         <NuxtLink
-          to="/challenge1"
-          class="animate-bounce2 relative flex h-auto w-[40%] justify-center"
+          :to="openChallenge >= 1 ? '/challenge2' : null"
+          :class="{ 'animate-bounce2': openChallenge >= 1 }"
+          class="relative flex h-auto w-[40%] justify-center"
         >
-          <img src="/cow2.png" alt="Challenge1" class="absolute h-auto w-full" />
+          <img
+            src="/cow2.png"
+            :style="{ filter: openChallenge >= 1 ? 'none' : 'brightness(50%)' }"
+            alt="Challenge1"
+            class="absolute h-auto w-full"
+          />
         </NuxtLink>
-        <img src="/grass.png" alt="Grass" class="absolute bottom-[12%] h-auto w-[15%]" />
+        <div
+          v-if="openChallenge < 1"
+          class="absolute bottom-[35%] flex h-auto w-[10%] flex-col items-center justify-center"
+        >
+          <img src="/lock.svg" alt="lock" />
+          <p class="p-3 font-shu text-3xl">未解鎖</p>
+        </div>
+        <img
+          src="/grass.png"
+          :style="{ filter: openChallenge >= 1 ? 'none' : 'brightness(50%)' }"
+          alt="Grass"
+          class="absolute bottom-[12%] h-auto w-[15%]"
+        />
       </div>
       <div class="flex h-auto w-1/3 items-start justify-center">
         <NuxtLink
-          to="/challenge1"
-          class="animate-bounce3 relative flex h-auto w-[40%] justify-center"
+          :to="openChallenge >= 2 ? '/challenge3' : null"
+          :class="{ 'animate-bounce3': openChallenge >= 2 }"
+          class="relative flex h-auto w-[40%] justify-center"
         >
-          <img src="/cow3.png" alt="Challenge1" class="absolute h-auto w-full" />
+          <img
+            src="/cow3.png"
+            :style="{ filter: openChallenge >= 2 ? 'none' : 'brightness(50%)' }"
+            alt="Challenge1"
+            class="absolute h-auto w-full"
+          />
         </NuxtLink>
-        <img src="/grass.png" alt="Grass" class="absolute bottom-[23%] h-auto w-[15%]" />
+        <div
+          v-if="openChallenge < 2"
+          class="absolute bottom-[35%] flex h-auto w-[10%] flex-col items-center justify-center"
+        >
+          <img src="/lock.svg" alt="lock" />
+          <p class="p-3 font-shu text-3xl">未解鎖</p>
+        </div>
+        <img
+          src="/grass.png"
+          :style="{ filter: openChallenge >= 2 ? 'none' : 'brightness(50%)' }"
+          alt="Grass"
+          class="absolute bottom-[23%] h-auto w-[15%]"
+        />
       </div>
     </div>
     <div
@@ -53,12 +100,14 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 
-let userName = useCookie('username')
-let originalText = `Hi, ${userName.value} ~ <br> 在尋找COW的過程中 <br> 尋找自己吧！ <br>`
-let displayedText = ref('')
-let currentIndex = ref(0)
+const userName = useCookie('username')
+const openChallenge = useCookie('openChallenge')
 
-onMounted(async () => {
+let originalText = `Hi, ${userName.value} ~ <br> 在尋找COW的過程中 <br> 尋找自己吧！ <br>`
+const displayedText = ref('')
+const currentIndex = ref(0)
+
+onMounted(() => {
   const intervalId = setInterval(() => {
     if (currentIndex.value < originalText.length) {
       if (originalText.substr(currentIndex.value, 4) === '<br>') {
@@ -72,21 +121,6 @@ onMounted(async () => {
       clearInterval(intervalId)
     }
   }, 110) // 110 毫秒
-
-  const token = useCookie('token')
-  const { data, status, error } = await useFetch('http://localhost:8000/api/rank-list/rank/user', {
-    method: 'GET',
-    headers: {
-      Authorization: 'Bearer ' + token.value,
-      'Content-Type': 'application/json'
-    }
-  })
-
-  if (status.value === 'success') {
-    console.log(data)
-  } else {
-    console.log('error')
-  }
 })
 
 const showSetting = ref(false)
