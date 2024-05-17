@@ -52,6 +52,7 @@
 
 <script setup>
 const token = useCookie('token')
+const username = useCookie('username')
 const label = ref('登出失敗，請再試一次')
 const showConfirm = ref(false)
 const showLoading = ref(false)
@@ -86,6 +87,10 @@ const logOut = async () => {
 
   if (status.value === 'success') {
     closeModelLoading()
+
+    token.value = null
+    username.value = null
+
     await navigateTo({ path: '/mainPage' })
   } else {
     openModelHint()
