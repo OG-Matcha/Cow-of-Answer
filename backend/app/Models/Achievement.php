@@ -23,4 +23,13 @@ class Achievement extends Model
     {
         return $this->hasMany(UserAchievement::class);
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($achievement) {
+            $achievement->linkusers()->delete();
+        });
+    }
 }
