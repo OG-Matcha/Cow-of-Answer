@@ -33,11 +33,16 @@ const isCowBookImageInvisible = ref(false)
 const answer = ref('問題一定可以被解決')
 const isAnswer = ref(false)
 
-const audioRefInfo = ref(null)
-
 // audioInGame
+const audioRefInfo = ref(null)
 const audioRefInGame = ref(null)
 const volume = ref(1)
+
+const showGameInfoClose = ref(true)
+
+const continueGame = () => {
+  showGameInfoClose.value = false
+}
 
 // Cow style
 const cowStyle = reactive({
@@ -95,7 +100,6 @@ const handleContinue = () => {
 const toggleIGsetting = () => {
   if (isGameInfoVisible.value) return
   showIGsetting.value = !showIGsetting.value
-  showButtons.value = true
 
   if (showIGsetting.value) {
     audioRefInGame.value.pause()
@@ -249,6 +253,7 @@ const handleClick = () => {
     </div>
     <div>
       <IGsetting v-if="showIGsetting" @continue="handleContinue"></IGsetting>
+      <GameInfoClose v-if="showGameInfoClose" @continueGame="continueGame" />
     </div>
     <div class="relative h-[87vh] w-full overflow-hidden">
       <div
