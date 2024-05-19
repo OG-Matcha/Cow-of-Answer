@@ -8,7 +8,7 @@
       <div class="h-auto w-1/3">
         <div class="flex h-[60%] w-auto items-start justify-center">
           <NuxtLink
-            :to="openChallenge >= 0 ? '/challenge1' : null"
+            :to="openChallenge >= 0 ? '/scenario/1' : null"
             :class="{ 'animate-bounce1': openChallenge >= 0 }"
             class="relative flex h-auto w-[40%] justify-center"
           >
