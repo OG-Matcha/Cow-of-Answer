@@ -28,20 +28,19 @@ import { defineProps, defineEmits } from 'vue'
 
 const audioRefRestart = ref(null)
 const volume = ref(1)
-const showGameInfoClose = ref(true)
 
 const props = defineProps({
   show: Boolean
 })
 
-const emits = defineEmits(['hide'])
+const emits = defineEmits(['hide', 'continueGame'])
 
 const hide = () => {
   emits('hide')
 }
 
 const continueGame = () => {
-  showGameInfoClose.value = false
+  emits('continueGame')
 }
 const testVolume = () => {
   audioRefRestart.value.volume = volume.value

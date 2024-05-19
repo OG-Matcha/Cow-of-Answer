@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, onMounted, ref } from 'vue'
+import { reactive, onMounted, ref, onUnmounted } from 'vue'
 
 // Cow variables
 const cowImage = ref('/CowRight.png')
@@ -30,19 +30,19 @@ const isBookLeftPageInvisible = ref(false)
 const cowBookImage = ref('/CowLOGO.svg')
 const isCowBookImageInvisible = ref(false)
 
+// Answer
 const answer = ref('問題一定可以被解決')
 const isAnswer = ref(false)
 
-// audioInGame
+// Audio
 const audioRefInfo = ref(null)
 const audioRefInGame = ref(null)
 const volume = ref(1)
 
-const showGameInfoClose = ref(true)
-
-const continueGame = () => {
-  showGameInfoClose.value = false
-}
+// Timer
+const gameStartTime = ref(null)
+const pauseTime = ref(null)
+const timerId = ref(null)
 
 // Cow style
 const cowStyle = reactive({
@@ -62,20 +62,53 @@ const bookStyle = reactive({
   height: 'auto'
 })
 
+// Timer functions
+const startTimer = () => {
+  gameStartTime.value = Date.now()
+  timerId.value = setInterval(() => {
+    const gameTimeInMilliseconds = Date.now() - gameStartTime.value
+    const seconds = Math.floor(gameTimeInMilliseconds / 1000)
+    console.log('Game time:', seconds, 'seconds')
+  }, 1000)
+}
+
+const pauseTimer = () => {
+  clearInterval(timerId.value)
+  pauseTime.value = Date.now()
+  console.log('Game paused')
+}
+
+const resumeTimer = () => {
+  const pauseDuration = Date.now() - pauseTime.value
+  gameStartTime.value += pauseDuration
+  timerId.value = setInterval(() => {
+    const gameTimeInMilliseconds = Date.now() - gameStartTime.value
+    const seconds = Math.floor(gameTimeInMilliseconds / 1000)
+    console.log('Game time:', seconds, 'seconds')
+  }, 1000)
+}
+
+const stopTimer = () => {
+  clearInterval(timerId.value)
+  console.log('Time stopped')
+}
+
+// Info Volume Test
 const handleVolumeTest = () => {
   audioRefInfo.value.volume = volume.value
   audioRefInfo.value.play()
 }
 
 // Handle the game info start event
-// @@@ calculate time
-// ### sound on
+// 【finish】 @@@ calculate time
+// 【finish】 ### sound on
 // $$$ get refresh token to update
 const handleGameInfoStart = () => {
   isGameInfoVisible.value = false
   audioRefInGame.value.volume = volume.value
-  // console.log('Game started')
   audioRefInGame.value.play()
+  startTimer()
+  // console.log('Game started')
 }
 
 // Handle the exit click event
@@ -92,19 +125,22 @@ const handleExitClick = (event) => {
 const handleContinue = () => {
   showIGsetting.value = false
   audioRefInGame.value.play()
+  resumeTimer()
 }
 
 // Toggle the IGsetting component
-// @@@ stop time
-// ### stop sound
+// 【finish】 @@@ stop time
+// 【finish】 ### stop sound
 const toggleIGsetting = () => {
   if (isGameInfoVisible.value) return
   showIGsetting.value = !showIGsetting.value
 
   if (showIGsetting.value) {
     audioRefInGame.value.pause()
+    pauseTimer()
   } else {
     audioRefInGame.value.play()
+    resumeTimer()
   }
 }
 
@@ -159,9 +195,13 @@ onMounted(() => {
   })
 })
 
+onUnmounted(() => {
+  clearInterval(timerId.value)
+})
+
 // Handle the cow click event
 // @@@ stop time
-// ### stop sound
+// finish ### stop sound
 // !!! send time to backend
 // ^^^ achievement (watch notepad)
 const handleClick = () => {
@@ -178,6 +218,9 @@ const handleClick = () => {
   cowStyle.width = '15%'
   cowStyle.height = 'auto'
   cowStyle.opacity = '1'
+
+  // Stop Timer
+  stopTimer()
 
   // Set the book show style
   setTimeout(() => {
@@ -253,7 +296,6 @@ const handleClick = () => {
     </div>
     <div>
       <IGsetting v-if="showIGsetting" @continue="handleContinue"></IGsetting>
-      <GameInfoClose v-if="showGameInfoClose" @continueGame="continueGame" />
     </div>
     <div class="relative h-[87vh] w-full overflow-hidden">
       <div
