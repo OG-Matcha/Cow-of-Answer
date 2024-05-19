@@ -4,7 +4,6 @@ const logOut = async () => {
   const { data, status } = await useFetch('http://localhost:8000/api/auth/logout', {
     method: 'GET',
     headers: {
-      //   Authorization: 'Bearer ' + token.value,
       'Content-Type': 'application/json'
     }
   })
