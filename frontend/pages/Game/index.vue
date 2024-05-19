@@ -44,6 +44,10 @@ const gameStartTime = ref(null)
 const pauseTime = ref(null)
 const timerId = ref(null)
 
+// Random redirect
+const randomRedirect = ref('/challenge')
+const showBonus = ref(false)
+
 // Cow style
 const cowStyle = reactive({
   top: '0%',
@@ -144,29 +148,6 @@ const toggleIGsetting = () => {
   }
 }
 
-// Handle the book click event
-const handleBookClick = () => {
-  if (showIGsetting.value || bookAnimationClass.value !== 'book-blink') {
-    return
-  }
-  bookStyle.transition = 'all 2s'
-  bookStyle.top = '10%'
-  bookStyle.left = '50%'
-  bookStyle.width = '24vw'
-  bookStyle.height = 'auto'
-  bookAnimationClass.value = 'bookFlipped'
-  isBookFlipped.value = true
-  isBookRightPageInvisible.value = true
-
-  setTimeout(() => {
-    isBookLeftPageInvisible.value = true
-    isLeftFlipped.value = true // 点击书本时切换左侧背景翻转状态
-    isCowBookImageInvisible.value = true
-    isFading.value = true
-    isAnswer.value = true
-  }, 500)
-}
-
 // %%% first get answer of word before get refresh token
 onMounted(() => {
   let cowX = Math.floor(Math.random() * 90)
@@ -258,6 +239,44 @@ const handleClick = () => {
     bookAnimationClass.value = 'book-blink'
   }, 2800)
 }
+
+// Handle the book click event
+const handleBookClick = () => {
+  if (showIGsetting.value || bookAnimationClass.value !== 'book-blink') {
+    return
+  }
+  bookStyle.transition = 'all 2s'
+  bookStyle.top = '10%'
+  bookStyle.left = '50%'
+  bookStyle.width = '24vw'
+  bookStyle.height = 'auto'
+  bookAnimationClass.value = 'bookFlipped'
+  isBookFlipped.value = true
+  isBookRightPageInvisible.value = true
+
+  setTimeout(() => {
+    isBookLeftPageInvisible.value = true
+    isLeftFlipped.value = true // 点击书本时切换左侧背景翻转状态
+    isCowBookImageInvisible.value = true
+    isFading.value = true
+    isAnswer.value = true
+  }, 500)
+}
+
+const updateRedirect = () => {
+  randomRedirect.value = Math.random() < 0.1 ? '/challenge' : '/Bonus.png'
+  if (randomRedirect.value === '/challenge') {
+    router.push(randomRedirect.value)
+  } else {
+    showBonus.value = true
+  }
+}
+
+watch(randomRedirect, (newVal) => {
+  if (newVal === '/Bonus.png') {
+    showBonus.value = true
+  }
+})
 </script>
 
 <template>
@@ -323,10 +342,14 @@ const handleClick = () => {
             class="absolute bottom-3 right-5 font-neucha text-4xl text-bookPageBorder"
           >
             <Nuxt-link
-              to="http://localhost:3000/challenge"
+              @click="updateRedirect"
+              :to="randomRedirect"
               class="animation-fade-in transition-transform duration-300 ease-in-out hover:scale-125 hover:text-bookPageMiddle"
               >NEXT>></Nuxt-link
             >
+            <div v-if="showBonus" class="bonus fixed left-[50%] top-[50%]">
+              <img src="/Bonus.png" alt="Bonus" class="animation-bonus-fade-in h-auto w-[100%]" />
+            </div>
           </div>
         </div>
       </div>
@@ -383,59 +406,6 @@ const handleClick = () => {
   border-right: 2px solid #000;
   box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.3);
 }
-/* .bookCenter {
-  position: absolute;
-  top: 30%;
-  left: 45%;
-  transform: translate(-50%, -50%);
-  display: flex;
-}
-
-.containerLeft {
-  background-color: #f5deb3; 
-  width: 200px; 
-  height: 300px; 
-  display: flex;
-  align-items: center;
-  padding-top: 10px;
-  border: 6px solid #635850; 
-  border-right: 0.5px solid #000;
-  box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.3);
-  z-index: 2;
-  opacity: 0;
-}
-
-.containerRight {
-  background-color: #f5deb3; 
-  width: 200px; 
-  height: 300px; 
-  display: flex;
-  align-items: center;
-  padding-top: 10px;
-  border: 6px solid #635850; 
-  border-left: none;
-  box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.3);
-}
-
-.book {
-  position: relative;
-  width: 105%;
-  height: 110%;
-  z-index: 1; 
-}
-
-.cover {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-.front-cover {
-  background-image: url('DroppedBookLeft.svg');
-} */
 
 @keyframes bookAnimationLeft {
   0% {
@@ -570,5 +540,13 @@ const handleClick = () => {
 
 .animation-fade-in {
   animation: fade-in 3.5s ease-in;
+}
+
+.bonus {
+  transform: translate(-50%, -50%);
+}
+
+.animation-bonus-fade-in {
+  animation: fade-in 2s ease-in;
 }
 </style>
