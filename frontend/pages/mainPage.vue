@@ -1,107 +1,6 @@
-<script setup>
-import { ref, onMounted } from 'vue'
-
-const email = ref('')
-const password = ref('')
-const username = useCookie('username')
-const token = useCookie('token')
-
-const logIn = ref(false)
-const signIn = ref(false)
-
-const openModalL = () => {
-  logIn.value = true
-}
-
-const openModalS = () => {
-  signIn.value = true
-}
-
-const closeModal = () => {
-  logIn.value = false
-  signIn.value = false
-}
-
-let showButtons = ref(false)
-let animationsEnded = ref(0)
-
-const handleAnimationEnd = () => {
-  animationsEnded.value++
-  if (animationsEnded.value >= 1) {
-    showButtons.value = true
-  }
-}
-
-const SignInUser = async () => {
-  console.log(email.value)
-  console.log(password.value)
-
-  const { data, status } = await useFetch('http://localhost:8000/api/auth/login', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: {
-      email: email.value,
-      password: password.value
-    }
-  })
-
-  console.log(status.value)
-
-  if (status.value === 'success') {
-    console.log('User login success')
-    token.value = data.value.token
-    username.value = data.value.user.name
-    console.log(username.value)
-    console.log(token.value)
-    await navigateTo({ path: '/question' })
-  } else {
-    alert('帳號或密碼錯誤')
-    console.log('User login failed')
-  }
-}
-
-const RegisterUser = async () => {
-  console.log(username.value)
-  console.log(email.value)
-  console.log(password.value)
-
-  const { data, status } = await useFetch('http://localhost:8000/api/auth/register', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: {
-      name: username.value,
-      email: email.value,
-      password: password.value
-    }
-  })
-
-  console.log(status.value)
-
-  if (status.value === 'success') {
-    console.log('User register success')
-    token.value = data.value.token
-    username.value = data.value.user.name
-    console.log(username.value)
-    console.log(token.value)
-    await navigateTo({ path: '/question' })
-  } else {
-    alert('Email已被註冊過')
-    console.log('User register failed')
-  }
-}
-
-onMounted(() => {
-  document.body.style.overflow = 'hidden'
-})
-</script>
-
 <template>
   <div>
-    <div class="flex h-[100vh] w-[100vw]">
+    <div class="flex h-[100vh] w-[100vw] overflow-hidden">
       <div class="flex h-auto w-[47%] items-center justify-center bg-orange-50 p-[2%]">
         <img
           src="/CowLOGO.png"
@@ -123,7 +22,7 @@ onMounted(() => {
         <div class="flex h-[30%] w-auto">
           <div class="flex h-auto w-[50%] items-center justify-center">
             <button
-              @click="openModalL"
+              @click="openModelLogin"
               class="flex items-center justify-center text-center text-4xl transition-transform duration-300 ease-in-out hover:scale-110"
             >
               <img
@@ -136,7 +35,7 @@ onMounted(() => {
           </div>
           <div class="flex h-auto w-[50%] items-center justify-center">
             <button
-              @click="openModalS"
+              @click="openModelSignUp"
               class="flex items-center justify-center text-center text-4xl transition-transform duration-300 ease-in-out hover:scale-110"
             >
               <img
@@ -152,43 +51,48 @@ onMounted(() => {
     </div>
     <div
       v-if="logIn"
-      @click="closeModal"
+      @click="closeModel"
       class="fixed inset-0 z-10 flex h-full w-full items-center justify-center bg-black bg-opacity-50"
     >
       <div @click.stop class="animate-fade-in h-[50%] w-[50%] rounded-3xl bg-overlay p-[2%]">
         <div class="flex h-[25%] w-auto items-start justify-end">
           <button
-            @click="closeModal"
+            @click="closeModel"
             class="text-xl transition duration-200 ease-in-out hover:text-white"
           >
             X
           </button>
         </div>
         <div class="flex h-[25%] w-auto p-[1%] text-xl">
-          <p class="flex h-auto w-[30%] items-center pl-[3%] font-neucha text-2xl text-textColor">
+          <p class="flex h-auto w-[30%] items-center pl-[3%] font-neucha text-2xl text-textColor2">
             E-mail：
           </p>
           <input
             v-model="email"
             type="email"
             placeholder=" "
+            required
             class="h-auto w-[70%] border-b-2 border-textColor bg-transparent outline-none"
           />
         </div>
         <div class="flex h-[25%] w-auto p-[1%] text-2xl">
-          <p class="flex h-auto w-[30%] items-center pl-[3%] font-neucha text-xl text-textColor">
+          <p class="flex h-auto w-[30%] items-center pl-[3%] font-neucha text-xl text-textColor2">
             密碼：
           </p>
           <input
             v-model="password"
             type="password"
             placeholder=" "
+            required
             class="h-auto w-[70%] border-b-2 border-textColor bg-transparent outline-none"
           />
         </div>
         <div class="flex h-[25%] w-auto justify-end pr-[3%] pt-[2%]">
+          <div class="flex w-[80%] items-center justify-start">
+            <p class="pl-[1.4rem] font-neucha text-2xl text-red-600">{{ errorMessage }}</p>
+          </div>
           <button
-            @click="SignInUser"
+            @click="LogInUser"
             class="flex h-auto w-[20%] items-center justify-end transition-transform duration-300 ease-in-out hover:scale-110"
           >
             <img src="/LogIn.png" alt="登入" />
@@ -197,51 +101,56 @@ onMounted(() => {
       </div>
     </div>
     <div
-      v-if="signIn"
-      @click="closeModal"
+      v-if="signUp"
+      @click="closeModel"
       class="fixed inset-0 z-10 flex h-full w-full items-center justify-center bg-black bg-opacity-50"
     >
       <div @click.stop class="animate-fade-in h-[50%] w-[50%] rounded-3xl bg-overlay p-[2%]">
         <div class="flex h-[20%] w-auto items-start justify-end">
           <button
-            @click="closeModal"
+            @click="closeModel"
             class="text-xl transition duration-200 ease-in-out hover:text-white"
           >
             X
           </button>
         </div>
         <div class="flex h-[20%] w-auto p-[1%] text-2xl">
-          <p class="flex h-auto w-[35%] items-center pl-[3%] font-neucha text-textColor">
+          <p class="flex h-auto w-[35%] items-center pl-[3%] font-neucha text-textColor2">
             使用者名稱：
           </p>
           <input
             v-model="username"
             type="text"
-            placeholder="Linda67890"
+            required
             class="h-auto w-[65%] border-b-2 border-textColor bg-transparent outline-none"
           />
         </div>
         <div class="flex h-[20%] w-auto p-[1%] text-2xl">
-          <p class="flex h-auto w-[35%] items-center pl-[3%] font-neucha text-textColor">
+          <p class="flex h-auto w-[35%] items-center pl-[3%] font-neucha text-textColor2">
             E-mail：
           </p>
           <input
             v-model="email"
             type="email"
+            required
             placeholder=" "
             class="h-auto w-[65%] border-b-2 border-textColor bg-transparent outline-none"
           />
         </div>
         <div class="flex h-[20%] w-auto p-[1%] text-2xl">
-          <p class="flex h-auto w-[35%] items-center pl-[3%] font-neucha text-textColor">密碼：</p>
+          <p class="flex h-auto w-[35%] items-center pl-[3%] font-neucha text-textColor2">密碼：</p>
           <input
             v-model="password"
             type="password"
+            required
             placeholder="請輸入6~13含有英數字的密碼"
             class="h-auto w-[65%] border-b-2 border-textColor bg-transparent outline-none"
           />
         </div>
         <div class="flex h-[20%] w-auto justify-end pr-[3%] pt-[2%]">
+          <div class="flex w-[80%] items-center justify-start">
+            <p class="pl-[1.4rem] font-neucha text-2xl text-red-600">{{ errorMessage }}</p>
+          </div>
           <button
             @click="RegisterUser"
             class="flex h-auto w-[20%] items-center justify-end transition-transform duration-300 ease-in-out hover:scale-110"
@@ -251,8 +160,165 @@ onMounted(() => {
         </div>
       </div>
     </div>
+    <div
+      v-if="showLoading"
+      class="fixed inset-0 z-10 flex w-full items-center justify-center bg-black bg-opacity-50"
+    >
+      <div class="animate-fade-in w-auto">
+        <Loading />
+      </div>
+    </div>
+    <div
+      v-if="showHint"
+      class="fixed inset-0 z-10 flex w-full items-center justify-center bg-black bg-opacity-50"
+    >
+      <div class="animate-fade-in w-auto">
+        <Hint :label="label" @close="showHint = false" />
+      </div>
+    </div>
   </div>
 </template>
+
+<script setup>
+import { ref } from 'vue'
+
+const email = ref('')
+const password = ref('')
+const errorMessage = ref('')
+const label = ref(' 登入失敗<br>（使用者帳號或密碼錯誤）')
+
+const username = useCookie('username')
+const token = useCookie('token')
+
+const logIn = ref(false)
+const signUp = ref(false)
+const showLoading = ref(false)
+const showHint = ref(false)
+
+const openModelLogin = () => {
+  logIn.value = true
+}
+
+const openModelSignUp = () => {
+  signUp.value = true
+}
+
+const openModelLoading = () => {
+  showLoading.value = true
+}
+
+const openModelHint = () => {
+  showHint.value = true
+}
+
+const closeModel = () => {
+  logIn.value = false
+  signUp.value = false
+
+  email.value = ''
+  password.value = ''
+  username.value = ''
+  errorMessage.value = ''
+}
+
+const closeLoading = () => {
+  showLoading.value = false
+}
+
+let showButtons = ref(false)
+let animationsEnded = ref(0)
+
+const handleAnimationEnd = () => {
+  animationsEnded.value++
+  if (animationsEnded.value >= 1) {
+    showButtons.value = true
+  }
+}
+
+const LogInUser = async () => {
+  if (!email.value || !password.value) {
+    errorMessage.value = '* 請填寫所有欄位 *'
+    await nextTick()
+    return
+  }
+
+  const emailRegex = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/
+  if (!emailRegex.test(email.value)) {
+    errorMessage.value = '* 請輸入有效的電子郵件 *'
+    await nextTick()
+    return
+  }
+
+  openModelLoading()
+
+  const { data, error, status } = await useFetch('http://localhost:8000/api/auth/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: {
+      email: email.value,
+      password: password.value
+    }
+  })
+
+  closeLoading()
+
+  if (status.value === 'success') {
+    token.value = data.value.token
+    username.value = data.value.user.name
+
+    await navigateTo({ path: '/question' })
+  } else if (error.value.statusCode == 401) {
+    label.value = ' 登入失敗（密碼錯誤）'
+    openModelHint()
+  } else if (error.value.statusCode == 404) {
+    label.value = ' 登入失敗<br>（使用者帳號錯誤）'
+    openModelHint()
+  }
+}
+
+const RegisterUser = async () => {
+  if (!username.value || !email.value || !password.value) {
+    errorMessage.value = '* 請填寫所有欄位 *'
+    await nextTick()
+    return
+  }
+
+  const emailRegex = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/
+  if (!emailRegex.test(email.value)) {
+    errorMessage.value = '* 請輸入有效的電子郵件地址 *'
+    await nextTick()
+    return
+  }
+
+  openModelLoading()
+
+  const { data, status } = await useFetch('http://localhost:8000/api/auth/register', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: {
+      name: username.value,
+      email: email.value,
+      password: password.value
+    }
+  })
+
+  closeLoading()
+
+  if (status.value === 'success') {
+    token.value = data.value.token
+    username.value = data.value.user.name
+
+    await navigateTo({ path: '/question' })
+  } else {
+    label.value = ' 註冊失敗<br>（Email 已被註冊過）'
+    openModelHint()
+  }
+}
+</script>
 
 <style scoped>
 @keyframes slide-in-from-left {
