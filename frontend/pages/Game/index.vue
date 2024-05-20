@@ -1,12 +1,13 @@
-
 <script setup>
 import { reactive, onMounted, ref, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 //
-const token = useCookie('token')
 const username = useCookie('username')
 const userid = useCookie('userid')
+
+// we can set a random number between 1 and 6
+const achievementid = useCookie('achievementid')
 
 // Cow variables
 const cowImage = ref('/CowRight.png')
@@ -161,8 +162,7 @@ const handleVolumeTest = () => {
 // Handle the game info start event
 // 【finish】 @@@ calculate time
 // 【finish】 ### sound on
-// $$$ 【get】 refresh token to update
-const handleGameInfoStart = async () => {
+const handleGameInfoStart = () => {
   isGameInfoVisible.value = false
   audioRefInGame.value.volume = volume.value
   audioRefInGame.value.play()
@@ -208,8 +208,9 @@ const toggleIGsetting = () => {
   }
 }
 
-// %%% first get answer of word before get refresh token
-onMounted( async () => {
+// $$$ 【get】 refresh token to update
+// %%% first 【get】 answer of word before get refresh token if no answer use loading
+onMounted(async () => {
   let cowX = Math.floor(Math.random() * 90)
   let cowY = Math.floor(Math.random() * 90)
   cowStyle.top = `${cowY}%`
@@ -232,6 +233,14 @@ onMounted( async () => {
     // Adjust the volume based on the distance
     if (audioRefInGame.value) {
       audioRefInGame.value.volume = Math.max(0.1, Math.min(1, 1.3 - (2 * distance) / 50))
+    }
+  })
+  const token = useCookie('token')
+  const { data, status, error } = await useFetch('http://localhost:8000/api/auth/refresh', {
+    method: 'GET',
+    headers: {
+      Authorization: 'Bearer ' + token.value,
+      'Content-Type': 'application/json'
     }
   })
 })
@@ -321,7 +330,6 @@ const handleBookClick = () => {
     isFading.value = true
     isAnswer.value = true
   }, 500)
-
 }
 </script>
 
@@ -346,7 +354,6 @@ const handleBookClick = () => {
         <source src="/mow.MP3" type="audio/mpeg" />
         Your browser does not support the audio element.
       </audio>
-
     </div>
     <div class="h-[10vh] w-full">
       <button
@@ -482,7 +489,6 @@ const handleBookClick = () => {
           </button>
         </div>
       </div>
-
     </div>
   </div>
 </template>
@@ -674,5 +680,4 @@ const handleBookClick = () => {
 .scale-150 {
   transform: scale(4);
 }
-
 </style>
