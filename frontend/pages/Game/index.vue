@@ -1,5 +1,6 @@
 <script setup>
 import { reactive, onMounted, ref, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 
 // Cow variables
 const cowImage = ref('/CowRight.png')
@@ -45,8 +46,39 @@ const pauseTime = ref(null)
 const timerId = ref(null)
 
 // Random redirect
-const randomRedirect = ref('/challenge')
+const redirectLink = ref('')
+const router = useRouter()
+
+// Bonus
 const showBonus = ref(false)
+const bonusAnimation = ref('')
+
+// Outside setting
+const showBonusCow = ref(false)
+
+const updateRedirect = () => {
+  const randomNumber = Math.random()
+  if (randomNumber < 0.9) {
+    showBonus.value = true
+    redirectLink.value = ''
+    isBookRightPageInvisible.value = false
+    isBookLeftPageInvisible.value = false
+    setTimeout(() => {
+      bonusAnimation.value = 'bonus-blink'
+    }, 1000)
+  } else {
+    router.push('/challenge')
+    console.log('Redirect to challenge')
+  }
+}
+
+const handleBonusClick = () => {
+  showBonus.value = false
+  bonusAnimation.value = ''
+  if (redirectLink.value) {
+    router
+  }
+}
 
 // Cow style
 const cowStyle = reactive({
@@ -262,21 +294,6 @@ const handleBookClick = () => {
     isAnswer.value = true
   }, 500)
 }
-
-const updateRedirect = () => {
-  randomRedirect.value = Math.random() < 0.1 ? '/challenge' : '/Bonus.png'
-  if (randomRedirect.value === '/challenge') {
-    router.push(randomRedirect.value)
-  } else {
-    showBonus.value = true
-  }
-}
-
-watch(randomRedirect, (newVal) => {
-  if (newVal === '/Bonus.png') {
-    showBonus.value = true
-  }
-})
 </script>
 
 <template>
@@ -284,6 +301,26 @@ watch(randomRedirect, (newVal) => {
     :class="{ 'bg-gray-200': showIGsetting }"
     class="grass-background h-[100vh] w-[100vw] bg-cover bg-no-repeat"
   >
+    <!-- user request -->
+    <div
+      class="absolute left-[45%] top-[50%] z-[10] h-[4rem] w-[8rem] scale-150 flex-col rounded-xl bg-[#E3C0A7]"
+    >
+      <p class="flex items-center justify-center font-shu text-[0.5rem]">A5和牛</p>
+      <div class="flex h-[2.5rem] w-full flex-row">
+        <div class="flex h-full w-[3rem] items-center justify-center">
+          <img src="/bonusCow.svg" alt="bonusCow" class="h-auto w-[60%]" />
+        </div>
+        <div class="flex h-full w-[5rem]">
+          <p
+            class="flex items-center justify-center rounded bg-textColor bg-opacity-50 p-1 font-shu text-[0.6rem]"
+          >
+            一隻可愛的小牛
+          </p>
+        </div>
+      </div>
+      <div class="flex h-[0.75rem] w-full"></div>
+    </div>
+
     <div>
       <GameInfoButton
         :show="isGameInfoVisible"
@@ -341,15 +378,12 @@ watch(randomRedirect, (newVal) => {
             v-if="isFading"
             class="absolute bottom-3 right-5 font-neucha text-4xl text-bookPageBorder"
           >
-            <Nuxt-link
+            <button
               @click="updateRedirect"
-              :to="randomRedirect"
               class="animation-fade-in transition-transform duration-300 ease-in-out hover:scale-125 hover:text-bookPageMiddle"
-              >NEXT>></Nuxt-link
             >
-            <div v-if="showBonus" class="bonus fixed left-[50%] top-[50%]">
-              <img src="/Bonus.png" alt="Bonus" class="animation-bonus-fade-in h-auto w-[100%]" />
-            </div>
+              NEXT>>
+            </button>
           </div>
         </div>
       </div>
@@ -376,6 +410,14 @@ watch(randomRedirect, (newVal) => {
         :style="bookStyle"
         @click="handleBookClick"
       />
+    </div>
+    <div
+      v-if="showBonus"
+      class="bonus absolute left-[60%] top-[50%]"
+      :class="bonusAnimation"
+      @click="handleBonusClick"
+    >
+      <img src="/Bonus.png" alt="Bonus" class="animation-bonus-fade-in h-auto w-[50%]" />
     </div>
   </div>
 </template>
@@ -547,6 +589,24 @@ watch(randomRedirect, (newVal) => {
 }
 
 .animation-bonus-fade-in {
-  animation: fade-in 2s ease-in;
+  animation: fade-in 1s ease-in;
+}
+
+@keyframes bonusBlink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.1;
+  }
+}
+
+.bonus-blink {
+  animation: bonusBlink 1s infinite;
+}
+
+.scale-150 {
+  transform: scale(4);
 }
 </style>
