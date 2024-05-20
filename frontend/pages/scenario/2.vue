@@ -80,7 +80,7 @@ const skip = async () => {
 
   await new Promise(requestAnimationFrame)
   await navigateTo({
-    path: '/scenario/3'
+    path: '/challenge'
   })
 }
 

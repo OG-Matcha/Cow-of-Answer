@@ -69,7 +69,7 @@ const nextText = async () => {
     await new Promise(requestAnimationFrame)
 
     await navigateTo({
-      path: '/challenge'
+      path: '/game/1'
     })
   }
 }
@@ -80,7 +80,7 @@ const skip = async () => {
 
   await new Promise(requestAnimationFrame)
   await navigateTo({
-    path: '/scenario/2'
+    path: '/game/1'
   })
 }
 
