@@ -862,7 +862,7 @@ components:
                 email:
                   type: string
                   description: 使用者email
-                psaaword:
+                password:
                     type: string
                     description: 使用者密碼
             required:
@@ -917,7 +917,7 @@ components:
                 email:
                   type: string
                   description: 使用者email
-                psaaword:
+                password:
                     type: string
                     description: 使用者密碼
             required:
@@ -933,7 +933,7 @@ components:
                 email:
                   type: string
                   description: 使用者email
-                psaaword:
+                password:
                     type: string
                     description: 使用者密碼
             required:
