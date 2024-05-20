@@ -1,30 +1,31 @@
 <template>
   <div class="fade-in h-screen w-full overflow-hidden bg-bg-color">
+    <audio loop ref="audioElement" src="/Scenario-1.mp3" preload="auto"></audio>
     <div class="flex h-[20%] w-[90%] justify-end">
-      <NuxtLink to="/mainPage" class="flex w-8 items-center">
+      <button @click="skip" class="flex w-8 items-center">
         <div class="flex items-center">
           <img src="/poly.png" alt="button" class="mr-3 w-[50%]" />
           <p class="font-neucha text-2xl">SKIP</p>
         </div>
-      </NuxtLink>
+      </button>
     </div>
     <div class="flex h-[40%] w-full items-start justify-around">
-      <img class="jump w-[15%]" src="/gress.svg" alt="grass" />
-      <img class="jump w-[15%]" src="/gress.svg" alt="grass" />
-      <img class="jump w-[15%]" src="/gress.svg" alt="grass" />
-      <img class="jump w-[15%]" src="/gress.svg" alt="grass" />
-      <img class="jump w-[15%]" src="/gress.svg" alt="grass" />
+      <img class="jump w-[15%]" src="/grass.svg" alt="grass" />
+      <img class="jump w-[15%]" src="/grass.svg" alt="grass" />
+      <img class="jump w-[15%]" src="/grass.svg" alt="grass" />
+      <img class="jump w-[15%]" src="/grass.svg" alt="grass" />
+      <img class="jump w-[15%]" src="/grass.svg" alt="grass" />
     </div>
     <div class="flex h-[40%] items-center justify-center">
       <img class="fixed left-[6rem] top-[28rem] w-[15%]" src="/cow4.svg" alt="cow" />
       <div class="flex w-[75%] flex-col rounded-3xl bg-[blanchedalmond]">
         <div class="h-[80%]">
-          <p class="p-[3rem] font-chen text-4xl text-listfont">
-            {{ text_1_start[textIndex] }}
+          <p class="h-full p-[3rem] font-chen text-4xl text-listfont">
+            {{ currentText }}
           </p>
         </div>
         <div class="flex h-[20%] justify-end">
-          <button @click="nextText">
+          <button @click="nextText" class="nextButton">
             <div class="mb-3 flex items-center">
               <img src="/Poly2.png" alt="button" class="mr-3 w-[30%]" />
               <p class="font-neucha text-2xl">NEXT</p>
@@ -39,18 +40,28 @@
 <script setup>
 import { ref } from 'vue'
 
-let text_1_start = [
+let text = [
   '因為人類的肆虐，我們能生活的土地越來越少了...',
   '我的爸爸為了尋找更廣闊的草原讓大家生活，離開了村子，丟下了年幼的我',
   '我並不怪他，我認為我的父親是英雄，只是過了那麼久，他怎麼還沒回來呢?',
   '現在我長大了，還是沒有老爸的消息，為了尋找他我踏上了旅程'
 ]
 
-let textIndex = ref(0)
+const textIndex = ref(-1)
+const currentText = ref('')
+const audioElement = ref(null)
 
 const nextText = async () => {
-  if (textIndex.value < text_1_start.length - 1) {
+  if (textIndex.value < text.length - 1) {
+    const button = document.querySelector('.nextButton')
+    button.disabled = true
     textIndex.value++
+    currentText.value = ''
+    for (let char of text[textIndex.value]) {
+      currentText.value += char
+      await new Promise((resolve) => setTimeout(resolve, 90))
+    }
+    button.disabled = false
   } else {
     const pageElement = document.querySelector('.fade-in')
     pageElement.classList.add('fade-out')
@@ -58,10 +69,26 @@ const nextText = async () => {
     await new Promise(requestAnimationFrame)
 
     await navigateTo({
-      path: '/Challenge'
+      path: '/challenge'
     })
   }
 }
+
+const skip = async () => {
+  const pageElement = document.querySelector('.fade-in')
+  pageElement.classList.add('fade-out')
+
+  await new Promise(requestAnimationFrame)
+  await navigateTo({
+    path: '/scenario/2'
+  })
+}
+
+onMounted(() => {
+  nextText()
+  audioElement.value.volume = 0.5
+  audioElement.value.play()
+})
 </script>
 
 <style scoped>
