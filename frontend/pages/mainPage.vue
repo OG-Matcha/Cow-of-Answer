@@ -249,6 +249,16 @@ const LogInUser = async () => {
     return
   }
 
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,13}$/
+  if (!passwordRegex.test(password.value)) {
+    errorMessage.value = '* 請輸入符合條件的密碼 *'
+    await nextTick()
+    return
+  }
+
+  errorMessage.value = ''
+  await nextTick()
+
   openModelLoading()
 
   const { data, error, status } = await useFetch('http://localhost:8000/api/auth/login', {
@@ -291,6 +301,16 @@ const RegisterUser = async () => {
     await nextTick()
     return
   }
+
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,13}$/
+  if (!passwordRegex.test(password.value)) {
+    errorMessage.value = '* 請輸入符合條件的密碼 *'
+    await nextTick()
+    return
+  }
+
+  errorMessage.value = ''
+  await nextTick()
 
   openModelLoading()
 
