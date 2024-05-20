@@ -2,6 +2,11 @@
 import { reactive, onMounted, ref, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 
+//
+const token = useCookie('token')
+const username = useCookie('username')
+const userid = useCookie('userid')
+
 // Cow variables
 const cowImage = ref('/CowRight.png')
 const hasClickedCow = ref(false)
@@ -52,11 +57,24 @@ const router = useRouter()
 // Bonus
 const showBonus = ref(false)
 const bonusAnimation = ref('')
+const isBonus = ref(false)
 
 // Outside setting
-const showBonusCow = ref(false)
+const showConfirm = ref(false)
 
-const updateRedirect = () => {
+// Gray background
+const showOverlay = ref(false)
+
+// Close confirm
+const cancelConfirm = () => {
+  showConfirm.value = false
+  showOverlay.value = false
+  audioRefInGame.value.play()
+  resumeTimer()
+}
+
+// Next navigation
+const updateRedirect = async () => {
   const randomNumber = Math.random()
   if (randomNumber < 0.9) {
     showBonus.value = true
@@ -67,17 +85,20 @@ const updateRedirect = () => {
       bonusAnimation.value = 'bonus-blink'
     }, 1000)
   } else {
-    router.push('/challenge')
+    await router.push('/challenge')
     console.log('Redirect to challenge')
   }
 }
 
-const handleBonusClick = () => {
+// Open bonus
+const openBonus = () => {
+  isBonus.value = true
   showBonus.value = false
-  bonusAnimation.value = ''
-  if (redirectLink.value) {
-    router
-  }
+}
+
+// Close bonus to next
+const handleBonusClick = () => {
+  isBonus.value = false
 }
 
 // Cow style
@@ -126,6 +147,7 @@ const resumeTimer = () => {
 
 const stopTimer = () => {
   clearInterval(timerId.value)
+
   console.log('Time stopped')
 }
 
@@ -138,8 +160,8 @@ const handleVolumeTest = () => {
 // Handle the game info start event
 // 【finish】 @@@ calculate time
 // 【finish】 ### sound on
-// $$$ get refresh token to update
-const handleGameInfoStart = () => {
+// $$$ 【get】 refresh token to update
+const handleGameInfoStart = async () => {
   isGameInfoVisible.value = false
   audioRefInGame.value.volume = volume.value
   audioRefInGame.value.play()
@@ -154,12 +176,16 @@ const handleExitClick = (event) => {
     event.preventDefault()
     return
   }
-  showButtons.value = false
+  showConfirm.value = true
   showIGsetting.value = false
+  showOverlay.value = true
+  audioRefInGame.value.pause()
+  pauseTimer()
 }
 
 const handleContinue = () => {
   showIGsetting.value = false
+  showOverlay.value = false
   audioRefInGame.value.play()
   resumeTimer()
 }
@@ -168,8 +194,9 @@ const handleContinue = () => {
 // 【finish】 @@@ stop time
 // 【finish】 ### stop sound
 const toggleIGsetting = () => {
-  if (isGameInfoVisible.value) return
+  if (showConfirm.value || isGameInfoVisible.value) return
   showIGsetting.value = !showIGsetting.value
+  showOverlay.value = showIGsetting.value
 
   if (showIGsetting.value) {
     audioRefInGame.value.pause()
@@ -181,7 +208,7 @@ const toggleIGsetting = () => {
 }
 
 // %%% first get answer of word before get refresh token
-onMounted(() => {
+onMounted( async () => {
   let cowX = Math.floor(Math.random() * 90)
   let cowY = Math.floor(Math.random() * 90)
   cowStyle.top = `${cowY}%`
@@ -213,11 +240,11 @@ onUnmounted(() => {
 })
 
 // Handle the cow click event
-// @@@ stop time
-// finish ### stop sound
+// 【finish】 @@@ stop time
+// 【finish】 ### stop sound
 // !!! send time to backend
 // ^^^ achievement (watch notepad)
-const handleClick = () => {
+const handleClick = async () => {
   if (isGameInfoVisible.value) return // Add condition to check if StartGameInfo is showing
   if (hasClickedCow.value) return // Prevent multiple cow clicks
   if (showIGsetting.value) return // Add condition to check if Setting is showing
@@ -298,29 +325,9 @@ const handleBookClick = () => {
 
 <template>
   <div
-    :class="{ 'bg-gray-200': showIGsetting }"
+    :class="{ 'bg-gray-200': showOverlay }"
     class="grass-background h-[100vh] w-[100vw] bg-cover bg-no-repeat"
   >
-    <!-- user request -->
-    <div
-      class="absolute left-[45%] top-[50%] z-[10] h-[4rem] w-[8rem] scale-150 flex-col rounded-xl bg-[#E3C0A7]"
-    >
-      <p class="flex items-center justify-center font-shu text-[0.5rem]">A5和牛</p>
-      <div class="flex h-[2.5rem] w-full flex-row">
-        <div class="flex h-full w-[3rem] items-center justify-center">
-          <img src="/bonusCow.svg" alt="bonusCow" class="h-auto w-[60%]" />
-        </div>
-        <div class="flex h-full w-[5rem]">
-          <p
-            class="flex items-center justify-center rounded bg-textColor bg-opacity-50 p-1 font-shu text-[0.6rem]"
-          >
-            一隻可愛的小牛
-          </p>
-        </div>
-      </div>
-      <div class="flex h-[0.75rem] w-full"></div>
-    </div>
-
     <div>
       <GameInfoButton
         :show="isGameInfoVisible"
@@ -415,9 +422,62 @@ const handleBookClick = () => {
       v-if="showBonus"
       class="bonus absolute left-[60%] top-[50%]"
       :class="bonusAnimation"
-      @click="handleBonusClick"
+      @click="openBonus"
     >
-      <img src="/Bonus.png" alt="Bonus" class="animation-bonus-fade-in h-auto w-[50%]" />
+      <img
+        src="/Bonus.png"
+        alt="Bonus"
+        class="animation-bonus-fade-in h-auto w-[50%] cursor-pointer"
+      />
+    </div>
+    <!-- user request -->
+    <div
+      v-if="isBonus"
+      class="animation-bonus-fade-in absolute left-[48%] top-[50%] z-[10] h-[4rem] w-[6rem] scale-150 flex-col rounded-xl bg-[#E3C0A7]"
+    >
+      <div class="flex h-[0.5rem] w-[6rem] items-center justify-center"></div>
+      <div class="flex h-[2.5rem] w-full flex-row">
+        <div class="flex h-full w-[3rem] items-center justify-center">
+          <img src="/bonusCow.svg" alt="bonusCow" class="h-auto w-[80%]" />
+        </div>
+        <div class="flex h-full w-[5rem]">
+          <p
+            class="flex items-center justify-center rounded bg-textColor bg-opacity-50 p-1 font-shu text-[0.9rem]"
+          >
+            A5和牛
+          </p>
+        </div>
+      </div>
+      <div class="flex h-[1rem] w-full items-center justify-center">
+        <button
+          @click="handleBonusClick"
+          class="flex h-[10%] w-[30%] items-center justify-center rounded-[1rem] bg-[#846e82] p-1 text-center text-[0.25rem] text-white no-underline"
+        >
+          NEXT
+        </button>
+      </div>
+    </div>
+    <div v-if="showConfirm" class="absolute left-[45%] top-[50%] z-[20]">
+      <div
+        class="flex w-[8rem] scale-150 flex-col items-center justify-center rounded-xl bg-[#E3C0A7]"
+      >
+        <div class="mt-1 flex h-[20%] w-[85%] justify-end">
+          <button class="w-[0.5rem]" @click="cancelConfirm">
+            <img src="/xx.svg" alt="x" />
+          </button>
+        </div>
+        <div class="flex">
+          <p class="font-shu text-[0.6rem]">是否確定要離開</p>
+        </div>
+        <div class="flex w-full items-center justify-around">
+          <button @click="cancelConfirm" class="m-2 w-[2rem]">
+            <img src="/cancel.svg" alt="cancel" />
+          </button>
+          <button @click="logOut" class="m-2 w-[2rem]">
+            <img src="/confirm.svg" alt="confirm" />
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
