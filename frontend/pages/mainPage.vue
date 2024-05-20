@@ -189,6 +189,7 @@ const label = ref(' 登入失敗<br>（使用者帳號或密碼錯誤）')
 
 const username = useCookie('username')
 const token = useCookie('token')
+const userid = useCookie('userid')
 
 const logIn = ref(false)
 const signUp = ref(false)
@@ -277,6 +278,7 @@ const LogInUser = async () => {
   if (status.value === 'success') {
     token.value = data.value.token
     username.value = data.value.user.name
+    userid.value = data.value.user.id
 
     await navigateTo({ path: '/question' })
   } else if (error.value.statusCode == 401) {
@@ -331,6 +333,7 @@ const RegisterUser = async () => {
   if (status.value === 'success') {
     token.value = data.value.token
     username.value = data.value.user.name
+    userid.value = data.value.user.id
 
     await navigateTo({ path: '/question' })
   } else {
