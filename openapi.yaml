@@ -715,7 +715,110 @@ paths:
               
     /api/book:
         get:
-            summary: 獲得答案
+            summary: 取得所有答案 (後台使用)
+            tags: 
+              - Book
+              
+            responses:
+                "200":
+                    description: 成功
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/AnswerList"
+                "401":
+                    description: 使用者 Token 不合格
+                    content:
+                      application/json:
+                          schema:
+                              $ref: "#/components/schemas/JwtError"
+                "404":
+                    description: 沒有找到答案
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        description: 沒有找到答案
+            security:
+              - jwt: []
+        post:
+            summary: 創建新答案 (後台使用)
+            tags: 
+              - Book
+
+            requestBody:
+              required: true
+              content:
+                  application/json:
+                      schema:
+                          $ref: '#/components/schemas/AnswerCreate'
+              
+            responses:
+                "200":
+                    description: 成功
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Answer"
+                "401":
+                    description: 使用者 Token 不合格
+                    content:
+                      application/json:
+                          schema:
+                              $ref: "#/components/schemas/JwtError"
+                "409":
+                    description: 答案已存在
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        description: 答案已存在
+            security:
+              - jwt: []
+    /api/book/{book_id}:
+        delete:
+            summary: 刪除特定答案 (後台使用)
+            tags: 
+              - Book
+
+            parameters:
+              - in: path
+                name: book_id
+                required: true
+                description: 答案的編號
+                schema:
+                    type: integer
+              
+            responses:
+                "204":
+                    description: 無內容
+                "401":
+                    description: 使用者 Token 不合格
+                    content:
+                      application/json:
+                          schema:
+                              $ref: "#/components/schemas/JwtError"
+                "404":
+                    description: 沒有找到答案
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        description: 沒有找到答案
+            security:
+              - jwt: []
+    /api/book/answer:
+        get:
+            summary: 取得隨機答案
             tags: 
               - Book
               
@@ -967,9 +1070,31 @@ components:
         Answer:
           type: object
           properties:
+            id:
+              type: integer
+              description: 答案編號
             answer:
               type: string
               description: 答案
+        
+        AnswerCreate:
+            type: object
+            properties:
+                answer:
+                  type: string
+                  description: 答案
+        
+        AnswerList:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: 答案編號
+              answer:
+                type: string
+                description: 答案
         
         
         ChallengeRankList:
