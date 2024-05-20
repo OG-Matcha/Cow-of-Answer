@@ -39,6 +39,7 @@ const hide = () => {
   emits('hide')
 }
 
+
 const continueGame = () => {
   emits('continueGame')
 }

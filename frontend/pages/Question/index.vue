@@ -84,6 +84,7 @@ import { ref, onMounted } from 'vue'
 
 const userName = useCookie('username')
 const openChallenge = useCookie('openChallenge')
+const skipScenario = useCookie('skipScenario')
 
 let originalText = `Hi, ${userName.value} ~ <br> 最近有什麼困擾著你? <br> 輸入你的問題 <br> 尋找封印在幕後的答案之牛！ <br> `
 const displayedText = ref('')
@@ -122,6 +123,12 @@ onMounted(async () => {
 
   if (status.value === 'success') {
     openChallenge.value = data.value.length
+
+    if (openChallenge.value == 3) {
+      skipScenario.value = true
+    } else {
+      skipScenario.value = false
+    }
   } else if (error.value.statusCode == 404) {
     openChallenge.value = 0
   }

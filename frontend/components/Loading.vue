@@ -11,6 +11,7 @@
   transform: scale(4);
 }
 
+/* from https://css-loaders.com/ */
 .loader {
   --w: 20ch;
   font-weight: bold;

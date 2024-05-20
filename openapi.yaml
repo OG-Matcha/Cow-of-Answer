@@ -5,6 +5,8 @@ info:
 tags:
     - name: User
       description: 與使用者有關的路由
+    - name: ChallengeRecord
+      description: 與關卡紀錄有關的路由
     - name: Authenticate
       description: 與驗證有關的路由
     - name: Achievement
@@ -182,6 +184,92 @@ paths:
                                     error:
                                         type: string
                                         description: 使用者未註冊
+            security:
+              - jwt: []
+
+    /api/challenge-record:
+        post:
+            summary: 創建使用者通關紀錄 (時間)
+            tags:
+                - ChallengeRecord
+            
+            description: 
+                當使用者通關時呼叫，會根據傳入的使用者 ID 與關卡編號去建立使用者與關卡的關聯，並記錄使用者通關時間 (以秒為單位)
+
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/RecordCreate'
+
+            responses:
+                "200":
+                    description: 成功
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/RecordCreate"
+                "401":
+                    description: 使用者 Token 不合格
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        description: 使用者帳號或密碼錯誤
+                "404":
+                    description: 找不到使用者
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        description: 使用者未註冊
+            security:
+              - jwt: []
+
+    /api/challenge-record/{challengeRecord-id}:
+        delete:
+            summary: 刪除使用者通關紀錄 (後台使用)
+            tags:
+                - ChallengeRecord
+
+            parameters:
+              - in: path
+                name: challengeRecord-id
+                required: true
+                description: 通關紀錄的 ID
+                schema:
+                    type: integer
+
+            responses:
+                "204":
+                    description: 無內容
+                "401":
+                    description: 使用者 Token 不合格
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        description: 使用者帳號或密碼錯誤
+                "404":
+                    description: 找不到通關紀錄
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        description: 找不到通關紀錄
             security:
               - jwt: []
 
@@ -715,7 +803,110 @@ paths:
               
     /api/book:
         get:
-            summary: 獲得答案
+            summary: 取得所有答案 (後台使用)
+            tags: 
+              - Book
+              
+            responses:
+                "200":
+                    description: 成功
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/AnswerList"
+                "401":
+                    description: 使用者 Token 不合格
+                    content:
+                      application/json:
+                          schema:
+                              $ref: "#/components/schemas/JwtError"
+                "404":
+                    description: 沒有找到答案
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        description: 沒有找到答案
+            security:
+              - jwt: []
+        post:
+            summary: 創建新答案 (後台使用)
+            tags: 
+              - Book
+
+            requestBody:
+              required: true
+              content:
+                  application/json:
+                      schema:
+                          $ref: '#/components/schemas/AnswerCreate'
+              
+            responses:
+                "200":
+                    description: 成功
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Answer"
+                "401":
+                    description: 使用者 Token 不合格
+                    content:
+                      application/json:
+                          schema:
+                              $ref: "#/components/schemas/JwtError"
+                "409":
+                    description: 答案已存在
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        description: 答案已存在
+            security:
+              - jwt: []
+    /api/book/{book_id}:
+        delete:
+            summary: 刪除特定答案 (後台使用)
+            tags: 
+              - Book
+
+            parameters:
+              - in: path
+                name: book_id
+                required: true
+                description: 答案的編號
+                schema:
+                    type: integer
+              
+            responses:
+                "204":
+                    description: 無內容
+                "401":
+                    description: 使用者 Token 不合格
+                    content:
+                      application/json:
+                          schema:
+                              $ref: "#/components/schemas/JwtError"
+                "404":
+                    description: 沒有找到答案
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        description: 沒有找到答案
+            security:
+              - jwt: []
+    /api/book/answer:
+        get:
+            summary: 取得隨機答案
             tags: 
               - Book
               
@@ -837,6 +1028,19 @@ components:
                 - name
                 - email
                 - password
+        
+        RecordCreate:
+            type: object
+            properties:
+                user_id:
+                    type: integer
+                    description: 使用者id
+                challenge_number:
+                    type: integer
+                    description: 關卡編號
+                best_time:
+                    type: integer
+                    description: 通關時間 (單位為 秒(s)，請自行轉換)
 
         DetailAchievement:
             type: object
@@ -967,9 +1171,31 @@ components:
         Answer:
           type: object
           properties:
+            id:
+              type: integer
+              description: 答案編號
             answer:
               type: string
               description: 答案
+        
+        AnswerCreate:
+            type: object
+            properties:
+                answer:
+                  type: string
+                  description: 答案
+        
+        AnswerList:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: 答案編號
+              answer:
+                type: string
+                description: 答案
         
         
         ChallengeRankList:

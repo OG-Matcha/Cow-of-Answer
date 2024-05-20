@@ -1,3 +1,4 @@
+
 <script setup>
 import { reactive, onMounted, ref, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
@@ -320,6 +321,7 @@ const handleBookClick = () => {
     isFading.value = true
     isAnswer.value = true
   }, 500)
+
 }
 </script>
 
@@ -344,6 +346,7 @@ const handleBookClick = () => {
         <source src="/mow.MP3" type="audio/mpeg" />
         Your browser does not support the audio element.
       </audio>
+
     </div>
     <div class="h-[10vh] w-full">
       <button
@@ -401,6 +404,7 @@ const handleBookClick = () => {
         :style="cowStyle"
         @click="handleClick"
       />
+
       <img
         v-if="showBook && bookDirection === 'Left'"
         :src="bookImageLeft"
@@ -478,6 +482,7 @@ const handleBookClick = () => {
           </button>
         </div>
       </div>
+
     </div>
   </div>
 </template>
@@ -669,4 +674,5 @@ const handleBookClick = () => {
 .scale-150 {
   transform: scale(4);
 }
+
 </style>

@@ -13,6 +13,7 @@
     >
       開始遊戲
     </button>
+
   </div>
 </template>
 

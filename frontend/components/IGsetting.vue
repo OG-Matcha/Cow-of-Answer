@@ -33,6 +33,7 @@
   </div>
 
   <GameInfoClose :show="showInfo" @hide="hideGameInfo" @continueGame="hideGameInfoAndContinue" />
+
 </template>
 
 <script setup>
