@@ -146,6 +146,7 @@ const closeModelSetting = () => {
 </script>
 
 <style scoped>
+/* from https://www.w3schools.com/howto/howto_css_custom_checkbox.asp */
 .container {
   display: block;
   position: relative;
