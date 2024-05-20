@@ -1,5 +1,6 @@
 <template>
   <div>
+    <audio loop ref="audioElement" src="/Background.mp3" preload="auto"></audio>
     <div class="flex h-[100vh] w-[100vw] bg-orange-50 p-[2%]">
       <button @click="openModelSetting">
         <img src="/Setting.png" alt="setting" class="fixed left-3 top-3 h-auto w-[3%]" />
@@ -117,8 +118,11 @@ const skipEnable = useCookie('skipEnable')
 let originalText = `Hi, ${userName.value} ~ <br> 在尋找COW的過程中 <br> 尋找自己吧！ <br>`
 const displayedText = ref('')
 const currentIndex = ref(0)
+const audioElement = ref(null)
 
 onMounted(() => {
+  audioElement.value.volume = 0.5
+  audioElement.value.play()
   const intervalId = setInterval(() => {
     if (currentIndex.value < originalText.length) {
       if (originalText.substr(currentIndex.value, 4) === '<br>') {
