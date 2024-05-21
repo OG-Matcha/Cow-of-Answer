@@ -25,7 +25,7 @@
         <button @click="cancelConfirm" class="m-2 w-[2rem]">
           <img src="/cancel.svg" alt="cancel" />
         </button>
-        <button @click="logOut" class="m-2 w-[2rem]">
+        <button @click="confirmExit" class="m-2 w-[2rem]">
           <img src="/confirm.svg" alt="confirm" />
         </button>
       </div>
@@ -33,7 +33,6 @@
   </div>
 
   <GameInfoClose :show="showInfo" @hide="hideGameInfo" @continueGame="hideGameInfoAndContinue" />
-
 </template>
 
 <script setup>
@@ -51,6 +50,10 @@ const confirm = () => {
 const cancelConfirm = () => {
   showConfirm.value = false
   showIGsetting.value = true
+}
+
+const confirmExit = async () => {
+  await navigateTo({ path: '/challenge' })
 }
 
 const emits = defineEmits(['continue'])

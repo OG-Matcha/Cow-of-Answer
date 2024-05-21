@@ -5,6 +5,8 @@ import { useRouter } from 'vue-router'
 //
 const username = useCookie('username')
 const userid = useCookie('userid')
+const answer = useCookie('answer')
+const token = useCookie('token')
 
 // we can set a random number between 1 and 6
 const achievementid = useCookie('achievementid')
@@ -39,7 +41,6 @@ const cowBookImage = ref('/CowLOGO.svg')
 const isCowBookImageInvisible = ref(false)
 
 // Answer
-const answer = ref('問題一定可以被解決')
 const isAnswer = ref(false)
 
 // Audio
@@ -50,6 +51,8 @@ const volume = ref(1)
 // Timer
 const gameStartTime = ref(null)
 const pauseTime = ref(null)
+const savedGameStartTime = ref(null)
+const second = ref(0)
 const timerId = ref(null)
 
 // Random redirect
@@ -61,11 +64,11 @@ const showBonus = ref(false)
 const bonusAnimation = ref('')
 const isBonus = ref(false)
 
-// Outside setting
-const showConfirm = ref(false)
-
 // Gray background
 const showOverlay = ref(false)
+
+// Outside setting
+const showConfirm = ref(false)
 
 // Close confirm
 const cancelConfirm = () => {
@@ -73,6 +76,13 @@ const cancelConfirm = () => {
   showOverlay.value = false
   audioRefInGame.value.play()
   resumeTimer()
+}
+
+// Confirm
+const confirm = async () => {
+  showConfirm.value = false
+  showOverlay.value = false
+  await navigateTo({ path: '/challenge' })
 }
 
 // Next navigation
@@ -87,7 +97,7 @@ const updateRedirect = async () => {
       bonusAnimation.value = 'bonus-blink'
     }, 1000)
   } else {
-    await router.push('/challenge')
+    await navigateTo({ path: '/challenge' })
     console.log('Redirect to challenge')
   }
 }
@@ -99,8 +109,9 @@ const openBonus = () => {
 }
 
 // Close bonus to next
-const handleBonusClick = () => {
+const handleBonusClick = async () => {
   isBonus.value = false
+  await navigateTo({ path: '/scenario/4' })
 }
 
 // Cow style
@@ -142,14 +153,14 @@ const resumeTimer = () => {
   gameStartTime.value += pauseDuration
   timerId.value = setInterval(() => {
     const gameTimeInMilliseconds = Date.now() - gameStartTime.value
-    const seconds = Math.floor(gameTimeInMilliseconds / 1000)
+    second.value = Math.floor(gameTimeInMilliseconds / 1000)
     console.log('Game time:', seconds, 'seconds')
   }, 1000)
 }
 
 const stopTimer = () => {
   clearInterval(timerId.value)
-
+  savedGameStartTime.value = gameStartTime.value
   console.log('Time stopped')
 }
 
@@ -235,14 +246,37 @@ onMounted(async () => {
       audioRefInGame.value.volume = Math.max(0.1, Math.min(1, 1.3 - (2 * distance) / 50))
     }
   })
-  const token = useCookie('token')
-  const { data, status, error } = await useFetch('http://localhost:8000/api/auth/refresh', {
+
+  // Refresh token
+  const { data } = await useFetch('http://localhost:8000/api/auth/refresh', {
     method: 'GET',
     headers: {
       Authorization: 'Bearer ' + token.value,
       'Content-Type': 'application/json'
     }
   })
+
+  token.value = data.value.token
+  useCookie('token', token.value)
+
+  // Get the answer
+  const {
+    data: data2,
+    status: status2,
+    error: error2
+  } = await useFetch('http://localhost:8000/api/book/answer', {
+    method: 'GET',
+    headers: {
+      Authorization: 'Bearer ' + token.value,
+      'Content-Type': 'application/json'
+    }
+  })
+
+  if (status2.value === 'success') {
+    answer.value = data2.value.answer
+  } else if (error2.value.statusCode == 404) {
+    answer.value = '問題一定可以被解決'
+  }
 })
 
 onUnmounted(() => {
@@ -262,15 +296,15 @@ const handleClick = async () => {
   hasClickedCow.value = true // Prevent multiple cow clicks
   audioRefInGame.value.pause()
 
+  // Stop Timer
+  stopTimer()
+
   // Set the cow style
   cowStyle.top = '50%'
   cowStyle.left = '50%'
   cowStyle.width = '15%'
   cowStyle.height = 'auto'
   cowStyle.opacity = '1'
-
-  // Stop Timer
-  stopTimer()
 
   // Set the book show style
   setTimeout(() => {
@@ -307,6 +341,24 @@ const handleClick = async () => {
     bookStyle.height = 'auto'
     bookAnimationClass.value = 'book-blink'
   }, 2800)
+
+  // Send the time to the backend
+  const { error } = await useFetch('http://localhost:8000/api/challenge-record', {
+    method: 'POST',
+    headers: {
+      Authorization: 'Bearer ' + token.value,
+      'Content-Type': 'application/json'
+    },
+    body: {
+      user_id: userid.value,
+      challenge_number: 2,
+      best_time: savedGameStartTime.value
+    }
+  })
+
+  if (error.value.statusCode == 404) {
+    console.log('Error:', error.value)
+  }
 }
 
 // Handle the book click event
@@ -484,7 +536,7 @@ const handleBookClick = () => {
           <button @click="cancelConfirm" class="m-2 w-[2rem]">
             <img src="/cancel.svg" alt="cancel" />
           </button>
-          <button @click="logOut" class="m-2 w-[2rem]">
+          <button @click="confirm" class="m-2 w-[2rem]">
             <img src="/confirm.svg" alt="confirm" />
           </button>
         </div>
