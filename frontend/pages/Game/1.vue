@@ -38,6 +38,7 @@ const isCowBookImageInvisible = ref(false)
 
 // Answer
 const isAnswer = ref(false)
+const answer = ref('')
 
 // Audio
 const audioRefInfo = ref(null)
@@ -384,7 +385,7 @@ const handleClick = async () => {
       'Content-Type': 'application/json'
     },
     body: {
-      user_id: userid.value,
+      user_id: parseInt(userid.value),
       challenge_number: 1,
       best_time: second.value
     }

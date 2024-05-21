@@ -24,8 +24,6 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue'
-
 const audioRefRestart = ref(null)
 const volume = ref(1)
 
@@ -38,7 +36,6 @@ const emits = defineEmits(['hide', 'continueGame'])
 const hide = () => {
   emits('hide')
 }
-
 
 const continueGame = () => {
   emits('continueGame')
