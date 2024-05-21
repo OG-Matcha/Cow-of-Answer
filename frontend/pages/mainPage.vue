@@ -72,6 +72,7 @@
             type="email"
             placeholder=" "
             required
+            @keydown.enter.prevent.prevent="LoginUser"
             class="h-auto w-[70%] border-b-2 border-textColor bg-transparent outline-none"
           />
         </div>
@@ -84,6 +85,7 @@
             type="password"
             placeholder=" "
             required
+            @keydown.enter.prevent="LoginUser"
             class="h-auto w-[70%] border-b-2 border-textColor bg-transparent outline-none"
           />
         </div>
@@ -122,6 +124,7 @@
             v-model="username"
             type="text"
             required
+            @keydown.enter.prevent="RegisterUser"
             class="h-auto w-[65%] border-b-2 border-textColor bg-transparent outline-none"
           />
         </div>
@@ -133,6 +136,7 @@
             v-model="email"
             type="email"
             required
+            @keydown.enter.prevent="RegisterUser"
             placeholder=" "
             class="h-auto w-[65%] border-b-2 border-textColor bg-transparent outline-none"
           />
@@ -143,6 +147,7 @@
             v-model="password"
             type="password"
             required
+            @keydown.enter.prevent="RegisterUser"
             placeholder="請輸入6~13含有英數字的密碼"
             class="h-auto w-[65%] border-b-2 border-textColor bg-transparent outline-none"
           />
