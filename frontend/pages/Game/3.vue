@@ -1,15 +1,9 @@
 <script setup>
 import { reactive, onMounted, ref, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
 
-//
-const username = useCookie('username')
 const userid = useCookie('userid')
 const answer = useCookie('answer')
 const token = useCookie('token')
-
-// we can set a random number between 1 and 6
-const achievementid = useCookie('achievementid')
 
 // Cow variables
 const cowImage = ref('/CowRight.png')
@@ -57,7 +51,6 @@ const timerId = ref(null)
 
 // Random redirect
 const redirectLink = ref('')
-const router = useRouter()
 
 // Bonus
 const showBonus = ref(false)
@@ -97,8 +90,8 @@ const updateRedirect = async () => {
       bonusAnimation.value = 'bonus-blink'
     }, 1000)
   } else {
-    await navigateTo({ path: '/challenge' })
-    console.log('Redirect to challenge')
+    await navigateTo({ path: '/scenario/6' })
+    // console.log('Redirect to challenge')
   }
 }
 
@@ -118,10 +111,10 @@ const handleBonusClick = async () => {
 const cowStyle = reactive({
   top: '0%',
   left: '0%',
-  width: '1%',
+  width: '1.5%',
   height: 'auto',
-  transform: 'translate(-50%, -50%)'
-  // opacity: '0'
+  transform: 'translate(-50%, -50%)',
+  opacity: '0'
 })
 
 // Book style
@@ -137,15 +130,15 @@ const startTimer = () => {
   gameStartTime.value = Date.now()
   timerId.value = setInterval(() => {
     const gameTimeInMilliseconds = Date.now() - gameStartTime.value
-    const seconds = Math.floor(gameTimeInMilliseconds / 1000)
-    console.log('Game time:', seconds, 'seconds')
+    second.value = Math.floor(gameTimeInMilliseconds / 1000)
+    // console.log('Game time:', seconds, 'seconds')
   }, 1000)
 }
 
 const pauseTimer = () => {
   clearInterval(timerId.value)
   pauseTime.value = Date.now()
-  console.log('Game paused')
+  // console.log('Game paused')
 }
 
 const resumeTimer = () => {
@@ -154,14 +147,14 @@ const resumeTimer = () => {
   timerId.value = setInterval(() => {
     const gameTimeInMilliseconds = Date.now() - gameStartTime.value
     second.value = Math.floor(gameTimeInMilliseconds / 1000)
-    console.log('Game time:', seconds, 'seconds')
+    // console.log('Game time:', seconds, 'seconds')
   }, 1000)
 }
 
 const stopTimer = () => {
   clearInterval(timerId.value)
   savedGameStartTime.value = gameStartTime.value
-  console.log('Time stopped')
+  // console.log('Time stopped')
 }
 
 // Info Volume Test
@@ -203,8 +196,6 @@ const handleContinue = () => {
 }
 
 // Toggle the IGsetting component
-// 【finish】 @@@ stop time
-// 【finish】 ### stop sound
 const toggleIGsetting = () => {
   if (showConfirm.value || isGameInfoVisible.value) return
   showIGsetting.value = !showIGsetting.value
@@ -219,8 +210,6 @@ const toggleIGsetting = () => {
   }
 }
 
-// $$$ 【get】 refresh token to update
-// %%% first 【get】 answer of word before get refresh token if no answer use loading
 onMounted(async () => {
   let cowX = Math.floor(Math.random() * 90)
   let cowY = Math.floor(Math.random() * 90)
@@ -247,24 +236,8 @@ onMounted(async () => {
     }
   })
 
-  // Refresh token
-  const { data } = await useFetch('http://localhost:8000/api/auth/refresh', {
-    method: 'GET',
-    headers: {
-      Authorization: 'Bearer ' + token.value,
-      'Content-Type': 'application/json'
-    }
-  })
-
-  token.value = data.value.token
-  useCookie('token', token.value)
-
   // Get the answer
-  const {
-    data: data2,
-    status: status2,
-    error: error2
-  } = await useFetch('http://localhost:8000/api/book/answer', {
+  const { data, status, error } = await useFetch('http://localhost:8000/api/book/answer', {
     method: 'GET',
     headers: {
       Authorization: 'Bearer ' + token.value,
@@ -272,11 +245,23 @@ onMounted(async () => {
     }
   })
 
-  if (status2.value === 'success') {
-    answer.value = data2.value.answer
-  } else if (error2.value.statusCode == 404) {
+  if (status.value === 'success') {
+    answer.value = data.value.answer
+  } else if (error.value.statusCode == 404) {
     answer.value = '問題一定可以被解決'
   }
+
+  // Refresh token
+  const { data: data2 } = await useFetch('http://localhost:8000/api/auth/refresh', {
+    method: 'GET',
+    headers: {
+      Authorization: 'Bearer ' + token.value,
+      'Content-Type': 'application/json'
+    }
+  })
+
+  token.value = data2.value.token
+  useCookie('token', token.value)
 })
 
 onUnmounted(() => {
@@ -284,14 +269,10 @@ onUnmounted(() => {
 })
 
 // Handle the cow click event
-// 【finish】 @@@ stop time
-// 【finish】 ### stop sound
-// !!! send time to backend
-// ^^^ achievement (watch notepad)
 const handleClick = async () => {
-  if (isGameInfoVisible.value) return // Add condition to check if StartGameInfo is showing
-  if (hasClickedCow.value) return // Prevent multiple cow clicks
-  if (showIGsetting.value) return // Add condition to check if Setting is showing
+  if (isGameInfoVisible.value) return
+  if (hasClickedCow.value) return
+  if (showIGsetting.value) return
   showButtons.value = false
   hasClickedCow.value = true // Prevent multiple cow clicks
   audioRefInGame.value.pause()
@@ -326,9 +307,9 @@ const handleClick = async () => {
   setTimeout(() => {
     cowStyle.transition = 'left 2.5s'
     if (bookDirection.value === 'Right') {
-      cowStyle.left = '-15%' // Move the cow to the right outside of the screen
+      cowStyle.left = '-15%' // Move the cow to the right outside
     } else {
-      cowStyle.left = '115%' // Move the cow to the left outside of the screen
+      cowStyle.left = '115%' // Move the cow to the left outside
     }
   }, 1500)
 
@@ -351,7 +332,7 @@ const handleClick = async () => {
     },
     body: {
       user_id: userid.value,
-      challenge_number: 3,
+      challenge_number: 2,
       best_time: savedGameStartTime.value
     }
   })
@@ -377,7 +358,7 @@ const handleBookClick = () => {
 
   setTimeout(() => {
     isBookLeftPageInvisible.value = true
-    isLeftFlipped.value = true // 点击书本时切换左侧背景翻转状态
+    isLeftFlipped.value = true
     isCowBookImageInvisible.value = true
     isFading.value = true
     isAnswer.value = true
@@ -493,7 +474,6 @@ const handleBookClick = () => {
         class="animation-bonus-fade-in h-auto w-[50%] cursor-pointer"
       />
     </div>
-    <!-- user request -->
     <div
       v-if="isBonus"
       class="animation-bonus-fade-in absolute left-[48%] top-[50%] z-[10] h-[4rem] w-[6rem] scale-150 flex-col rounded-xl bg-[#E3C0A7]"
