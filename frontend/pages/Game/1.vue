@@ -2,7 +2,6 @@
 import { reactive, onMounted, ref, onUnmounted } from 'vue'
 
 const userid = useCookie('userid')
-const answer = useCookie('answer')
 const token = useCookie('token')
 
 // Cow variables
@@ -36,6 +35,7 @@ const isCowBookImageInvisible = ref(false)
 
 // Answer
 const isAnswer = ref(false)
+const answer = ref('')
 
 // Audio
 const audioRefInfo = ref(null)
@@ -51,7 +51,6 @@ const timerId = ref(null)
 
 // Random redirect
 const redirectLink = ref('')
-const router = useRouter()
 
 // Bonus
 const showBonus = ref(false)
@@ -63,6 +62,36 @@ const showOverlay = ref(false)
 
 // Outside setting
 const showConfirm = ref(false)
+
+// Achievement
+const achievementList = ref(['A5和牛', '五花牛', '雪花牛', '培根牛', '霜降牛', '安格斯牛'])
+const achievementImageList = ref([
+  '/A5Cow.svg',
+  '/FiveFlowerCow.svg',
+  '/SnowFlakeCow.svg',
+  '/BaconCow.svg',
+  '/FrostCow.svg',
+  '/AngusCow.svg'
+])
+const achievementIndex = ref(0)
+
+//// Generate a random index with different probabilities
+const generateRandomIndex = () => {
+  const probabilities = [0.01, 0.06, 0.06, 0.29, 0.29, 0.29]
+  const sum = probabilities.reduce((a, b) => a + b, 0)
+  const random = Math.random() * sum
+  let tempSum = 0
+  for (let i = 0; i < probabilities.length; i++) {
+    tempSum += probabilities[i]
+    if (random <= tempSum) {
+      return i
+    }
+  }
+  return probabilities.length - 1
+}
+
+// Use the function to set the achievementIndex
+achievementIndex.value = generateRandomIndex()
 
 // Close confirm
 const cancelConfirm = () => {
@@ -114,8 +143,8 @@ const cowStyle = reactive({
   left: '0%',
   width: '5%',
   height: 'auto',
-  transform: 'translate(-50%, -50%)',
-  opacity: '0'
+  transform: 'translate(-50%, -50%)'
+  // opacity: '0'
 })
 
 // Book style
@@ -332,9 +361,9 @@ const handleClick = async () => {
       'Content-Type': 'application/json'
     },
     body: {
-      user_id: userid.value,
+      user_id: parseInt(userid.value),
       challenge_number: 1,
-      best_time: savedGameStartTime.value
+      best_time: parseInt(savedGameStartTime.value)
     }
   })
 
@@ -379,12 +408,12 @@ const handleBookClick = () => {
         @close="handleGameInfoStart"
       />
 
-      <audio ref="audioRefInfo" controls autoplay style="display: none">
+      <audio ref="audioRefInfo" controls style="display: none">
         <source src="/mow.MP3" type="audio/mpeg" />
         Your browser does not support the audio element.
       </audio>
 
-      <audio ref="audioRefInGame" controls loop autoplay style="display: none">
+      <audio ref="audioRefInGame" controls loop style="display: none">
         <source src="/mow.MP3" type="audio/mpeg" />
         Your browser does not support the audio element.
       </audio>
@@ -407,7 +436,7 @@ const handleBookClick = () => {
     <div class="relative h-[87vh] w-full overflow-hidden">
       <div
         v-if="isBookLeftPageInvisible"
-        class="bookLeftPage absolute left-[26%] top-[10%] z-auto h-[81%] w-[24%] border-[6px] border-solid border-bookPageBorder bg-bookPage"
+        class="bookLeftPage absolute left-[26%] top-[10%] z-auto h-[31.5rem] w-[22.5rem] border-[6px] border-solid border-bookPageBorder bg-bookPage"
         :class="{ leftFlipped: isLeftFlipped }"
       >
         <img
@@ -419,7 +448,7 @@ const handleBookClick = () => {
       </div>
       <div
         v-if="isBookRightPageInvisible"
-        class="bookRightPage absolute left-[50%] top-[10%] z-auto h-[81%] w-[24%] border-[6px] border-solid border-bookPageBorder bg-bookPage"
+        class="bookRightPage absolute left-[50%] top-[10%] z-auto h-[31.5rem] w-[22.5rem] border-[6px] border-solid border-bookPageBorder bg-bookPage"
       >
         <div class="h-[80%] w-auto pl-[5%] pr-[5%] pt-[50%] text-center text-5xl">
           <div v-if="isFading" v-text="answer" class="animation-fade-in font-shu text-answer"></div>
@@ -482,13 +511,17 @@ const handleBookClick = () => {
       <div class="flex h-[0.5rem] w-[6rem] items-center justify-center"></div>
       <div class="flex h-[2.5rem] w-full flex-row">
         <div class="flex h-full w-[3rem] items-center justify-center">
-          <img src="/bonusCow.svg" alt="bonusCow" class="h-auto w-[80%]" />
+          <img
+            :src="achievementImageList[achievementIndex]"
+            :alt="achievementList[achievementIndex]"
+            class="h-auto w-[80%]"
+          />
         </div>
         <div class="flex h-full w-[5rem]">
           <p
-            class="flex items-center justify-center rounded bg-textColor bg-opacity-50 p-1 font-shu text-[0.9rem]"
+            class="flex items-center justify-center rounded bg-textColor bg-opacity-50 p-1 font-shu text-[0.75rem]"
           >
-            A5和牛
+            {{ achievementList[achievementIndex] }}
           </p>
         </div>
       </div>
