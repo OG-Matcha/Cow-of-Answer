@@ -95,7 +95,11 @@
           {{ time }}
         </div>
         <div class="h-[5vh] w-auto"></div>
+        <<<<<<< HEAD
         {{ Ytime || '--:--:--' }}
+        =======
+        {{ Ytime.value || '--:--:--' }}
+        >>>>>>> c193ba3 (add: 1.vue串接)
       </div>
     </div>
     <div
@@ -111,7 +115,6 @@
 
 <script setup>
 import { ref } from 'vue'
-
 const username = useCookie('username')
 const showLoading = ref(true)
 
