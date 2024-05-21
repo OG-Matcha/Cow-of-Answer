@@ -66,20 +66,38 @@ const closeContent = () => {
         <button @click="openContent(1)" v-if="id.includes(1)" class="h-[100%] w-auto">
           <img src="/3starCow.png" alt="" class="h-[70%] w-auto" />
         </button>
-        <img v-else src="/question.png" alt="" class="h-[70%] w-auto" />
+        <img
+          v-else
+          src="/question.png"
+          alt=""
+          class="h-[70%] w-auto"
+          :style="{ filter: 'brightness(75%)' }"
+        />
       </div>
       <div class="flex h-1/3 w-auto">
         <div class="flex h-auto w-1/2 items-center justify-center">
           <button @click="openContent(2)" v-if="id.includes(2)" class="h-[100%] w-auto">
             <img src="/兩星牛1.png" alt="" class="h-[70%] w-auto" />
           </button>
-          <img v-else src="/question.png" alt="" class="h-[70%] w-auto" />
+          <img
+            v-else
+            src="/question.png"
+            alt=""
+            class="h-[70%] w-auto"
+            :style="{ filter: 'brightness(75%)' }"
+          />
         </div>
         <div class="flex h-auto w-1/2 items-center justify-center">
           <button @click="openContent(3)" v-if="id.includes(3)" class="h-[100%] w-auto">
             <img src="/兩星牛2.png" alt="" class="h-[70%] w-auto" />
           </button>
-          <img v-else src="/question.png" alt="" class="h-[70%] w-auto" />
+          <img
+            v-else
+            src="/question.png"
+            alt=""
+            class="h-[70%] w-auto"
+            :style="{ filter: 'brightness(75%)' }"
+          />
         </div>
       </div>
       <div class="flex h-1/3 w-auto">
@@ -87,19 +105,37 @@ const closeContent = () => {
           <button @click="openContent(4)" v-if="id.includes(4)" class="h-[100%] w-auto">
             <img src="/一星牛1.png" alt="" class="h-[70%] w-auto" />
           </button>
-          <img v-else src="/question.png" alt="" class="h-[70%] w-auto" />
+          <img
+            v-else
+            src="/question.png"
+            alt=""
+            class="h-[70%] w-auto"
+            :style="{ filter: 'brightness(75%)' }"
+          />
         </div>
         <div class="flex h-auto w-1/3 items-center justify-center">
           <button @click="openContent(5)" v-if="id.includes(5)" class="h-[100%] w-auto">
             <img src="/一星牛2.png" alt="" class="h-[70%] w-auto" />
           </button>
-          <img v-else src="/question.png" alt="" class="h-[70%] w-auto" />
+          <img
+            v-else
+            src="/question.png"
+            alt=""
+            class="h-[70%] w-auto"
+            :style="{ filter: 'brightness(75%)' }"
+          />
         </div>
         <div class="flex h-auto w-1/3 items-center justify-center">
           <button @click="openContent(6)" v-if="id.includes(6)" class="h-[100%] w-auto">
             <img src="/一星牛3.png" alt="" class="h-[70%] w-auto" />
           </button>
-          <img v-else src="/question.png" alt="" class="h-[70%] w-auto" />
+          <img
+            v-else
+            src="/question.png"
+            alt=""
+            class="h-[70%] w-auto"
+            :style="{ filter: 'brightness(75%)' }"
+          />
         </div>
       </div>
     </div>
@@ -107,10 +143,10 @@ const closeContent = () => {
 </template>
 <style scoped>
 .background {
-  background-image: url('bookcase.png'); /* 假設 bookcase.jpg 在 assets 目錄下 */
-  background-size: cover; /* 背景圖片覆蓋整個元素 */
-  background-position: center; /* 背景圖片居中 */
-  background-repeat: no-repeat; /* 背景圖片不重複 */
+  background-image: url('bookcase.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   height: 90%;
   width: 100%;
 }

@@ -6,7 +6,7 @@
     >
       <div class="font space-y-19 r-50% flex flex-col items-center justify-center font-chen">
         <button class="font" @click="confirm">登出</button>
-        <NuxtLink to="/table" class="font mt-[1.25vh]">排行榜</NuxtLink>
+        <NuxtLink to="/table/1" class="font mt-[1.25vh]">排行榜</NuxtLink>
         <NuxtLink to="/achievement" class="font mt-[1.25vh]">收藏集</NuxtLink>
       </div>
     </div>
