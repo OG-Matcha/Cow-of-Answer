@@ -15,7 +15,7 @@ const times = ref([
   '00:77:77'
 ])
 const showList = ref(false)
-const Yrank = ref('99th')
+const Yrank = ref('4th')
 const Yname = ref('linda')
 const Ytime = ref('100:00:00')
 const openModalL = () => {
@@ -97,21 +97,36 @@ const closeModal = () => {
     </div>
     <div class="flex h-[60%] w-auto justify-center font-neucha text-xl">
       <div class="flex h-auto w-1/3 flex-col items-center">
-        <div v-for="(rank, index) in ranks" :key="index" class="m-[2%] text-xl">
+        <div
+          v-for="(rank, index) in ranks"
+          :key="index"
+          class="m-[2%] text-xl"
+          :class="{ 'text-red-500': Yrank === rank }"
+        >
           {{ rank }}
         </div>
         <div class="h-[5vh] w-auto"></div>
         {{ Yrank }}
       </div>
       <div class="flex h-auto w-1/3 flex-col items-center text-lg">
-        <div v-for="(name, index) in names.slice(-7)" :key="index" class="m-[2%] text-xl">
+        <div
+          v-for="(name, index) in names.slice(-7)"
+          :key="index"
+          class="m-[2%] text-xl"
+          :class="{ 'text-red-500': Yrank === ranks.slice(-7)[index] }"
+        >
           {{ name }}
         </div>
         <div class="h-[5vh] w-auto">...</div>
         {{ Yname }}
       </div>
       <div class="flex h-auto w-1/3 flex-col items-center text-lg">
-        <div v-for="(time, index) in times.slice(-7)" :key="index" class="m-[2%] text-xl">
+        <div
+          v-for="(time, index) in times.slice(-7)"
+          :key="index"
+          class="m-[2%] text-xl"
+          :class="{ 'text-red-500': Yrank === ranks.slice(-7)[index] }"
+        >
           {{ time }}
         </div>
         <div class="h-[5vh] w-auto"></div>
