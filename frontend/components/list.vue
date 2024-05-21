@@ -20,7 +20,7 @@ const logOut = () => {
       >排行榜</NuxtLink
     >
     <NuxtLink
-      to="/"
+      to="http://localhost:3000/achievement"
       class="no-scale flex h-[20%] w-auto items-start justify-center font-chen text-xs"
       >收藏集</NuxtLink
     >

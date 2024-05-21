@@ -1,7 +1,10 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 // import { useCookie } from 'vue-cookie-next'
-
+// const pendding = ref(true)
+// onMounted(async () => {
+//   isLoading.value = false
+// })
 const email = ref('')
 const password = ref('')
 const username = ref('')
@@ -19,6 +22,9 @@ const openModalS = () => {
 const closeModal = () => {
   logIn.value = false
   signIn.value = false
+  email.value = ''
+  password.value = ''
+  username.value = ''
 }
 
 let showButtons = ref(false)

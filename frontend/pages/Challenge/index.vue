@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import List from '@/components/list.vue'
+// import List from '@/components/list.vue'
 
 let userName = ref('User')
 let originalText = `Hi, ${userName.value} ~ <br> 在尋找COW的過程中 <br> 尋找自己吧！ <br>`
