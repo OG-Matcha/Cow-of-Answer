@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -32,6 +33,16 @@ class User extends Authenticatable implements JWTSubject
     protected $hidden = [
         'password',
     ];
+
+    public function challengeRecords(): HasMany
+    {
+        return $this->hasMany(ChallengeRecord::class);
+    }
+
+    public function linkAchievements(): HasMany
+    {
+        return $this->hasMany(UserAchievement::class);
+    }
 
     /**
      * Set the user's password.
@@ -66,5 +77,15 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($user) {
+            $user->challengeRecords()->delete();
+            $user->linkAchievement()->delete();
+        });
     }
 }

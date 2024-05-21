@@ -57,6 +57,7 @@ your_folder/
     ├── frontend/
     ├── backend/
     ├── mysql/
+    ├── redis/
     ├── nginx/
     └── docker-compose.yaml
 ```

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Achievement extends Model
 {
@@ -17,4 +18,18 @@ class Achievement extends Model
         'image',
         'star'
     ];
+
+    public function linkusers(): HasMany
+    {
+        return $this->hasMany(UserAchievement::class);
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($achievement) {
+            $achievement->linkusers()->delete();
+        });
+    }
 }
