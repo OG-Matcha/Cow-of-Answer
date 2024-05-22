@@ -50,7 +50,7 @@ const closeContent = () => {
           <div class="h-[60%] w-auto p-[1%] font-chen text-2xl">好吃好吃</div>
         </div>
         <div v-else-if="selectedId == 6">
-          <div class="h-[30%] w-auto font-chen text-4xl">NAME:和牛</div>
+          <div class="h-[30%] w-auto font-chen text-4xl">NAME:安格斯牛</div>
           <div class="h-[60%] w-auto p-[1%] font-chen text-2xl">好吃好吃</div>
         </div>
       </div>
