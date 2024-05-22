@@ -149,11 +149,16 @@
 
 <script setup>
 import { onMounted, ref } from 'vue'
-const id = ref([])
-const showLoading = ref(true)
+const showLoading = ref(false)
 
 const selectedId = ref(null)
 const showContent = ref(false)
+
+const id = useCookie('id', {
+  default: () => [],
+  maxAge: 600
+})
+
 const openContent = (id) => {
   showContent.value = true
   selectedId.value = id
@@ -163,27 +168,34 @@ const closeContent = () => {
 }
 onMounted(async () => {
   const token = useCookie('token')
-  const { data, status, error } = await useFetch('http://localhost:8000/api/user-achievement', {
-    method: 'GET',
-    headers: {
-      Authorization: 'Bearer ' + token.value,
-      'Content-Type': 'application/json'
-    }
-  })
 
-  if (status.value === 'success') {
-    for (let i = 0; i < data.value.length; i++) {
-      id.value.push(data.value[i].achievement_id)
+  console.log(id.value)
+
+  if (id.value.length == 0) {
+    showLoading.value = true
+
+    const { data, status, error } = await useFetch('http://localhost:8000/api/user-achievement', {
+      method: 'GET',
+      headers: {
+        Authorization: 'Bearer ' + token.value,
+        'Content-Type': 'application/json'
+      }
+    })
+
+    if (status.value === 'success') {
+      for (let i = 0; i < data.value.length; i++) {
+        id.value.push(data.value[i].achievement_id)
+      }
+    } else if (error.value.statusCode == 404) {
+      console.log(error)
+      console.log(id.value)
+      id.value = []
+    } else if (error.value.statusCode == 401) {
+      console.log(error)
+      console.log('請先登入')
     }
-  } else if (error.value.statusCode == 404) {
-    console.log(error)
-    console.log(id.value)
-    id.value = []
-  } else if (error.value.statusCode == 401) {
-    console.log(error)
-    console.log('請先登入')
+    showLoading.value = false
   }
-  showLoading.value = false
 })
 </script>
 
