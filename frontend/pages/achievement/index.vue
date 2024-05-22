@@ -57,7 +57,7 @@
         <img src="/Exit.png" alt="Exit" class="fixed left-3 top-3 h-auto w-[3%]" />
       </NuxtLink>
     </div>
-    <div class="flex h-[10%] w-auto justify-center font-chen text-5xl">收藏集</div>
+    <div class="flex h-[10%] w-auto justify-center font-chen text-5xl font-bold">收藏集</div>
     <div class="background animate-fade-in h-[90%] w-auto">
       <div class="relative flex h-1/3 w-auto items-center justify-center">
         <button @click="openContent(1)" v-if="id.includes(1)" class="h-[100%] w-auto">
@@ -189,7 +189,7 @@ onMounted(async () => {
 
 <style scoped>
 .background {
-  background-image: url('bookcase.png');
+  background-image: url('bookcase.svg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
