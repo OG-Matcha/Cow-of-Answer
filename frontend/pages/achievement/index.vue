@@ -124,12 +124,21 @@
         </div>
       </div>
     </div>
+    <div
+      v-if="showLoading"
+      class="fixed inset-0 z-10 flex w-full items-center justify-center bg-black bg-opacity-50"
+    >
+      <div class="Loading-fade-in w-auto">
+        <Loading />
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { onMounted, ref } from 'vue'
 const id = ref([])
+const showLoading = ref(true)
 
 const selectedId = ref(null)
 const showContent = ref(false)
@@ -151,7 +160,9 @@ onMounted(async () => {
   })
 
   if (status.value === 'success') {
-    id.push(data.value.achievement_id)
+    for (i = 0; i < data.value.length; i++) {
+      id.push(data.value[i].achievement_id)
+    }
   } else if (error.value.statusCode == 404) {
     console.log(error)
     console.log(id.value)
@@ -160,6 +171,7 @@ onMounted(async () => {
     console.log(error)
     console.log('請先登入')
   }
+  showLoading.value = false
 })
 </script>
 
@@ -188,5 +200,10 @@ onMounted(async () => {
 .cow-fade-in {
   animation: fade-in 0.5s ease-in-out;
   animation-delay: 2s; /* 延遲 2 秒 */
+}
+
+.Loading-fade-in {
+  animation-delay: 5s;
+  animation: fade-in 2s ease-in-out;
 }
 </style>
