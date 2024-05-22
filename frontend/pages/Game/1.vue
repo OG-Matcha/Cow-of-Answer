@@ -11,7 +11,6 @@ const cowImage = ref('/CowRight.png')
 const hasClickedCow = ref(false)
 
 // Book variables
-const answer = ref('')
 const bookDirection = ref('Right')
 const showBook = ref(false)
 const bookAnimationClass = ref('')
