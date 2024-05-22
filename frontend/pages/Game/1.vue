@@ -11,7 +11,6 @@ const cowImage = ref('/CowRight.png')
 const hasClickedCow = ref(false)
 
 // Book variables
-const answer = ref('')
 const bookDirection = ref('Right')
 const showBook = ref(false)
 const bookAnimationClass = ref('')
@@ -88,6 +87,9 @@ const generateRandomIndex = () => {
   }
   return probabilities.length - 1
 }
+
+// Use the function to set the achievementIndex
+achievementIndex.value = generateRandomIndex()
 
 // Close confirm
 const cancelConfirm = () => {
