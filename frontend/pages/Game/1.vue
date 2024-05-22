@@ -66,7 +66,7 @@ const showConfirm = ref(false)
 const achievementList = ref(['A5和牛', '五花牛', '雪花牛', '培根牛', '霜降牛', '安格斯牛'])
 const achievementImageList = ref([
   '/A5Cow.svg',
-  '/FiveFlowerCow.svg',
+  '/FiveFloweredCow.svg',
   '/SnowFlakeCow.svg',
   '/BaconCow.svg',
   '/FrostCow.svg',
