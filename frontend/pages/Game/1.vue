@@ -9,6 +9,7 @@ const cowImage = ref('/CowRight.png')
 const hasClickedCow = ref(false)
 
 // Book variables
+const answer = ref('')
 const bookDirection = ref('Right')
 const showBook = ref(false)
 const bookAnimationClass = ref('')
@@ -45,7 +46,6 @@ const volume = ref(1)
 // Timer
 const gameStartTime = ref(null)
 const pauseTime = ref(null)
-const savedGameStartTime = ref(null)
 const second = ref(0)
 const timerId = ref(null)
 
@@ -183,7 +183,6 @@ const resumeTimer = () => {
 
 const stopTimer = () => {
   clearInterval(timerId.value)
-  savedGameStartTime.value = gameStartTime.value
   // console.log('Time stopped')
 }
 
@@ -282,16 +281,28 @@ onMounted(async () => {
   }
 
   // Refresh token
-  const { data: data2 } = await useFetch('http://localhost:8000/api/auth/refresh', {
-    method: 'GET',
-    headers: {
-      Authorization: 'Bearer ' + token.value,
-      'Content-Type': 'application/json'
+  const { data: data2, status: status2 } = await useFetch(
+    'http://localhost:8000/api/auth/refresh',
+    {
+      method: 'GET',
+      headers: {
+        Authorization: 'Bearer ' + token.value,
+        'Content-Type': 'application/json'
+      }
     }
-  })
+  )
 
-  token.value = data2.value.token
-  useCookie('token', token.value)
+  console.log('refresh token')
+  console.log(token.value)
+  token.value = null
+
+  if (status2.value === 'success') {
+    console.log(data2.value)
+    token.value = data2.value.token
+    console.log(token.value)
+  } else if (error.value.statusCode == 401) {
+    console.log('Token expired')
+  }
 })
 
 onUnmounted(() => {
@@ -353,8 +364,14 @@ const handleClick = async () => {
     bookAnimationClass.value = 'book-blink'
   }, 2800)
 
+  const delay = (ms) => new Promise((res) => setTimeout(res, ms))
+
+  while (!token.value) {
+    await delay(1000)
+  }
+
   // Send the time to the backend
-  const { error } = await useFetch('http://localhost:8000/api/challenge-record', {
+  const { status } = await useFetch('http://localhost:8000/api/challenge-record', {
     method: 'POST',
     headers: {
       Authorization: 'Bearer ' + token.value,
@@ -363,12 +380,12 @@ const handleClick = async () => {
     body: {
       user_id: parseInt(userid.value),
       challenge_number: 1,
-      best_time: parseInt(savedGameStartTime.value)
+      best_time: second.value
     }
   })
 
-  if (error.value.statusCode == 404) {
-    console.log('Error:', error.value)
+  if (status.value != 'success') {
+    console.log('Error happened when sending the time to the backend')
   }
 }
 
@@ -450,7 +467,7 @@ const handleBookClick = () => {
         v-if="isBookRightPageInvisible"
         class="bookRightPage absolute left-[50%] top-[10%] z-auto h-[31.5rem] w-[22.5rem] border-[6px] border-solid border-bookPageBorder bg-bookPage"
       >
-        <div class="h-[80%] w-auto pl-[5%] pr-[5%] pt-[50%] text-center text-5xl">
+        <div class="h-[80%] w-auto pl-[5%] pr-[5%] pt-[50%] text-left text-5xl">
           <div v-if="isFading" v-text="answer" class="animation-fade-in font-shu text-answer"></div>
         </div>
         <div class="h-[20%] w-auto p-[5%]">
