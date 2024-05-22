@@ -95,7 +95,7 @@
           {{ time }}
         </div>
         <div class="h-[5vh] w-auto"></div>
-        {{ Ytime.value || '--:--:--' }}
+        {{ Ytime || '--:--:--' }}
       </div>
     </div>
     <div
@@ -111,15 +111,17 @@
 
 <script setup>
 import { ref } from 'vue'
+
 const username = useCookie('username')
 const showLoading = ref(true)
 
 const ranks = ref(['4th', '5th', '6th', '7th', '8th', '9th', '10th'])
 
-const names = ref(['jay', 'jerry'])
+const names = ref([])
 while (names.value.length < 10) {
   names.value.push('--')
 }
+
 const times = ref([])
 while (times.value.length < 10) {
   times.value.push('--:--:--')
@@ -128,6 +130,10 @@ while (times.value.length < 10) {
 const Ytime = ref('')
 
 function secondsToHms(d) {
+  if (d == 0) {
+    return '00:00:00'
+  }
+
   if (d === null || d === undefined) {
     return '--:--:--'
   }
@@ -153,16 +159,12 @@ onMounted(async () => {
   })
 
   if (status.value === 'success') {
-    if (data.value && data.value.user_name) {
-      names.push(data.value.user_name)
-    }
-    if (data.value && data.value.best_time) {
-      times.push(data.value.best_time)
+    for (let i = 0; i < data.value.length; i++) {
+      names.value[i] = data.value[i].user_name
+      times.value[i] = secondsToHms(data.value[i].best_time)
     }
   } else if (error.value.statusCode == 404) {
     console.log(error)
-    names.value = '--'
-    times.value = '--:--:--'
   } else if (error.value.statusCode == 401) {
     console.log(error)
   }
@@ -181,7 +183,7 @@ onMounted(async () => {
   if (myStatus.value === 'success') {
     const challenge = myData.value.find((item) => item.challenge_number === 1)
     if (challenge) {
-      Ytime.value = secondsToHms(myData.value.best_time)
+      Ytime.value = secondsToHms(challenge.best_time)
     } else {
       Ytime.value = '--:--:--'
     }
