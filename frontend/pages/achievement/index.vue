@@ -1,18 +1,3 @@
-<script setup>
-import { ref } from 'vue'
-const id = ref([1, 2, 3])
-
-const selectedId = ref(null)
-const showContent = ref(false)
-const openContent = (id) => {
-  showContent.value = true
-  selectedId.value = id
-}
-const closeContent = () => {
-  showContent.value = false
-}
-</script>
-
 <template>
   <div class="h-[100vh] w-[100vw] bg-orange-50 p-[2%]">
     <div
@@ -139,8 +124,57 @@ const closeContent = () => {
         </div>
       </div>
     </div>
+    <div
+      v-if="showLoading"
+      class="fixed inset-0 z-10 flex w-full items-center justify-center bg-black bg-opacity-50"
+    >
+      <div class="Loading-fade-in w-auto">
+        <Loading />
+      </div>
+    </div>
   </div>
 </template>
+
+<script setup>
+import { onMounted, ref } from 'vue'
+const id = ref([])
+const showLoading = ref(true)
+
+const selectedId = ref(null)
+const showContent = ref(false)
+const openContent = (id) => {
+  showContent.value = true
+  selectedId.value = id
+}
+const closeContent = () => {
+  showContent.value = false
+}
+onMounted(async () => {
+  const token = useCookie('token')
+  const { data, status, error } = await useFetch('http://localhost:8000/api/user-achievement', {
+    method: 'GET',
+    headers: {
+      Authorization: 'Bearer ' + token.value,
+      'Content-Type': 'application/json'
+    }
+  })
+
+  if (status.value === 'success') {
+    for (i = 0; i < data.value.length; i++) {
+      id.push(data.value[i].achievement_id)
+    }
+  } else if (error.value.statusCode == 404) {
+    console.log(error)
+    console.log(id.value)
+    id.value = []
+  } else if (error.value.statusCode == 401) {
+    console.log(error)
+    console.log('請先登入')
+  }
+  showLoading.value = false
+})
+</script>
+
 <style scoped>
 .background {
   background-image: url('bookcase.png');
@@ -166,5 +200,10 @@ const closeContent = () => {
 .cow-fade-in {
   animation: fade-in 0.5s ease-in-out;
   animation-delay: 2s; /* 延遲 2 秒 */
+}
+
+.Loading-fade-in {
+  animation-delay: 5s;
+  animation: fade-in 2s ease-in-out;
 }
 </style>

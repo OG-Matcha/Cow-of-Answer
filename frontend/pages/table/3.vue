@@ -95,7 +95,7 @@
           {{ time }}
         </div>
         <div class="h-[5vh] w-auto"></div>
-        {{ Ytime.value || '--:--:--' }}
+        {{ Ytime || '--:--:--' }}
       </div>
     </div>
     <div
@@ -179,7 +179,7 @@ onMounted(async () => {
     }
   })
   if (myStatus.value === 'success') {
-    const challenge = data.value.find((item) => item.challenge_number === 3)
+    const challenge = myData.value.find((item) => item.challenge_number === 3)
     if (challenge) {
       Ytime.value = secondsToHms(myData.value.best_time)
     } else {
