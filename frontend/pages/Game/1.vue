@@ -89,9 +89,6 @@ const generateRandomIndex = () => {
   return probabilities.length - 1
 }
 
-// Use the function to set the achievementIndex
-achievementIndex.value = generateRandomIndex()
-
 // Close confirm
 const cancelConfirm = () => {
   showConfirm.value = false
