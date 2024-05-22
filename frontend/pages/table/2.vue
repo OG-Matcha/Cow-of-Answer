@@ -144,7 +144,7 @@ function secondsToHms(d) {
 
 onMounted(async () => {
   const token = useCookie('token')
-  const { data, status, error } = await useFetch('http://localhost:8000/api/rank-list/1', {
+  const { data, status, error } = await useFetch('http://localhost:8000/api/rank-list/2', {
     method: 'GET',
     headers: {
       Authorization: 'Bearer ' + token.value,
@@ -179,7 +179,7 @@ onMounted(async () => {
     }
   })
   if (myStatus.value === 'success') {
-    const challenge = data.value.find((item) => item.challenge_number === 1)
+    const challenge = data.value.find((item) => item.challenge_number === 2)
     if (challenge) {
       Ytime.value = secondsToHms(myData.value.best_time)
     } else {
