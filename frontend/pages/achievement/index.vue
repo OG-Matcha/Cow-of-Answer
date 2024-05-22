@@ -15,28 +15,40 @@
           </button>
         </div>
         <div v-if="selectedId == 1">
-          <div class="h-[30%] w-auto font-chen text-4xl">NAME:A5和牛</div>
-          <div class="h-[60%] w-auto p-[1%] font-chen text-2xl">好吃好吃</div>
+          <div class="mb-2 h-[30%] w-auto text-center font-shu text-4xl font-bold">A5和牛</div>
+          <div class="h-[60%] w-auto p-[1%] font-chen text-4xl">
+            牛排界的愛馬仕，覺得人生不如意的時候，先停一下，吃口A5和牛，享受人生。
+          </div>
         </div>
         <div v-else-if="selectedId == 2">
-          <div class="h-[30%] w-auto font-chen text-4xl">NAME:五花牛</div>
-          <div class="h-[60%] w-auto p-[1%] font-chen text-2xl">好吃好吃</div>
+          <div class="mb-2 h-[30%] w-auto text-center font-shu text-4xl font-bold">五花牛</div>
+          <div class="h-[60%] w-auto p-[1%] font-chen text-4xl">
+            油脂會胖，但肥牛會讓你快樂。找件會讓你快樂的事情去做吧！
+          </div>
         </div>
         <div v-else-if="selectedId == 3">
-          <div class="h-[30%] w-auto font-chen text-4xl">NAME:雪花牛</div>
-          <div class="h-[60%] w-auto p-[1%] font-chen text-2xl">好吃好吃</div>
+          <div class="mb-2 h-[30%] w-auto text-center font-shu text-4xl font-bold">雪花牛</div>
+          <div class="h-[60%] w-auto p-[1%] font-chen text-4xl">
+            雪花飄飄~北風蕭蕭~覺得冷，雪花牛配火鍋，暖你一生。
+          </div>
         </div>
         <div v-else-if="selectedId == 4">
-          <div class="h-[30%] w-auto font-chen text-4xl">NAME:培根牛</div>
-          <div class="h-[60%] w-auto p-[1%] font-chen text-2xl">好吃好吃</div>
+          <div class="mb-2 h-[30%] w-auto text-center font-shu text-4xl font-bold">培根牛</div>
+          <div class="h-[60%] w-auto p-[1%] font-chen text-4xl">
+            緊實的肉質，需要高溫炙烤或悶煮。許多事情，放寬心，慢慢來。
+          </div>
         </div>
         <div v-else-if="selectedId == 5">
-          <div class="h-[30%] w-auto font-chen text-4xl">NAME:霜降牛</div>
-          <div class="h-[60%] w-auto p-[1%] font-chen text-2xl">好吃好吃</div>
+          <div class="mb-2 h-[30%] w-auto text-center font-shu text-4xl font-bold">霜降牛</div>
+          <div class="h-[60%] w-auto p-[1%] font-chen text-4xl">
+            油脂如霜降般不均勻灑在鮮紅肉色上，人生中，也難免會碰上不如意，咀嚼它，化解它。
+          </div>
         </div>
         <div v-else-if="selectedId == 6">
-          <div class="h-[30%] w-auto font-chen text-4xl">NAME:安格斯牛</div>
-          <div class="h-[60%] w-auto p-[1%] font-chen text-2xl">好吃好吃</div>
+          <div class="mb-2 h-[30%] w-auto text-center font-shu text-4xl font-bold">安格斯牛</div>
+          <div class="h-[60%] w-auto p-[1%] font-chen text-4xl">
+            因為安格斯牛肉質偏嫩，建議以中火烹煮。在做每件事時，也需要控制火侯，因地制宜。
+          </div>
         </div>
       </div>
     </div>
@@ -160,8 +172,8 @@ onMounted(async () => {
   })
 
   if (status.value === 'success') {
-    for (i = 0; i < data.value.length; i++) {
-      id.push(data.value[i].achievement_id)
+    for (let i = 0; i < data.value.length; i++) {
+      id.value.push(data.value[i].achievement_id)
     }
   } else if (error.value.statusCode == 404) {
     console.log(error)

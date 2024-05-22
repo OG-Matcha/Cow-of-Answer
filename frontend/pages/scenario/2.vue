@@ -91,6 +91,7 @@ onMounted(async () => {
 
   const token = useCookie('token')
   const skipScenario = useCookie('skipScenario')
+  const openChallenge = useCookie('openChallenge')
 
   const { data, status, error } = await useFetch('http://localhost:8000/api/rank-list/rank/user', {
     method: 'GET',
@@ -101,15 +102,11 @@ onMounted(async () => {
   })
 
   if (status.value === 'success') {
-    openChallenge.value = data.value.length
-
     if (openChallenge.value == 3) {
       skipScenario.value = true
     } else {
       skipScenario.value = false
     }
-  } else if (error.value.statusCode == 404) {
-    openChallenge.value = 0
   }
 })
 </script>
