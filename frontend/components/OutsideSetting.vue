@@ -91,7 +91,7 @@ const logOut = async () => {
     token.value = null
     username.value = null
 
-    await navigateTo({ path: '/mainPage' })
+    await navigateTo({ path: '/' })
   } else {
     openModelHint()
     closeModelLoading()

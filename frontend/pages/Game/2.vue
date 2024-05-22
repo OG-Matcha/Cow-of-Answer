@@ -2,14 +2,16 @@
 import { reactive, onMounted, ref, onUnmounted } from 'vue'
 
 const userid = useCookie('userid')
-const answer = useCookie('answer')
 const token = useCookie('token')
+const openChallenge = useCookie('openChallenge')
+const skipEnable = useCookie('skipEnable')
 
 // Cow variables
 const cowImage = ref('/CowRight.png')
 const hasClickedCow = ref(false)
 
 // Book variables
+const answer = ref('')
 const bookDirection = ref('Right')
 const showBook = ref(false)
 const bookAnimationClass = ref('')
@@ -45,12 +47,8 @@ const volume = ref(1)
 // Timer
 const gameStartTime = ref(null)
 const pauseTime = ref(null)
-const savedGameStartTime = ref(null)
 const second = ref(0)
 const timerId = ref(null)
-
-// Random redirect
-const redirectLink = ref('')
 
 // Bonus
 const showBonus = ref(false)
@@ -62,6 +60,36 @@ const showOverlay = ref(false)
 
 // Outside setting
 const showConfirm = ref(false)
+
+// Achievement
+const achievementList = ref(['A5和牛', '五花牛', '雪花牛', '培根牛', '霜降牛', '安格斯牛'])
+const achievementImageList = ref([
+  '/A5Cow.svg',
+  '/FiveFlowerCow.svg',
+  '/SnowFlakeCow.svg',
+  '/BaconCow.svg',
+  '/FrostCow.svg',
+  '/AngusCow.svg'
+])
+const achievementIndex = ref(0)
+
+//// Generate a random index with different probabilities
+const generateRandomIndex = () => {
+  const probabilities = [0.01, 0.06, 0.06, 0.29, 0.29, 0.29]
+  const sum = probabilities.reduce((a, b) => a + b, 0)
+  const random = Math.random() * sum
+  let tempSum = 0
+  for (let i = 0; i < probabilities.length; i++) {
+    tempSum += probabilities[i]
+    if (random <= tempSum) {
+      return i
+    }
+  }
+  return probabilities.length - 1
+}
+
+// Use the function to set the achievementIndex
+achievementIndex.value = generateRandomIndex()
 
 // Close confirm
 const cancelConfirm = () => {
@@ -83,15 +111,27 @@ const updateRedirect = async () => {
   const randomNumber = Math.random()
   if (randomNumber < 0.9) {
     showBonus.value = true
-    redirectLink.value = ''
     isBookRightPageInvisible.value = false
     isBookLeftPageInvisible.value = false
     setTimeout(() => {
       bonusAnimation.value = 'bonus-blink'
     }, 1000)
-  } else {
-    await navigateTo({ path: '/scenario/4' })
+
+    const { status } = await useFetch('http://localhost:8000/api/user-achievement', {
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer ' + token.value,
+        'Content-Type': 'application/json'
+      },
+      body: {
+        user_id: userid.value,
+        achievement_id: achievementIndex.value + 1
+      }
+    })
+
     // console.log('Redirect to challenge')
+  } else {
+    await navigateTo({ path: skipEnable.value ? '/challenge' : '/scenario/4' })
   }
 }
 
@@ -104,7 +144,7 @@ const openBonus = () => {
 // Close bonus to next
 const handleBonusClick = async () => {
   isBonus.value = false
-  await navigateTo({ path: '/scenario/4' })
+  await navigateTo({ path: skipEnable.value ? '/challenge' : '/scenario/4' })
 }
 
 // Cow style
@@ -113,8 +153,8 @@ const cowStyle = reactive({
   left: '0%',
   width: '3%',
   height: 'auto',
-  transform: 'translate(-50%, -50%)',
-  opacity: '0'
+  transform: 'translate(-50%, -50%)'
+  //   opacity: '0'
 })
 
 // Book style
@@ -153,7 +193,6 @@ const resumeTimer = () => {
 
 const stopTimer = () => {
   clearInterval(timerId.value)
-  savedGameStartTime.value = gameStartTime.value
   // console.log('Time stopped')
 }
 
@@ -252,16 +291,24 @@ onMounted(async () => {
   }
 
   // Refresh token
-  const { data: data2 } = await useFetch('http://localhost:8000/api/auth/refresh', {
-    method: 'GET',
-    headers: {
-      Authorization: 'Bearer ' + token.value,
-      'Content-Type': 'application/json'
+  const { data: data2, status: status2 } = await useFetch(
+    'http://localhost:8000/api/auth/refresh',
+    {
+      method: 'GET',
+      headers: {
+        Authorization: 'Bearer ' + token.value,
+        'Content-Type': 'application/json'
+      }
     }
-  })
+  )
 
-  token.value = data2.value.token
-  useCookie('token', token.value)
+  token.value = null
+
+  if (status2.value === 'success') {
+    token.value = data2.value.token
+  } else if (error.value.statusCode == 401) {
+    console.log('Token expired')
+  }
 })
 
 onUnmounted(() => {
@@ -323,8 +370,14 @@ const handleClick = async () => {
     bookAnimationClass.value = 'book-blink'
   }, 2800)
 
+  const delay = (ms) => new Promise((res) => setTimeout(res, ms))
+
+  while (!token.value) {
+    await delay(1000)
+  }
+
   // Send the time to the backend
-  const { error } = await useFetch('http://localhost:8000/api/challenge-record', {
+  const { status } = await useFetch('http://localhost:8000/api/challenge-record', {
     method: 'POST',
     headers: {
       Authorization: 'Bearer ' + token.value,
@@ -333,12 +386,16 @@ const handleClick = async () => {
     body: {
       user_id: userid.value,
       challenge_number: 2,
-      best_time: savedGameStartTime.value
+      best_time: second.value
     }
   })
 
-  if (error.value.statusCode == 404) {
-    console.log('Error:', error.value)
+  if (openChallenge.value == 1) {
+    openChallenge.value++
+  }
+
+  if (status.value != 'success') {
+    console.log('Error happened when sending the time to the backend')
   }
 }
 
@@ -378,12 +435,12 @@ const handleBookClick = () => {
         @close="handleGameInfoStart"
       />
 
-      <audio ref="audioRefInfo" controls autoplay style="display: none">
+      <audio ref="audioRefInfo" controls style="display: none">
         <source src="/mow.MP3" type="audio/mpeg" />
         Your browser does not support the audio element.
       </audio>
 
-      <audio ref="audioRefInGame" controls loop autoplay style="display: none">
+      <audio ref="audioRefInGame" controls loop style="display: none">
         <source src="/mow.MP3" type="audio/mpeg" />
         Your browser does not support the audio element.
       </audio>
@@ -406,7 +463,7 @@ const handleBookClick = () => {
     <div class="relative h-[87vh] w-full overflow-hidden">
       <div
         v-if="isBookLeftPageInvisible"
-        class="bookLeftPage absolute left-[26%] top-[10%] z-auto h-[81%] w-[24%] border-[6px] border-solid border-bookPageBorder bg-bookPage"
+        class="bookLeftPage absolute left-[26%] top-[10%] z-auto h-[31.5rem] w-[22.5rem] border-[6px] border-solid border-bookPageBorder bg-bookPage"
         :class="{ leftFlipped: isLeftFlipped }"
       >
         <img
@@ -418,9 +475,9 @@ const handleBookClick = () => {
       </div>
       <div
         v-if="isBookRightPageInvisible"
-        class="bookRightPage absolute left-[50%] top-[10%] z-auto h-[81%] w-[24%] border-[6px] border-solid border-bookPageBorder bg-bookPage"
+        class="bookRightPage absolute left-[50%] top-[10%] z-auto h-[31.5rem] w-[22.5rem] border-[6px] border-solid border-bookPageBorder bg-bookPage"
       >
-        <div class="h-[80%] w-auto pl-[5%] pr-[5%] pt-[50%] text-center text-5xl">
+        <div class="h-[80%] w-auto pl-[5%] pr-[5%] pt-[50%] text-left text-5xl">
           <div v-if="isFading" v-text="answer" class="animation-fade-in font-shu text-answer"></div>
         </div>
         <div class="h-[20%] w-auto p-[5%]">
@@ -481,13 +538,17 @@ const handleBookClick = () => {
       <div class="flex h-[0.5rem] w-[6rem] items-center justify-center"></div>
       <div class="flex h-[2.5rem] w-full flex-row">
         <div class="flex h-full w-[3rem] items-center justify-center">
-          <img src="/bonusCow.svg" alt="bonusCow" class="h-auto w-[80%]" />
+          <img
+            :src="achievementImageList[achievementIndex]"
+            :alt="achievementList[achievementIndex]"
+            class="h-auto w-[80%]"
+          />
         </div>
         <div class="flex h-full w-[5rem]">
           <p
-            class="flex items-center justify-center rounded bg-textColor bg-opacity-50 p-1 font-shu text-[0.9rem]"
+            class="flex items-center justify-center rounded bg-textColor bg-opacity-50 p-1 font-shu text-[0.75rem]"
           >
-            A5和牛
+            {{ achievementList[achievementIndex] }}
           </p>
         </div>
       </div>

@@ -3,6 +3,8 @@ import { reactive, onMounted, ref, onUnmounted } from 'vue'
 
 const userid = useCookie('userid')
 const token = useCookie('token')
+const openChallenge = useCookie('openChallenge')
+const skipEnable = useCookie('skipEnable')
 
 // Cow variables
 const cowImage = ref('/CowRight.png')
@@ -49,9 +51,6 @@ const pauseTime = ref(null)
 const second = ref(0)
 const timerId = ref(null)
 
-// Random redirect
-const redirectLink = ref('')
-
 // Bonus
 const showBonus = ref(false)
 const bonusAnimation = ref('')
@@ -75,7 +74,7 @@ const achievementImageList = ref([
 ])
 const achievementIndex = ref(0)
 
-//// Generate a random index with different probabilities
+// from Copilot
 const generateRandomIndex = () => {
   const probabilities = [0.01, 0.06, 0.06, 0.29, 0.29, 0.29]
   const sum = probabilities.reduce((a, b) => a + b, 0)
@@ -113,15 +112,27 @@ const updateRedirect = async () => {
   const randomNumber = Math.random()
   if (randomNumber < 0.9) {
     showBonus.value = true
-    redirectLink.value = ''
     isBookRightPageInvisible.value = false
     isBookLeftPageInvisible.value = false
     setTimeout(() => {
       bonusAnimation.value = 'bonus-blink'
     }, 1000)
-  } else {
-    await navigateTo({ path: '/scenario/2' })
+
+    const { status } = await useFetch('http://localhost:8000/api/user-achievement', {
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer ' + token.value,
+        'Content-Type': 'application/json'
+      },
+      body: {
+        user_id: userid.value,
+        achievement_id: achievementIndex.value + 1
+      }
+    })
+
     // console.log('Redirect to challenge')
+  } else {
+    await navigateTo({ path: skipEnable.value ? '/challenge' : '/scenario/2' })
   }
 }
 
@@ -134,7 +145,7 @@ const openBonus = () => {
 // Close bonus to next
 const handleBonusClick = async () => {
   isBonus.value = false
-  await navigateTo({ path: '/scenario/2' })
+  await navigateTo({ path: skipEnable.value ? '/challenge' : '/scenario/2' })
 }
 
 // Cow style
@@ -259,7 +270,7 @@ onMounted(async () => {
     const dy = mouseY - cowY
     const distance = Math.sqrt(dx * dx + dy * dy)
 
-    // Adjust the volume based on the distance
+    // from Copilot
     if (audioRefInGame.value) {
       audioRefInGame.value.volume = Math.max(0.1, Math.min(1, 1.3 - (2 * distance) / 50))
     }
@@ -292,14 +303,10 @@ onMounted(async () => {
     }
   )
 
-  console.log('refresh token')
-  console.log(token.value)
   token.value = null
 
   if (status2.value === 'success') {
-    console.log(data2.value)
     token.value = data2.value.token
-    console.log(token.value)
   } else if (error.value.statusCode == 401) {
     console.log('Token expired')
   }
@@ -383,6 +390,10 @@ const handleClick = async () => {
       best_time: second.value
     }
   })
+
+  if (openChallenge.value == 0) {
+    openChallenge.value++
+  }
 
   if (status.value != 'success') {
     console.log('Error happened when sending the time to the backend')
