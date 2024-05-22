@@ -6,8 +6,8 @@
     >
       <div class="font space-y-19 r-50% flex flex-col items-center justify-center font-chen">
         <button class="font" @click="confirm">登出</button>
-        <NuxtLink to="http://localhost:3000/table" class="font mt-[1.25vh]">排行榜</NuxtLink>
-        <NuxtLink to="/" class="font mt-[1.25vh]">收藏集</NuxtLink>
+        <NuxtLink to="/table" class="font mt-[1.25vh]">排行榜</NuxtLink>
+        <NuxtLink to="/achievement" class="font mt-[1.25vh]">收藏集</NuxtLink>
       </div>
     </div>
     <div
@@ -91,7 +91,7 @@ const logOut = async () => {
     token.value = null
     username.value = null
 
-    await navigateTo({ path: '/mainPage' })
+    await navigateTo({ path: '/' })
   } else {
     openModelHint()
     closeModelLoading()
