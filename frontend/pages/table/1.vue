@@ -95,11 +95,7 @@
           {{ time }}
         </div>
         <div class="h-[5vh] w-auto"></div>
-        <<<<<<< HEAD
         {{ Ytime || '--:--:--' }}
-        =======
-        {{ Ytime.value || '--:--:--' }}
-        >>>>>>> c193ba3 (add: 1.vue串接)
       </div>
     </div>
     <div
