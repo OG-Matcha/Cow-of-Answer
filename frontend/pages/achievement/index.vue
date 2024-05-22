@@ -1,18 +1,3 @@
-<script setup>
-import { ref } from 'vue'
-const id = ref([1, 2, 3])
-
-const selectedId = ref(null)
-const showContent = ref(false)
-const openContent = (id) => {
-  showContent.value = true
-  selectedId.value = id
-}
-const closeContent = () => {
-  showContent.value = false
-}
-</script>
-
 <template>
   <div class="h-[100vh] w-[100vw] bg-orange-50 p-[2%]">
     <div
@@ -141,6 +126,43 @@ const closeContent = () => {
     </div>
   </div>
 </template>
+
+<script setup>
+import { onMounted, ref } from 'vue'
+const id = ref([])
+
+const selectedId = ref(null)
+const showContent = ref(false)
+const openContent = (id) => {
+  showContent.value = true
+  selectedId.value = id
+}
+const closeContent = () => {
+  showContent.value = false
+}
+onMounted(async () => {
+  const token = useCookie('token')
+  const { data, status, error } = await useFetch('http://localhost:8000/api/user-achievement', {
+    method: 'GET',
+    headers: {
+      Authorization: 'Bearer ' + token.value,
+      'Content-Type': 'application/json'
+    }
+  })
+
+  if (status.value === 'success') {
+    id.push(data.value.achievement_id)
+  } else if (error.value.statusCode == 404) {
+    console.log(error)
+    console.log(id.value)
+    id.value = []
+  } else if (error.value.statusCode == 401) {
+    console.log(error)
+    console.log('請先登入')
+  }
+})
+</script>
+
 <style scoped>
 .background {
   background-image: url('bookcase.png');
