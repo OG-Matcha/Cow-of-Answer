@@ -479,7 +479,11 @@ const handleBookClick = () => {
         class="bookRightPage absolute left-[50%] top-[10%] z-auto h-[31.5rem] w-[22.5rem] border-[6px] border-solid border-bookPageBorder bg-bookPage"
       >
         <div class="h-[80%] w-auto pl-[5%] pr-[5%] pt-[50%] text-left text-5xl">
-          <div v-if="isFading" v-text="answer" class="animation-fade-in font-shu text-answer"></div>
+          <div
+            v-if="isFading"
+            v-text="answer"
+            class="animation-fade-in font-chen font-bold text-answer"
+          ></div>
         </div>
         <div class="h-[20%] w-auto p-[5%]">
           <div
