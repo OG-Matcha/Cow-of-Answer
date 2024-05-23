@@ -22,7 +22,7 @@ class AchievementController extends Controller
                 return response()->json(['error' => '資料庫內沒有成就'], 404);
             }
 
-            Redis::setex('achievements', 600, json_encode($achievements));
+            Redis::setex('achievements', 300, json_encode($achievements));
         }
 
         return response()->json($achievements, 200);

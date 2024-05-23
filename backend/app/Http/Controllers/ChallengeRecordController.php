@@ -28,7 +28,7 @@ class ChallengeRecordController extends Controller
                     ];
                 });
 
-            Redis::setex("rank_{$challenge_number}", 600, json_encode($records));
+            Redis::setex("rank_{$challenge_number}", 300, json_encode($records));
         }
 
         return response()->json($records, 200);
