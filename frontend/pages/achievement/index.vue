@@ -156,7 +156,7 @@ const showContent = ref(false)
 
 const id = useCookie('id', {
   default: () => [],
-  maxAge: 600
+  maxAge: 300
 })
 
 const openContent = (id) => {
@@ -168,8 +168,6 @@ const closeContent = () => {
 }
 onMounted(async () => {
   const token = useCookie('token')
-
-  console.log(id.value)
 
   if (id.value.length == 0) {
     showLoading.value = true

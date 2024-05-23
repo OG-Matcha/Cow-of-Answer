@@ -113,21 +113,24 @@
 import { ref } from 'vue'
 
 const username = useCookie('username')
-const showLoading = ref(true)
+const showLoading = ref(false)
 
 const ranks = ref(['4th', '5th', '6th', '7th', '8th', '9th', '10th'])
 
-const names = ref([])
-while (names.value.length < 10) {
-  names.value.push('--')
-}
+const names = useCookie('names_3', {
+  default: () => [],
+  maxAge: 300
+})
 
-const times = ref([])
-while (times.value.length < 10) {
-  times.value.push('--:--:--')
-}
+const times = useCookie('times_3', {
+  default: () => [],
+  maxAge: 300
+})
 
-const Ytime = ref('')
+const Ytime = useCookie('usertime_3', {
+  default: () => null,
+  maxAge: 300
+})
 
 function secondsToHms(d) {
   if (d == 0) {
@@ -150,52 +153,71 @@ function secondsToHms(d) {
 
 onMounted(async () => {
   const token = useCookie('token')
-  const { data, status, error } = await useFetch('http://localhost:8000/api/rank-list/3', {
-    method: 'GET',
-    headers: {
-      Authorization: 'Bearer ' + token.value,
-      'Content-Type': 'application/json'
-    }
-  })
 
-  if (status.value === 'success') {
-    for (let i = 0; i < data.value.length; i++) {
-      names.value[i] = data.value[i].user_name
-      times.value[i] = secondsToHms(data.value[i].best_time)
+  if (names.value.length == 0 || times.value.length == 0) {
+    while (names.value.length < 10) {
+      names.value.push('--')
     }
-  } else if (error.value.statusCode == 404) {
-    console.log(error)
-  } else if (error.value.statusCode == 401) {
-    console.log(error)
+
+    while (times.value.length < 10) {
+      times.value.push('--:--:--')
+    }
+
+    showLoading.value = true
+
+    const { data, status, error } = await useFetch('http://localhost:8000/api/rank-list/3', {
+      method: 'GET',
+      headers: {
+        Authorization: 'Bearer ' + token.value,
+        'Content-Type': 'application/json'
+      }
+    })
+
+    if (status.value === 'success') {
+      for (let i = 0; i < data.value.length; i++) {
+        names.value[i] = data.value[i].user_name
+        times.value[i] = secondsToHms(data.value[i].best_time)
+      }
+    } else if (error.value.statusCode == 404) {
+      console.log(error)
+    } else if (error.value.statusCode == 401) {
+      console.log(error)
+    }
+
+    showLoading.value = false
   }
 
-  const {
-    data: myData,
-    status: myStatus,
-    error: myError
-  } = await useFetch('http://localhost:8000/api/rank-list/rank/user', {
-    method: 'GET',
-    headers: {
-      Authorization: 'Bearer ' + token.value,
-      'Content-Type': 'application/json'
-    }
-  })
-  if (myStatus.value === 'success') {
-    const challenge = myData.value.find((item) => item.challenge_number === 3)
-    if (challenge) {
-      Ytime.value = secondsToHms(challenge.best_time)
-    } else {
+  if (Ytime.value === null || Ytime.value === undefined) {
+    showLoading.value = true
+
+    const {
+      data: myData,
+      status: myStatus,
+      error: myError
+    } = await useFetch('http://localhost:8000/api/rank-list/rank/user', {
+      method: 'GET',
+      headers: {
+        Authorization: 'Bearer ' + token.value,
+        'Content-Type': 'application/json'
+      }
+    })
+    if (myStatus.value === 'success') {
+      const challenge = myData.value.find((item) => item.challenge_number === 3)
+      if (challenge) {
+        Ytime.value = secondsToHms(challenge.best_time)
+      } else {
+        Ytime.value = '--:--:--'
+      }
+    } else if (myError.value.statusCode == 404) {
+      console.log(myError)
       Ytime.value = '--:--:--'
+      console.log(Ytime.value)
+    } else if (myError.value.statusCode == 401) {
+      console.log(myError)
     }
-  } else if (myError.value.statusCode == 404) {
-    console.log(myError)
-    Ytime.value = '--:--:--'
-    console.log(Ytime.value)
-  } else if (myError.value.statusCode == 401) {
-    console.log(myError)
-  }
 
-  showLoading.value = false
+    showLoading.value = false
+  }
 })
 </script>
 <style scoped>
