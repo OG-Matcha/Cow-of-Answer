@@ -262,7 +262,7 @@ const LogInUser = async () => {
 
   openModelLoading()
 
-  const { data, error, status } = await useFetch('http://localhost:8000/api/auth/login', {
+  const { data, error, status } = await useFetch('http://52.185.190.68:8000/api/auth/login', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -316,7 +316,7 @@ const RegisterUser = async () => {
 
   openModelLoading()
 
-  const { data, status } = await useFetch('http://localhost:8000/api/auth/register', {
+  const { data, status } = await useFetch('http://52.185.190.68:8000/api/auth/register', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

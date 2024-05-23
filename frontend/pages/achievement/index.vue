@@ -53,7 +53,7 @@
       </div>
     </div>
     <div>
-      <NuxtLink to="http://localhost:3000/challenge">
+      <NuxtLink to="http://52.185.190.68:3000/challenge">
         <img src="/Exit.png" alt="Exit" class="fixed left-3 top-3 h-auto w-[3%]" />
       </NuxtLink>
     </div>
@@ -172,13 +172,16 @@ onMounted(async () => {
   if (id.value.length == 0) {
     showLoading.value = true
 
-    const { data, status, error } = await useFetch('http://localhost:8000/api/user-achievement', {
-      method: 'GET',
-      headers: {
-        Authorization: 'Bearer ' + token.value,
-        'Content-Type': 'application/json'
+    const { data, status, error } = await useFetch(
+      'http://52.185.190.68:8000/api/user-achievement',
+      {
+        method: 'GET',
+        headers: {
+          Authorization: 'Bearer ' + token.value,
+          'Content-Type': 'application/json'
+        }
       }
-    })
+    )
 
     if (status.value === 'success') {
       for (let i = 0; i < data.value.length; i++) {

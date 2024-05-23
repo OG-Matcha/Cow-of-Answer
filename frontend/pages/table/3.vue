@@ -2,7 +2,7 @@
   <div class="h-[100vh] w-[100vw] bg-table">
     <div class="flex h-[40%] w-full border-b-2 border-black bg-table">
       <div>
-        <NuxtLink to="http://localhost:3000/challenge">
+        <NuxtLink to="http://52.185.190.68:3000/challenge">
           <img src="/Exit.png" alt="Exit" class="fixed left-3 top-3 h-auto w-[3%]" />
         </NuxtLink>
       </div>
@@ -165,7 +165,7 @@ onMounted(async () => {
 
     showLoading.value = true
 
-    const { data, status, error } = await useFetch('http://localhost:8000/api/rank-list/3', {
+    const { data, status, error } = await useFetch('http://52.185.190.68:8000/api/rank-list/3', {
       method: 'GET',
       headers: {
         Authorization: 'Bearer ' + token.value,
@@ -194,7 +194,7 @@ onMounted(async () => {
       data: myData,
       status: myStatus,
       error: myError
-    } = await useFetch('http://localhost:8000/api/rank-list/rank/user', {
+    } = await useFetch('http://52.185.190.68:8000/api/rank-list/rank/user', {
       method: 'GET',
       headers: {
         Authorization: 'Bearer ' + token.value,

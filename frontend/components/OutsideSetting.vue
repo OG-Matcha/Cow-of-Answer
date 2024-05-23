@@ -77,7 +77,7 @@ const openModelHint = () => {
 const logOut = async () => {
   openModelLoading()
 
-  const { status } = await useFetch('http://localhost:8000/api/auth/logout', {
+  const { status } = await useFetch('http://52.185.190.68:8000/api/auth/logout', {
     method: 'GET',
     headers: {
       Authorization: 'Bearer ' + token.value,
