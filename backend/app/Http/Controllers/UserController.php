@@ -86,7 +86,7 @@ class UserController extends Controller
                 return response()->json(['error' => '使用者沒有通關紀錄'], 404);
             }
 
-            Redis::setex("user_rank_{$user_id}", 600, json_encode($records));
+            Redis::setex("user_rank_{$user_id}", 300, json_encode($records));
         }
 
         return response()->json($records, 200);
@@ -106,7 +106,7 @@ class UserController extends Controller
                 return response()->json(['error' => '使用者沒有已獲得成就'], 404);
             }
 
-            Redis::setex("user_achievement_{$user_id}", 600, json_encode($records));
+            Redis::setex("user_achievement_{$user_id}", 300, json_encode($records));
         }
 
         return response()->json($records, 200);
