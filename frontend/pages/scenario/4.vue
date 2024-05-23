@@ -4,7 +4,7 @@
     <div class="flex h-[20%] w-[90%] justify-end">
       <button @click="skip" class="flex w-8 items-center">
         <div class="flex items-center">
-          <img src="/poly.png" alt="button" class="mr-3 w-[50%]" />
+          <img src="/Poly.png" alt="button" class="mr-3 w-[50%]" />
           <p class="font-neucha text-2xl">SKIP</p>
         </div>
       </button>
