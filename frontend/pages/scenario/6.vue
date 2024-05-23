@@ -106,7 +106,7 @@ onMounted(async () => {
   })
 
   if (status.value === 'success') {
-    if (openChallenge.value == 2) {
+    if (openChallenge.value == 3) {
       skipScenario.value = true
     } else {
       skipScenario.value = false
