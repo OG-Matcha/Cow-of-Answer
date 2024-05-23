@@ -389,6 +389,10 @@ const handleClick = async () => {
     }
   })
 
+  if (openChallenge.value == 2) {
+    openChallenge.value++
+  }
+
   if (status.value != 'success') {
     console.log('Error happened when sending the time to the backend')
   }
