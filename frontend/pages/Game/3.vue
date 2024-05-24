@@ -4,6 +4,7 @@ import { reactive, onMounted, ref, onUnmounted } from 'vue'
 const userid = useCookie('userid')
 const token = useCookie('token')
 const skipEnable = useCookie('skipEnable')
+const openChallenge = useCookie('openChallenge')
 
 // Cow variables
 const cowImage = ref('/CowRight.png')
@@ -368,12 +369,6 @@ const handleClick = async () => {
     bookStyle.height = 'auto'
     bookAnimationClass.value = 'book-blink'
   }, 2800)
-
-  const delay = (ms) => new Promise((res) => setTimeout(res, ms))
-
-  while (!token.value) {
-    await delay(1000)
-  }
 
   // Send the time to the backend
   const { status } = await useFetch('http://52.185.190.68:8000/api/challenge-record', {
