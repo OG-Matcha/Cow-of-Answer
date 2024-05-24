@@ -75,18 +75,11 @@ class UserController extends Controller
     public function getChallengeRecords()
     {
         $user = auth()->user();
-        $user_id = $user->id;
 
-        $records = json_decode(Redis::get("user_rank_{$user_id}"));
+        $records = $user->challengeRecords()->select('challenge_number', 'best_time')->get();
 
-        if (!$records) {
-            $records = $user->challengeRecords()->select('challenge_number', 'best_time')->get();
-
-            if ($records->isEmpty()) {
-                return response()->json(['error' => '使用者沒有通關紀錄'], 404);
-            }
-
-            Redis::setex("user_rank_{$user_id}", 300, json_encode($records));
+        if ($records->isEmpty()) {
+            return response()->json(['error' => '使用者沒有通關紀錄'], 404);
         }
 
         return response()->json($records, 200);
@@ -95,18 +88,11 @@ class UserController extends Controller
     public function completeAchievement()
     {
         $user = auth()->user();
-        $user_id = $user->id;
 
-        $records = json_decode(Redis::get("user_achievement_{$user_id}"));
+        $records = $user->linkAchievements()->select('achievement_id')->get();
 
-        if (!$records) {
-            $records = $user->linkAchievements()->select('achievement_id')->get();
-
-            if ($records->isEmpty()) {
-                return response()->json(['error' => '使用者沒有已獲得成就'], 404);
-            }
-
-            Redis::setex("user_achievement_{$user_id}", 300, json_encode($records));
+        if ($records->isEmpty()) {
+            return response()->json(['error' => '使用者沒有已獲得成就'], 404);
         }
 
         return response()->json($records, 200);
