@@ -17,7 +17,7 @@
       <img class="jump w-[15%]" src="/wall.svg" alt="grass" />
     </div>
     <div class="flex h-[40%] items-center justify-center">
-      <img class="fixed left-[6rem] top-[28rem] w-[15%]" src="/cow4.svg" alt="cow" />
+      <img class="fixed left-[10vh] top-[55vh] w-[15%]" src="/cow4.svg" alt="cow" />
       <div class="flex w-[75%] flex-col rounded-3xl bg-[blanchedalmond]">
         <div class="h-[80%]">
           <p class="h-full p-[3rem] font-chen text-4xl text-listfont">
