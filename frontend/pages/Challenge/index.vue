@@ -121,7 +121,7 @@ const currentIndex = ref(0)
 const audioElement = ref(null)
 
 onMounted(() => {
-  audioElement.value.volume = 0.5
+  audioElement.value.volume = 0.2
   audioElement.value.play()
   const intervalId = setInterval(() => {
     if (currentIndex.value < originalText.length) {

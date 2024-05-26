@@ -86,7 +86,7 @@ const skip = async () => {
 
 onMounted(() => {
   nextText()
-  audioElement.value.volume = 0.3
+  audioElement.value.volume = 0.1
   audioElement.value.play()
 })
 </script>
