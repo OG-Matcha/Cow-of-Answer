@@ -154,10 +154,7 @@ const showLoading = ref(false)
 const selectedId = ref(null)
 const showContent = ref(false)
 
-const id = useCookie('id', {
-  default: () => [],
-  maxAge: 300
-})
+const id = ref([])
 
 const openContent = (id) => {
   showContent.value = true
