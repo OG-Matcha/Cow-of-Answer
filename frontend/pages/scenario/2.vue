@@ -115,6 +115,7 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+/* from https://codepen.io/w3core/pen/ZbJeXm */
 @keyframes jump {
   0% {
     transform: translate3d(0, 0, 0) scale3d(1, 1, 1);
@@ -126,6 +127,7 @@ onMounted(async () => {
     transform: translate3d(0, 100%, 0) scale3d(1, 0.7, 1);
   }
 }
+
 .jump {
   transform-origin: 50% 50%;
   animation: jump 1s linear alternate infinite;
