@@ -370,6 +370,12 @@ const handleClick = async () => {
     bookAnimationClass.value = 'book-blink'
   }, 2800)
 
+  const delay = (ms) => new Promise((res) => setTimeout(res, ms))
+
+  while (!token.value) {
+    await delay(1000)
+  }
+
   // Send the time to the backend
   const { status } = await useFetch('http://52.185.190.68:8000/api/challenge-record', {
     method: 'POST',
